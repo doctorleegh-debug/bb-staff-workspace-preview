@@ -1397,13 +1397,13 @@ function buildNativeFormattingFunc(standardDateProps, extendedSettings, context)
   }
   return (date) => {
     let { marker } = date;
-    let format;
+    let format2;
     if (zeroFormat && !marker.getUTCMinutes()) {
-      format = zeroFormat;
+      format2 = zeroFormat;
     } else {
-      format = normalFormat;
+      format2 = normalFormat;
     }
-    let s3 = format.format(marker);
+    let s3 = format2.format(marker);
     return postProcess(s3, date, standardDateProps, extendedSettings, context);
   };
 }
@@ -6898,9 +6898,9 @@ function renderFill(fillType) {
 var WeekNumberContainer = (props) => y(ViewContextType.Consumer, null, (context) => {
   let { dateEnv, options } = context;
   let { date } = props;
-  let format = options.weekNumberFormat || props.defaultFormat;
+  let format2 = options.weekNumberFormat || props.defaultFormat;
   let num = dateEnv.computeWeekNumber(date);
-  let text = dateEnv.format(date, format);
+  let text = dateEnv.format(date, format2);
   let renderProps = { num, text, date };
   return y(
     ContentContainer,
@@ -12159,9 +12159,176 @@ async function updateMeal(storage, personId, action, locks = globalThis.navigato
   return locks ? locks.request(MEAL_PREFIX + personId, work) : work();
 }
 
+// review-share/src/daily-detail.js
+var esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
+var monthLabel = (month2) => `20${month2.slice(0, 2)}\uB144 ${Number(month2.slice(2))}\uC6D4`;
+var format = (value) => value === "" || value === null || value === void 0 ? "\uBBF8\uAE30\uC7AC" : typeof value === "number" ? value.toLocaleString("ko-KR") : String(value);
+var dateKey = (month2, day) => `20${month2.slice(0, 2)}-${month2.slice(2)}-${String(day).padStart(2, "0")}`;
+function calendarDays(month2) {
+  const year = 2e3 + Number(month2.slice(0, 2)), index4 = Number(month2.slice(2)) - 1;
+  const count = new Date(year, index4 + 1, 0).getDate(), offset = new Date(year, index4, 1).getDay();
+  return Array.from({ length: Math.ceil((offset + count) / 7) * 7 }, (_3, i3) => i3 < offset || i3 >= offset + count ? null : i3 - offset + 1);
+}
+function selectDetailRow(rows, initialRow, month2, selectedId) {
+  const candidates = rows.filter((r3) => r3.month === month2 && r3.personId === initialRow.personId);
+  const row = selectedId ? candidates.find((r3) => r3.id === selectedId) : month2 === initialRow.month ? initialRow : candidates.length === 1 ? candidates[0] : void 0;
+  return { row, candidates };
+}
+function dailyEntries(kind, row, localRecords2, month2, personId) {
+  const days = {}, lastDay = Math.max(...calendarDays(month2).filter(Boolean));
+  const add = (day, entry) => {
+    if (Number.isInteger(Number(day)) && Number(day) >= 1 && Number(day) <= lastDay) (days[Number(day)] ??= []).push(entry);
+  };
+  if (kind === "meals") for (const [day, cell] of Object.entries(row?.days || {})) add(day, { ...cell, label: "\uC2DD\uB300", local: false });
+  else for (const category of row?.categories || []) for (const [day, cell] of Object.entries(category.days || {})) add(day, { ...cell, label: category.label, local: false });
+  for (const record of localRecords2) if (record.kind === kind && record.personId === personId && record.month === month2 && record.date?.startsWith(`20${month2.slice(0, 2)}-${month2.slice(2)}-`)) add(Number(record.date.slice(-2)), { value: record.amount, label: record.label, note: record.note, local: true });
+  return days;
+}
+function entryText(entry, kind) {
+  return typeof entry.value === "number" ? `${format(entry.value)}${kind === "meals" ? "\uC6D0" : "\uBD84"}` : format(entry.value);
+}
+function entryClass(entry) {
+  return entry.local ? "added" : typeof entry.value === "number" && entry.value < 0 ? "deducted" : "";
+}
+function openDailyDetail({ kind, initialRow, rows, months, localRecords: localRecords2, readRecords, storageKey }) {
+  const opener = document.activeElement, scroll = { x: window.scrollX, y: window.scrollY };
+  const host = document.querySelector("#overlays");
+  host.querySelectorAll("dialog[open]").forEach((el) => el.close());
+  const dialog = document.createElement("dialog");
+  dialog.className = "daily-drawer";
+  dialog.setAttribute("aria-labelledby", "daily-title");
+  host.replaceChildren(dialog);
+  let selectedMonth = initialRow.month, selectedDay = null, selectedId = initialRow.id, closing = false, closeTimeout, currentEntries = {};
+  function close() {
+    if (closing) return;
+    closing = true;
+    dialog.classList.add("is-closing");
+    const finish = () => {
+      clearTimeout(closeTimeout);
+      if (dialog.open) dialog.close();
+    };
+    dialog.addEventListener("animationend", (event) => {
+      if (event.target === dialog) finish();
+    }, { once: true });
+    closeTimeout = setTimeout(finish, matchMedia("(prefers-reduced-motion: reduce)").matches ? 160 : 340);
+  }
+  dialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    close();
+  });
+  dialog.addEventListener("close", () => {
+    clearTimeout(closeTimeout);
+    removeEventListener("storage", refreshRecords);
+    dialog.remove();
+    if (!document.querySelector("dialog[open]")) {
+      if (opener?.isConnected) opener.focus({ preventScroll: true });
+      window.scrollTo(scroll.x, scroll.y);
+    }
+  }, { once: true });
+  function render2() {
+    const { row, candidates } = selectDetailRow(rows, initialRow, selectedMonth, selectedId);
+    currentEntries = dailyEntries(kind, row, localRecords2, selectedMonth, initialRow.personId);
+    const recordedDays = Object.keys(currentEntries).map(Number).sort((a3, b3) => a3 - b3), today = /* @__PURE__ */ new Date();
+    if (!selectedDay) selectedDay = recordedDays[0] || 1;
+    const totals = kind === "meals" ? Object.entries(row?.totals || {}).map(([label, c3]) => [label, c3.value]) : (row?.categories || []).map((c3) => [c3.label, c3.total, c3.carry]);
+    const index4 = months.indexOf(selectedMonth);
+    dialog.innerHTML = `
+   <header class="daily-heading"><div><p>${esc(row?.rawTeam ?? initialRow.rawTeam)} \xB7 \uAC1C\uC778\uBCC4 \uC6D4\uAC04 \uB0B4\uC5ED</p><h2 id="daily-title">${esc(initialRow.name)} <span>${kind === "meals" ? "\uC2DD\uB300" : "OT\xB7\uC9C0\uAC01"}</span></h2></div><button data-daily-close aria-label="\uAC1C\uC778 \uB0B4\uC5ED \uB2EB\uAE30">\uB2EB\uAE30 \u2715</button></header>
+   <div class="daily-scroll">
+    <div class="daily-month-nav"><button data-daily-month="${index4 - 1}" ${index4 <= 0 ? "disabled" : ""} aria-label="\uC774\uC804 \uB2EC">\u2039</button><label>\uC870\uD68C \uC6D4<select id="daily-month" aria-label="\uAC1C\uC778 \uB0B4\uC5ED \uC870\uD68C \uC6D4">${months.map((m3) => `<option value="${m3}" ${m3 === selectedMonth ? "selected" : ""}>${monthLabel(m3)}</option>`).join("")}</select></label><button data-daily-month="${index4 + 1}" ${index4 >= months.length - 1 ? "disabled" : ""} aria-label="\uB2E4\uC74C \uB2EC">\u203A</button></div>
+    ${candidates.length > 1 ? `<label class="daily-row-field">\uAC00\uC838\uC628 \uAE30\uB85D \uC120\uD0DD<select id="daily-row"><option value="" ${!row ? "selected" : ""}>\uD655\uC778\uD560 \uAE30\uB85D\uC744 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694</option>${candidates.map((r3) => `<option value="${esc(r3.id)}" ${row?.id === r3.id ? "selected" : ""}>${esc(r3.originalName || r3.name)} \xB7 ${esc(r3.rawTeam)} \xB7 ${esc(r3.source?.tab)} / ${esc(r3.source?.cell)}</option>`).join("")}</select></label>` : ""}
+    ${row?.identityNeedsReview ? '<p class="notice">\uC2A4\uCF00\uC904 \uBA85\uBD80\uC640\uC758 \uC774\uB984\xB7\uD300 \uC5F0\uACB0\uC740 \uD655\uC778 \uC911\uC785\uB2C8\uB2E4. \uC120\uD0DD\uD55C \uAE30\uB85D\uC744 \uADF8\uB300\uB85C \uBCF4\uC5EC\uC90D\uB2C8\uB2E4.</p>' : ""}
+    ${!row ? `<p class="notice">${candidates.length > 1 ? "\uC774 \uC9C1\uC6D0\uC758 \uAE30\uB85D\uC774 \uC5EC\uB7EC \uD589\uC5D0 \uC788\uC2B5\uB2C8\uB2E4. \uC704\uC5D0\uC11C \uD655\uC778\uD560 \uAE30\uB85D\uC744 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694." : "\uC774 \uC9C1\uC6D0\uC758 \uD574\uB2F9 \uC6D4 \uAC00\uC838\uC628 \uAE30\uB85D\uC740 \uC5C6\uC2B5\uB2C8\uB2E4."}</p>` : ""}
+    <div class="daily-calendar-heading"><h3>${monthLabel(selectedMonth)}</h3><span>\uB0B4\uC5ED ${recordedDays.length}\uC77C</span></div>
+    <p class="daily-help"><span class="daily-desktop-help">\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC544\uB798\uC5D0\uC11C \uAE08\uC561\xB7\uC2DC\uAC04\uACFC \uBA54\uBAA8\uB97C \uBCFC \uC218 \uC788\uC5B4\uC694.</span><span class="daily-mobile-help">\uD45C\uC2DC\uB41C \uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC5ED\uC774 \uBCF4\uC5EC\uC694.</span></p>
+    <div class="daily-calendar-scroll"><div class="daily-calendar" aria-label="${esc(initialRow.name)} ${monthLabel(selectedMonth)} \uB0B4\uC5ED \uB2EC\uB825">
+     <div class="daily-weekdays">${["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"].map((w4) => `<span>${w4}</span>`).join("")}</div>
+     <div class="daily-grid">${calendarDays(selectedMonth).map((day) => {
+      if (!day) return '<div class="daily-blank" aria-hidden="true"></div>';
+      const items = currentEntries[day] || [], isToday = dateKey(selectedMonth, day) === `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+      return `<button class="daily-day ${day === selectedDay ? "selected" : ""} ${isToday ? "today" : ""}" data-daily-day="${day}" aria-pressed="${day === selectedDay}" aria-label="${esc(`${Number(selectedMonth.slice(2))}\uC6D4 ${day}\uC77C, ${items.length ? items.map((e3) => `${e3.label} ${entryText(e3, kind)}`).join(", ") : "\uB0B4\uC5ED \uC5C6\uC74C"}`)}">
+       <span class="daily-day-number">${day}${isToday ? "<small>\uC624\uB298</small>" : ""}</span>
+       <span class="daily-desktop-entries">${items.slice(0, 2).map((entry) => `<span class="daily-entry ${entryClass(entry)}">${kind === "attendance" ? `<span>${esc(entry.label)}</span>` : ""}<strong>${esc(entryText(entry, kind))}</strong>${entry.local ? "<span>\uCD94\uAC00 \uAE30\uB85D</span>" : ""}</span>`).join("")}${items.length > 2 ? `<span class="daily-more">+${items.length - 2}\uAC74</span>` : ""}${items.some((e3) => e3.note) ? '<span class="daily-note-dot">\uBA54\uBAA8</span>' : ""}</span>
+       ${items.length ? `<span class="daily-mobile-count" aria-hidden="true"><i class="${items.some((e3) => e3.local) ? "added" : ""}"></i>${items.length}\uAC74</span>` : ""}
+      </button>`;
+    }).join("")}</div>
+    </div></div>
+    <section class="daily-selection" aria-live="polite"></section>
+    <div class="daily-key"><span><i></i> \uAC00\uC838\uC628 \uB0B4\uC5ED</span><span><i class="added"></i> \uBE0C\uB77C\uC6B0\uC800 \uCD94\uAC00</span></div>
+    ${kind === "meals" ? '<p class="daily-help">0\uC6D0\uACFC \uBBF8\uAE30\uC7AC\uB294 \uAD6C\uBD84\uD574 \uD45C\uC2DC\uD569\uB2C8\uB2E4.</p>' : ""}
+    ${totals.length ? '<h3 class="daily-totals-heading">\uAC00\uC838\uC628 \uC6D4\uBCC4 \uD569\uACC4</h3>' : ""}
+    <div class="daily-summary">${totals.map(([label, value, carry]) => `<div><span>${esc(label)}</span><strong>${esc(format(value))}${typeof value === "number" ? kind === "attendance" ? "\uBD84" : ["\uC0AC\uC6A9", "\uD55C\uB3C4", "\uC794\uC561"].includes(label) ? "\uC6D0" : "" : ""}</strong>${carry !== void 0 && carry !== "" ? `<small>\uC774\uC6D4 ${esc(format(carry))}\uBD84</small>` : ""}</div>`).join("")}</div>
+   </div>`;
+    renderDay();
+  }
+  function renderDay() {
+    const items = currentEntries[selectedDay] || [];
+    dialog.querySelectorAll("[data-daily-day]").forEach((el) => {
+      const active = Number(el.dataset.dailyDay) === selectedDay;
+      el.classList.toggle("selected", active);
+      el.setAttribute("aria-pressed", String(active));
+    });
+    dialog.querySelector(".daily-selection").innerHTML = `<div class="daily-selection-heading"><h3>${Number(selectedMonth.slice(2))}\uC6D4 ${selectedDay}\uC77C \uB0B4\uC5ED</h3><span>${items.length}\uAC74</span></div>${items.length ? items.map((entry) => `<article class="daily-record"><div><strong>${esc(entry.label)}</strong><strong class="${entryClass(entry)}">${esc(entryText(entry, kind))}</strong></div>${entry.note ? `<p class="daily-memo">${esc(entry.note)}</p>` : "<p>\uBA54\uBAA8 \uC5C6\uC74C</p>"}<small>${entry.local ? "\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uAE30\uB85D" : `\uAC00\uC838\uC628 \uAE30\uB85D${entry.source ? " \xB7 " + esc(entry.source.tab) + " / " + esc(entry.source.cell) : ""}`}</small></article>`).join("") : '<p class="empty">\uAE30\uC7AC\uB41C \uB0B4\uC5ED\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.</p>'}`;
+  }
+  function changeMonth(next) {
+    selectedMonth = next;
+    selectedId = null;
+    selectedDay = null;
+    render2();
+    dialog.querySelector("#daily-month").focus({ preventScroll: true });
+  }
+  function refreshRecords(event) {
+    if (event.key !== storageKey || !readRecords || !dialog.open || closing) return;
+    try {
+      localRecords2 = readRecords();
+      const y3 = dialog.querySelector(".daily-scroll").scrollTop, active = document.activeElement;
+      const focus = active?.dataset.dailyDay ? `[data-daily-day="${active.dataset.dailyDay}"]` : active?.hasAttribute("data-daily-close") ? "[data-daily-close]" : active?.id ? `#${active.id}` : null;
+      render2();
+      if (focus) dialog.querySelector(focus)?.focus({ preventScroll: true });
+      dialog.querySelector(".daily-scroll").scrollTop = y3;
+    } catch {
+    }
+  }
+  addEventListener("storage", refreshRecords);
+  dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) {
+      const bounds = dialog.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) close();
+      return;
+    }
+    const button = event.target.closest("button");
+    if (!button) return;
+    if (button.hasAttribute("data-daily-close")) {
+      close();
+      return;
+    }
+    if (button.dataset.dailyMonth !== void 0) {
+      const next = months[Number(button.dataset.dailyMonth)];
+      if (next) changeMonth(next);
+      return;
+    }
+    if (button.dataset.dailyDay) {
+      selectedDay = Number(button.dataset.dailyDay);
+      renderDay();
+    }
+  });
+  dialog.addEventListener("change", (event) => {
+    if (event.target.id === "daily-month") changeMonth(event.target.value);
+    if (event.target.id === "daily-row") {
+      selectedId = event.target.value;
+      selectedDay = null;
+      render2();
+      dialog.querySelector("#daily-row").focus({ preventScroll: true });
+    }
+  });
+  render2();
+  dialog.showModal();
+  return dialog;
+}
+
 // review-share/src/clinic-app.js
 var app = document.querySelector("#app");
-var esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
+var esc2 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
 var number = (value) => typeof value === "number" ? value.toLocaleString("ko-KR") : String(value ?? "");
 var display = (value) => value === "" || value === void 0 || value === null ? "\u2014" : number(value);
 var localDate = (date = /* @__PURE__ */ new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -12171,7 +12338,7 @@ var monthText = (month2) => `20${month2.slice(0, 2)}\uB144 ${Number(month2.slice
 var menus = [["team-calendar", "\uD300 \uC77C\uC815", "\uD734\uBB34\uC640 \uD300 \uC77C\uC815\uC744 \uD55C\uB208\uC5D0", "calendar"], ["roster", "\uC9C1\uC6D0\uBCC4 \uADFC\uBB34\uD45C", "\uC9C1\uC6D0 \xD7 \uB0A0\uC9DC\uB85C \uBE44\uAD50", "grid"], ["meal-timer", "\uC2DD\uC0AC \uD0C0\uC774\uBA38", "\uD55C \uC2DC\uAC04\uC758 \uC2DD\uC0AC, \uC2DC\uC791\uACFC \uC885\uB8CC", "clock"], ["meals", "\uC2DD\uB300", "\uC77C\uBCC4 \uC0AC\uC6A9\uACFC \uC6D4\uBCC4 \uC794\uC561", "meal"], ["attendance", "OT\xB7\uC9C0\uAC01", "\uC774\uC6D4\uBD80\uD130 \uC0AC\uC6A9\xB7\uB9C8\uAC10\uAE4C\uC9C0", "chart"], ["sources", "\uC608\uC2DC\xB7\uAC80\uC99D", "37\uAC1C \uD0ED\uACFC \uC608\uC2DC \uAE30\uB85D \uD655\uC778", "file"]];
 var paths = { calendar: "M5 3v4M19 3v4M3 10h18M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2ZM7 14h2m3 0h2m3 0h1M7 18h2m3 0h2", grid: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z", clock: "M12 8v5l3 2M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z", meal: "M4 3v7m3-7v7M2 7h7M5.5 10v11M18 3c-4 4-4 9 0 9V3Zm0 9v9", chart: "M3 3v18h18M7 17v-6m5 6V7m5 10V4", file: "M14 3H5v18h14V8l-5-5Zm0 0v5h5M8 12h8m-8 4h8" };
 var icon = (key) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[key] || paths.file}"/></svg>`;
-var badge = (label, cls = "") => `<span class="badge ${cls}">${esc(label)}</span>`;
+var badge = (label, cls = "") => `<span class="badge ${cls}">${esc2(label)}</span>`;
 var swatch = (color) => /^[A-Fa-f0-9]{6}$/.test(color || "") ? `<i class="swatch" style="--source-color:#${color}" title="\uC608\uC2DC \uC0C9\uC0C1 #${color}" aria-label="\uC608\uC2DC \uC0C9\uC0C1 #${color}"></i>` : "";
 var data;
 var calendar;
@@ -12224,20 +12391,20 @@ async function saveDraft(row) {
   return navigator.locks ? navigator.locks.request(LOCAL_KEY, work) : work();
 }
 function sourceButton(source, label = "\uC608\uC2DC \uBCF4\uAE30") {
-  return source ? `<button class="text-button" data-source="${esc(JSON.stringify(source))}">${esc(label)} \u2197</button>` : "";
+  return source ? `<button class="text-button" data-source="${esc2(JSON.stringify(source))}">${esc2(label)} \u2197</button>` : "";
 }
 function metric(label, value, detail = "") {
-  return `<div class="metric"><span>${esc(label)}</span><strong>${esc(value)}</strong><small>${esc(detail)}</small></div>`;
+  return `<div class="metric"><span>${esc2(label)}</span><strong>${esc2(value)}</strong><small>${esc2(detail)}</small></div>`;
 }
 function empty(message = "\uC120\uD0DD\uD55C \uC870\uAC74\uC758 \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.") {
-  return `<div class="empty">${esc(message)}</div>`;
+  return `<div class="empty">${esc2(message)}</div>`;
 }
 function teamOptions() {
   return [...new Set([...data.roster, ...data.mealRows, ...data.otRows].filter((r3) => r3.month === month).flatMap((r3) => r3.teams))];
 }
 function shell() {
   const current = menus.find((m3) => m3[0] === view), teams = teamOptions();
-  app.innerHTML = `<aside class="sidebar"><a class="brand" href="#/team-calendar"><span class="brand-mark">b.</span><span>\uBDF0\uD2F0\uBE14\uB77C\uC378<small>\uD568\uAED8\uD558\uB294 \uD558\uB8E8</small></span></a><div class="nav-caption">\uC9C1\uC6D0 \uC5C5\uBB34</div><nav aria-label="\uC9C1\uC6D0 \uC5C5\uBB34 \uBA54\uB274">${menus.map(([id, title, desc, key]) => `<a class="nav-card ${view === id ? "selected" : ""}" href="#/${id}" ${view === id ? 'aria-current="page"' : ""}>${icon(key)}<span><strong>${title}</strong><small>${desc}</small></span><span class="nav-arrow">\u203A</span></a>`).join("")}</nav><div class="sidebar-note"><span class="status-dot"></span> \uC9C1\uC6D0 \uC5C5\uBB34 \uCD08\uC548<small>\uC2A4\uCF00\uC904 \xB7 \uC2DD\uB300 \xB7 OT/\uC9C0\uAC01<br>2026\uB144 \uC790\uB8CC\uB97C \uC5F0\uACB0\uD588\uC5B4\uC694.</small></div></aside><div class="main"><header class="topbar"><span class="eyebrow">\uBDF0\uD2F0\uBE14\uB77C\uC378\uC758\uC6D0 / \uC9C1\uC6D0 \uC5C5\uBB34</span><span class="date-label">${new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "long" }).format(/* @__PURE__ */ new Date())}</span></header><main><div class="page-heading"><div><p class="eyebrow">\uC6B0\uB9AC \uD300\uC758 \uC77C\uC0C1\uC744 \uC870\uAE08 \uB354 \uD3B8\uD558\uAC8C</p><h1>${current[1]}</h1><p>${current[2]}</p></div>${view === "sources" ? "" : view === "meal-timer" ? badge("\uC2DD\uC0AC \uC2DC\uAC04 60\uBD84", "accent") : `<button class="primary" data-action="new">+ ${view === "meals" ? "\uC2DD\uB300" : view === "attendance" ? "OT\xB7\uC9C0\uAC01" : "\uC77C\uC815"} \uB4F1\uB85D</button>`}</div><section class="filters" aria-label="\uACF5\uD1B5 \uD544\uD130"><div class="filter-top"><label class="month-field">\uC870\uD68C \uC6D4<select id="month-filter">${data.months.map((m3) => `<option value="${m3}" ${m3 === month ? "selected" : ""}>${monthText(m3)}</option>`).join("")}</select></label><label class="search-field">\uC9C1\uC6D0 \uCC3E\uAE30<input id="staff-search" type="search" value="${esc(search)}" placeholder="\uC9C1\uC6D0 \uC774\uB984 \uB610\uB294 \uD300" maxlength="100"></label><span class="filter-note">\uD654\uBA74\uC744 \uBC14\uAFD4\uB3C4 \uC6D4\uACFC \uD300\uC774 \uC720\uC9C0\uB3FC\uC694.</span></div><div class="team-tabs" role="group" aria-label="\uD300\uBCC4 \uD544\uD130">${["\uC804\uCCB4", ...teams].map((t3) => `<button class="team-tab ${team === t3 ? "active" : ""}" data-team="${esc(t3)}" aria-pressed="${team === t3}">${esc(t3)}${t3 === "\uC804\uCCB4" ? "" : "\uD300"}</button>`).join("")}</div></section><div id="content" aria-live="polite"></div></main><footer>\uBDF0\uD2F0\uBE14\uB77C\uC378 \uC9C1\uC6D0 \uC5C5\uBB34 \xB7 \uC608\uC2DC \uAC00\uC838\uC628 \uB0A0\uC9DC ${esc(data.importedAt?.slice(0, 10))}<span>\uCD94\uAC00\uD55C \uAE30\uB85D\uC740 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</span></footer></div>`;
+  app.innerHTML = `<aside class="sidebar"><a class="brand" href="#/team-calendar"><img class="brand-mark" src="./assets/clinic-logo.png" width="52" height="52" alt="\uBDF0\uD2F0\uBE14\uB77C\uC378 \uB85C\uACE0"><span>\uBDF0\uD2F0\uBE14\uB77C\uC378<small>\uD568\uAED8\uD558\uB294 \uD558\uB8E8</small></span></a><div class="nav-caption">\uC9C1\uC6D0 \uC5C5\uBB34</div><nav aria-label="\uC9C1\uC6D0 \uC5C5\uBB34 \uBA54\uB274">${menus.map(([id, title, desc, key]) => `<a class="nav-card ${view === id ? "selected" : ""}" href="#/${id}" ${view === id ? 'aria-current="page"' : ""}>${icon(key)}<span><strong>${title}</strong><small>${desc}</small></span><span class="nav-arrow">\u203A</span></a>`).join("")}</nav><div class="sidebar-note"><span class="status-dot"></span> \uC9C1\uC6D0 \uC5C5\uBB34 \uCD08\uC548<small>\uC2A4\uCF00\uC904 \xB7 \uC2DD\uB300 \xB7 OT/\uC9C0\uAC01<br>2026\uB144 \uC790\uB8CC\uB97C \uC5F0\uACB0\uD588\uC5B4\uC694.</small></div></aside><div class="main"><header class="topbar"><span class="eyebrow">\uBDF0\uD2F0\uBE14\uB77C\uC378\uC758\uC6D0 / \uC9C1\uC6D0 \uC5C5\uBB34</span><span class="date-label">${new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "long" }).format(/* @__PURE__ */ new Date())}</span></header><main><div class="page-heading"><div><p class="eyebrow">\uC6B0\uB9AC \uD300\uC758 \uC77C\uC0C1\uC744 \uC870\uAE08 \uB354 \uD3B8\uD558\uAC8C</p><h1>${current[1]}</h1><p>${current[2]}</p></div>${view === "sources" ? "" : view === "meal-timer" ? badge("\uC2DD\uC0AC \uC2DC\uAC04 60\uBD84", "accent") : `<button class="primary" data-action="new">+ ${view === "meals" ? "\uC2DD\uB300" : view === "attendance" ? "OT\xB7\uC9C0\uAC01" : "\uC77C\uC815"} \uB4F1\uB85D</button>`}</div><section class="filters" aria-label="\uACF5\uD1B5 \uD544\uD130"><div class="filter-top"><label class="month-field">\uC870\uD68C \uC6D4<select id="month-filter">${data.months.map((m3) => `<option value="${m3}" ${m3 === month ? "selected" : ""}>${monthText(m3)}</option>`).join("")}</select></label><label class="search-field">\uC9C1\uC6D0 \uCC3E\uAE30<input id="staff-search" type="search" value="${esc2(search)}" placeholder="\uC9C1\uC6D0 \uC774\uB984 \uB610\uB294 \uD300" maxlength="100"></label><label class="team-field">\uD300 \uC120\uD0DD<select id="team-filter">${["\uC804\uCCB4", ...teams].map((t3) => `<option value="${esc2(t3)}" ${team === t3 ? "selected" : ""}>${esc2(t3)}${t3 === "\uC804\uCCB4" ? "" : "\uD300"}</option>`).join("")}</select></label><span class="filter-note">\uD654\uBA74\uC744 \uBC14\uAFD4\uB3C4 \uC6D4\uACFC \uD300\uC774 \uC720\uC9C0\uB3FC\uC694.</span></div></section><div id="content" aria-live="polite"></div></main><footer>\uBDF0\uD2F0\uBE14\uB77C\uC378 \uC9C1\uC6D0 \uC5C5\uBB34 \xB7 \uC608\uC2DC \uAC00\uC838\uC628 \uB0A0\uC9DC ${esc2(data.importedAt?.slice(0, 10))}<span>\uCD94\uAC00\uD55C \uAE30\uB85D\uC740 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</span></footer></div>`;
 }
 function render() {
   if (!data) return;
@@ -12251,6 +12418,7 @@ function render() {
   const content = document.querySelector("#content");
   try {
     ({ "team-calendar": renderCalendar, roster: renderRoster, "meal-timer": renderTimers, meals: renderMeals, attendance: renderAttendance, sources: renderSources })[view](content);
+    labelMobileTables(content);
   } catch (error) {
     content.innerHTML = empty("\uD654\uBA74\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C\uACE0\uCE68 \uD6C4 \uB2E4\uC2DC \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
     toast(error.message);
@@ -12264,7 +12432,7 @@ function calendarRows() {
 }
 function renderCalendar(content) {
   const events = calendarRows(), people = rosterRows();
-  content.innerHTML = `<div class="metrics">${metric("\uC870\uD68C \uC9C1\uC6D0", `${new Set(people.map((r3) => r3.personId)).size}\uBA85`, team === "\uC804\uCCB4" ? "\uC774\uB2EC \uC2A4\uCF00\uC904 \uBA85\uBD80" : `${team}\uD300`)}${metric("\uC77C\uC815 \uD45C\uC2DC", `${events.length}\uAC74`, "\uACF5\uD1B5 \uC77C\uC815 \uD3EC\uD568")}${metric("\uC608\uC2DC \uC0C9\uC0C1", `${events.filter((r3) => r3.unresolved).length}\uAC74`, "\uC758\uBBF8 \uD655\uC778 \uC804\uC5D0\uB3C4 \uC608\uC2DC \uC0C9\uC0C1 \uBCF4\uC874")}</div><section class="panel calendar-panel"><div class="panel-heading"><div><h2>${team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${esc(team)}\uD300`}\uC758 \uC77C\uC815</h2><p>\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC77C\uC815 \uB4F1\uB85D, \uAE30\uB85D\uC744 \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694.</p></div><span class="legend-dot">\u25CF \uD734\uBB34\xB7\uD734\uAC00\u3000<span>\u25CF \uC608\uC2DC \uC0C9\uC0C1</span></span></div><div id="calendar"></div></section>`;
+  content.innerHTML = `<div class="metrics">${metric("\uC870\uD68C \uC9C1\uC6D0", `${new Set(people.map((r3) => r3.personId)).size}\uBA85`, team === "\uC804\uCCB4" ? "\uC774\uB2EC \uC2A4\uCF00\uC904 \uBA85\uBD80" : `${team}\uD300`)}${metric("\uC77C\uC815 \uD45C\uC2DC", `${events.length}\uAC74`, "\uACF5\uD1B5 \uC77C\uC815 \uD3EC\uD568")}${metric("\uC608\uC2DC \uC0C9\uC0C1", `${events.filter((r3) => r3.unresolved).length}\uAC74`, "\uC758\uBBF8 \uD655\uC778 \uC804\uC5D0\uB3C4 \uC608\uC2DC \uC0C9\uC0C1 \uBCF4\uC874")}</div><section class="panel calendar-panel"><div class="panel-heading"><div><h2>${team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${esc2(team)}\uD300`}\uC758 \uC77C\uC815</h2><p>\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC77C\uC815 \uB4F1\uB85D, \uAE30\uB85D\uC744 \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694.</p></div><span class="legend-dot">\u25CF \uD734\uBB34\xB7\uD734\uAC00\u3000<span>\u25CF \uC608\uC2DC \uC0C9\uC0C1</span></span></div><div id="calendar"></div></section>`;
   calendar = new Calendar(document.querySelector("#calendar"), {
     plugins: [index, index2, index3],
     locale: l45,
@@ -12306,14 +12474,31 @@ function findDayColor(event) {
   return r3?.days[Number(event.date.slice(-2))]?.color || "";
 }
 function showSchedule(record) {
-  openDialog(`${record.name || "\uACF5\uD1B5"} \xB7 ${record.label}`, `<dl><dt>\uB0A0\uC9DC</dt><dd>${esc(record.date)}</dd><dt>\uD300</dt><dd>${esc(record.teams?.join(" \xB7 ") || "\uACF5\uD1B5")}</dd><dt>\uC608\uC2DC \uD45C\uC2DC</dt><dd>${swatch(record.color || findDayColor(record))} ${esc(record.rawValue || record.label)}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc(record.note || "\uBA54\uBAA8 \uC5C6\uC74C")}</dd></dl>${record.unresolved ? '<p class="notice">\uC608\uC2DC \uC0C9\uC0C1\uC744 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uC758\uBBF8\uB294 \uC544\uC9C1 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>' : ""}${sourceButton(record.source)}${record.local ? '<p class="notice">\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uC77C\uC815\uC785\uB2C8\uB2E4.</p>' : ""}`);
+  openDialog(`${record.name || "\uACF5\uD1B5"} \xB7 ${record.label}`, `<dl><dt>\uB0A0\uC9DC</dt><dd>${esc2(record.date)}</dd><dt>\uD300</dt><dd>${esc2(record.teams?.join(" \xB7 ") || "\uACF5\uD1B5")}</dd><dt>\uC608\uC2DC \uD45C\uC2DC</dt><dd>${swatch(record.color || findDayColor(record))} ${esc2(record.rawValue || record.label)}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc2(record.note || "\uBA54\uBAA8 \uC5C6\uC74C")}</dd></dl>${record.unresolved ? '<p class="notice">\uC608\uC2DC \uC0C9\uC0C1\uC744 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uC758\uBBF8\uB294 \uC544\uC9C1 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>' : ""}${sourceButton(record.source)}${record.local ? '<p class="notice">\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uC77C\uC815\uC785\uB2C8\uB2E4.</p>' : ""}`);
 }
 function renderRoster(content) {
   const people = rosterRows(), count = new Date(2e3 + Number(month.slice(0, 2)), Number(month.slice(2)), 0).getDate(), days = Array.from({ length: count }, (_3, i3) => i3 + 1);
-  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${monthText(month)} \uADFC\uBB34\uD45C</h2><p>${people.length}\uBA85 \xB7 \uC608\uC2DC \uC0C9\uC0C1\uC744 \uADF8\uB300\uB85C \uBCF4\uC874\uD588\uC5B4\uC694. \uBE48\uCE78\uC740 \uBBF8\uAE30\uC7AC \uC0C1\uD0DC\uC785\uB2C8\uB2E4.</p></div>${badge("\uAC00\uB85C\uB85C \uC2A4\uD06C\uB864")}</div><div class="table-scroll roster-scroll"><table class="roster-table"><thead><tr><th class="sticky-cell">\uC9C1\uC6D0 / \uD300</th>${days.map((d2) => `<th>${d2}<small>${new Intl.DateTimeFormat("ko-KR", { weekday: "short" }).format(/* @__PURE__ */ new Date(dateOf(month, d2) + "T12:00:00"))}</small></th>`).join("")}</tr></thead><tbody>${people.map((r3) => `<tr><th class="sticky-cell"><strong>${esc(r3.name)}</strong><small>${esc(r3.rawTeam)}${r3.role ? " \xB7 " + esc(r3.role) : ""}</small></th>${days.map((d2) => {
+  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${monthText(month)} \uADFC\uBB34\uD45C</h2><p>${people.length}\uBA85 \xB7 \uC608\uC2DC \uC0C9\uC0C1\uC744 \uADF8\uB300\uB85C \uBCF4\uC874\uD588\uC5B4\uC694. \uBE48\uCE78\uC740 \uBBF8\uAE30\uC7AC \uC0C1\uD0DC\uC785\uB2C8\uB2E4.</p></div><span class="desktop-roster-hint">${badge("\uAC00\uB85C\uB85C \uC2A4\uD06C\uB864")}</span><span class="mobile-roster-hint">\uC9C1\uC6D0\uC744 \uB20C\uB7EC \uC6D4\uAC04 \uADFC\uBB34\uD45C \uD655\uC778</span></div><div class="table-scroll roster-scroll"><table class="roster-table"><thead><tr><th class="sticky-cell">\uC9C1\uC6D0 / \uD300</th>${days.map((d2) => `<th>${d2}<small>${new Intl.DateTimeFormat("ko-KR", { weekday: "short" }).format(/* @__PURE__ */ new Date(dateOf(month, d2) + "T12:00:00"))}</small></th>`).join("")}</tr></thead><tbody>${people.map((r3) => `<tr><th class="sticky-cell"><strong>${esc2(r3.name)}</strong><small>${esc2(r3.rawTeam)}${r3.role ? " \xB7 " + esc2(r3.role) : ""}</small></th>${days.map((d2) => {
     const cell = r3.days[d2];
-    return `<td>${cell ? `<button class="roster-cell" data-source="${esc(JSON.stringify(cell.source))}" title="${esc(cell.note || cell.label || "\uC608\uC2DC \uD655\uC778")}">${swatch(cell.color)}<span>${esc(cell.value || cell.colorMeaning || cell.label || "\uC0C9\uC0C1 \uD45C\uC2DC")}</span>${cell.note ? '<b class="note-mark" aria-label="\uBA54\uBAA8 \uC788\uC74C">\xB7</b>' : ""}</button>` : '<span class="blank-cell">\u2014</span>'}</td>`;
-  }).join("")}</tr>`).join("")}</tbody></table></div>${people.length ? "" : empty()}</section>${localRecords("schedule")}`;
+    return `<td>${cell ? `<button class="roster-cell" data-source="${esc2(JSON.stringify(cell.source))}" title="${esc2(cell.note || cell.label || "\uC608\uC2DC \uD655\uC778")}">${swatch(cell.color)}<span>${esc2(cell.value || cell.colorMeaning || cell.label || "\uC0C9\uC0C1 \uD45C\uC2DC")}</span>${cell.note ? '<b class="note-mark" aria-label="\uBA54\uBAA8 \uC788\uC74C">\xB7</b>' : ""}</button>` : '<span class="blank-cell">\u2014</span>'}</td>`;
+  }).join("")}</tr>`).join("")}</tbody></table></div>${mobileRoster(people)}${people.length ? "" : empty()}</section>${localRecords("schedule")}`;
+}
+function labelMobileTables(root) {
+  root.querySelectorAll(".table-scroll table:not(.roster-table)").forEach((table) => {
+    table.classList.add("mobile-card-table");
+    const labels = [...table.querySelectorAll("thead th")].map((th) => th.textContent);
+    table.querySelectorAll("tbody tr").forEach((row) => [...row.children].forEach((cell, i3) => {
+      cell.dataset.label = labels[i3] || "";
+      if (cell.querySelector("[data-detail]")) cell.classList.add("mobile-card-action");
+    }));
+  });
+}
+function mobileRoster(people) {
+  return '<div class="mobile-roster">' + people.map((r3, i3) => `<details class="mobile-roster-person" ${i3 === 0 ? "open" : ""}><summary><strong>${esc2(r3.name)}</strong><span>${esc2(r3.rawTeam)}${r3.role ? " \xB7 " + esc2(r3.role) : ""}</span></summary><div class="mobile-roster-month"><div class="daily-weekdays">${["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"].map((w4) => "<span>" + w4 + "</span>").join("")}</div><div class="mobile-roster-days">${calendarDays(month).map((day) => {
+    if (!day) return '<span class="mobile-roster-blank"></span>';
+    const cell = r3.days[day];
+    return cell ? `<button data-source="${esc2(JSON.stringify(cell.source))}" aria-label="${esc2(day + "\uC77C " + (cell.value || cell.colorMeaning || cell.label || "\uC0C9\uC0C1 \uD45C\uC2DC"))}"><strong>${day}</strong>${swatch(cell.color)}<span class="mobile-roster-value">${esc2(cell.value || cell.colorMeaning || cell.label || "\uD45C\uC2DC")}</span></button>` : `<span class="mobile-roster-empty"><strong>${day}</strong><span>\u2014</span></span>`;
+  }).join("")}</div></div></details>`).join("") + "</div>";
 }
 function mealRecord(personId) {
   try {
@@ -12324,12 +12509,12 @@ function mealRecord(personId) {
 }
 function timerCard(r3) {
   const record = mealRecord(r3.personId), state = timerState(record), last = record.history.at(-1);
-  return `<article class="timer-card ${state.active ? "eating" : ""}" data-person="${r3.personId}"><div class="staff-line"><span class="avatar">${esc(r3.name.slice(0, 1))}</span><div><h2>${esc(r3.name)}</h2><p>${esc(r3.rawTeam)}</p></div><span class="meal-status">${state.active ? "\uC2DD\uC0AC\uC911" : "\uC2DD\uC0AC \uC804 / \uBCF5\uADC0"}</span></div><div class="timer-face"><span class="timer-caption">${state.active ? state.over ? "\uCD08\uACFC \uC2DC\uAC04" : "\uB0A8\uC740 \uC2DD\uC0AC \uC2DC\uAC04" : "\uC2DD\uC0AC \uC2DC\uAC04"}</span><strong class="timer-value">${clockText(state.active ? state.over || state.remaining : 36e5)}</strong><span class="timer-detail">${record.error ? esc(record.error) : state.active ? `\uC2DC\uC791 ${new Date(record.active.startedAt).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}` : last ? `\uCD5C\uADFC \uC2DD\uC0AC ${clockText(last.elapsed)}` : "\uC2DD\uC0AC\uD558\uB7EC \uAC08 \uB54C \uB20C\uB7EC \uC8FC\uC138\uC694."}</span></div><button class="${state.active ? "end-meal" : "primary"} meal-button" data-meal="${state.active ? "end" : "start"}" data-person-id="${r3.personId}" ${record.error ? "disabled" : ""}>${state.active ? "\uC2DD\uC0AC\uC885\uB8CC" : "\uC2DD\uC0AC\uC911"}</button></article>`;
+  return `<article class="timer-card ${state.active ? "eating" : ""}" data-person="${r3.personId}"><div class="staff-line"><span class="avatar">${esc2(r3.name.slice(0, 1))}</span><div><h2>${esc2(r3.name)}</h2><p>${esc2(r3.rawTeam)}</p></div><span class="meal-status">${state.active ? "\uC2DD\uC0AC\uC911" : "\uC2DD\uC0AC \uC804 / \uBCF5\uADC0"}</span></div><div class="timer-face"><span class="timer-caption">${state.active ? state.over ? "\uCD08\uACFC \uC2DC\uAC04" : "\uB0A8\uC740 \uC2DD\uC0AC \uC2DC\uAC04" : "\uC2DD\uC0AC \uC2DC\uAC04"}</span><strong class="timer-value">${clockText(state.active ? state.over || state.remaining : 36e5)}</strong><span class="timer-detail">${record.error ? esc2(record.error) : state.active ? `\uC2DC\uC791 ${new Date(record.active.startedAt).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}` : last ? `\uCD5C\uADFC \uC2DD\uC0AC ${clockText(last.elapsed)}` : "\uC2DD\uC0AC\uD558\uB7EC \uAC08 \uB54C \uB20C\uB7EC \uC8FC\uC138\uC694."}</span></div><button class="${state.active ? "end-meal" : "primary"} meal-button" data-meal="${state.active ? "end" : "start"}" data-person-id="${r3.personId}" ${record.error ? "disabled" : ""}>${state.active ? "\uC2DD\uC0AC\uC885\uB8CC" : "\uC2DD\uC0AC\uC911"}</button></article>`;
 }
 function renderTimers(content) {
   const people = rosterRows(), unique = [...new Map(people.map((r3) => [r3.personId, r3])).values()];
   const histories = unique.flatMap((r3) => mealRecord(r3.personId).history.map((h3) => ({ ...h3, name: r3.name, teams: r3.rawTeam }))).filter((h3) => monthOf(localDate(new Date(h3.startedAt))) === month).sort((a3, b3) => b3.startedAt - a3.startedAt);
-  content.innerHTML = `<div class="notice"><strong>\uC2DD\uC0AC \uC2DC\uC791\uACFC \uC885\uB8CC\uB294 \uD604\uC7AC \uC2DC\uAC01\uC73C\uB85C \uAE30\uB85D\uD569\uB2C8\uB2E4.</strong> 60\uBD84\uC774 \uC9C0\uB098\uBA74 \uCD08\uACFC \uC2DC\uAC04\uC774 \uD45C\uC2DC\uB418\uACE0, \uC9C1\uC811 \uC2DD\uC0AC\uC885\uB8CC\uB97C \uB204\uB97C \uB54C\uAE4C\uC9C0 \uACC4\uC18D \uAE30\uB85D\uB3FC\uC694. \uC544\uB798 \uBA85\uBD80\uC640 \uC644\uB8CC \uC774\uB825\uC740 \uC120\uD0DD\uD55C \uC6D4\xB7\uD300 \uAE30\uC900\uC785\uB2C8\uB2E4.</div><div class="timer-grid">${unique.map(timerCard).join("")}</div>${unique.length ? "" : empty()}<section class="panel"><div class="panel-heading"><div><h2>\uC2DD\uC0AC \uC644\uB8CC \uC774\uB825</h2><p>${monthText(month)} \xB7 ${histories.length}\uAC74</p></div></div>${histories.length ? `<div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0</th><th>\uB0A0\uC9DC</th><th>\uC2DC\uC791</th><th>\uC885\uB8CC</th><th>\uC2DD\uC0AC \uC2DC\uAC04</th><th>\uCD08\uACFC</th></tr></thead><tbody>${histories.map((h3) => `<tr><th>${esc(h3.name)}</th><td>${localDate(new Date(h3.startedAt))}</td><td>${new Date(h3.startedAt).toLocaleTimeString("ko-KR")}</td><td>${new Date(h3.endedAt).toLocaleTimeString("ko-KR")}</td><td>${clockText(h3.elapsed)}</td><td>${h3.elapsed > 36e5 ? clockText(h3.elapsed - 36e5) : "\u2014"}</td></tr>`).join("")}</tbody></table></div>` : empty("\uC644\uB8CC\uD55C \uC2DD\uC0AC \uAE30\uB85D\uC774 \uC544\uC9C1 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>`;
+  content.innerHTML = `<div class="notice"><strong>\uC2DD\uC0AC \uC2DC\uC791\uACFC \uC885\uB8CC\uB294 \uD604\uC7AC \uC2DC\uAC01\uC73C\uB85C \uAE30\uB85D\uD569\uB2C8\uB2E4.</strong> 60\uBD84\uC774 \uC9C0\uB098\uBA74 \uCD08\uACFC \uC2DC\uAC04\uC774 \uD45C\uC2DC\uB418\uACE0, \uC9C1\uC811 \uC2DD\uC0AC\uC885\uB8CC\uB97C \uB204\uB97C \uB54C\uAE4C\uC9C0 \uACC4\uC18D \uAE30\uB85D\uB3FC\uC694. \uC544\uB798 \uBA85\uBD80\uC640 \uC644\uB8CC \uC774\uB825\uC740 \uC120\uD0DD\uD55C \uC6D4\xB7\uD300 \uAE30\uC900\uC785\uB2C8\uB2E4.</div><div class="timer-grid">${unique.map(timerCard).join("")}</div>${unique.length ? "" : empty()}<section class="panel"><div class="panel-heading"><div><h2>\uC2DD\uC0AC \uC644\uB8CC \uC774\uB825</h2><p>${monthText(month)} \xB7 ${histories.length}\uAC74</p></div></div>${histories.length ? `<div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0</th><th>\uB0A0\uC9DC</th><th>\uC2DC\uC791</th><th>\uC885\uB8CC</th><th>\uC2DD\uC0AC \uC2DC\uAC04</th><th>\uCD08\uACFC</th></tr></thead><tbody>${histories.map((h3) => `<tr><th>${esc2(h3.name)}</th><td>${localDate(new Date(h3.startedAt))}</td><td>${new Date(h3.startedAt).toLocaleTimeString("ko-KR")}</td><td>${new Date(h3.endedAt).toLocaleTimeString("ko-KR")}</td><td>${clockText(h3.elapsed)}</td><td>${h3.elapsed > 36e5 ? clockText(h3.elapsed - 36e5) : "\u2014"}</td></tr>`).join("")}</tbody></table></div>` : empty("\uC644\uB8CC\uD55C \uC2DD\uC0AC \uAE30\uB85D\uC774 \uC544\uC9C1 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>`;
 }
 function tickTimers() {
   if (view !== "meal-timer") return;
@@ -12344,30 +12529,33 @@ function tickTimers() {
 }
 function renderMeals(content) {
   const rows = data.mealRows.filter((r3) => matches(r3)), sum = (label) => rows.reduce((s3, r3) => s3 + (typeof r3.totals[label]?.value === "number" ? r3.totals[label].value : 0), 0);
-  content.innerHTML = `<div class="metrics">${metric("\uC608\uC2DC \uC0AC\uC6A9 \uD569\uACC4", `${number(sum("\uC0AC\uC6A9"))}\uC6D0`, `${rows.length}\uBA85`)}${metric("\uC608\uC2DC \uD55C\uB3C4 \uD569\uACC4", `${number(sum("\uD55C\uB3C4"))}\uC6D0`, "\uC2DC\uD2B8\uC758 \uD55C\uB3C4 \uAE30\uC900")}${metric("\uC608\uC2DC \uC794\uC561 \uD569\uACC4", `${number(sum("\uC794\uC561"))}\uC6D0`, "\uC0C8 \uB4F1\uB85D \uB0B4\uC5ED\uC740 \uC544\uB798\uC5D0 \uBCC4\uB3C4 \uD45C\uC2DC")}</div><section class="panel"><div class="panel-heading"><div><h2>\uC9C1\uC6D0\uBCC4 \uC2DD\uB300</h2><p>\uC9C1\uC6D0\uC744 \uB204\uB974\uBA74 \uC77C\uBCC4 \uAE08\uC561\uACFC \uBA54\uBAA8\uB97C \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694. 0\uC6D0\uACFC \uBE48\uCE78\uC740 \uAD6C\uBD84\uD574\uC11C \uBCF4\uC874\uD569\uB2C8\uB2E4.</p></div></div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0</th><th>\uC608\uC2DC \uD300</th><th>\uC0AC\uC6A9</th><th>\uD55C\uB3C4</th><th>\uC794\uC561</th><th>\uADFC\uBB34\uC77C\uC218</th><th>\uC785\uAE08 \uC5EC\uBD80</th><th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc(r3.name)}${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th><td>${esc(r3.rawTeam)}</td>${["\uC0AC\uC6A9", "\uD55C\uB3C4", "\uC794\uC561", "\uADFC\uBB34\uC77C\uC790", "\uC785\uAE08\uC5EC\uBD80"].map((label) => `<td>${esc(display(r3.totals[label]?.value))}</td>`).join("")}<td><button data-detail="${esc(r3.id)}" data-kind="meals">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty()}</section>${localRecords("meals")}`;
+  content.innerHTML = `<div class="metrics">${metric("\uC608\uC2DC \uC0AC\uC6A9 \uD569\uACC4", `${number(sum("\uC0AC\uC6A9"))}\uC6D0`, `${rows.length}\uBA85`)}${metric("\uC608\uC2DC \uD55C\uB3C4 \uD569\uACC4", `${number(sum("\uD55C\uB3C4"))}\uC6D0`, "\uC2DC\uD2B8\uC758 \uD55C\uB3C4 \uAE30\uC900")}${metric("\uC608\uC2DC \uC794\uC561 \uD569\uACC4", `${number(sum("\uC794\uC561"))}\uC6D0`, "\uC0C8 \uB4F1\uB85D \uB0B4\uC5ED\uC740 \uC544\uB798\uC5D0 \uBCC4\uB3C4 \uD45C\uC2DC")}</div><section class="panel"><div class="panel-heading"><div><h2>\uC9C1\uC6D0\uBCC4 \uC2DD\uB300</h2><p>\uC9C1\uC6D0\uC744 \uB204\uB974\uBA74 \uC77C\uBCC4 \uAE08\uC561\uACFC \uBA54\uBAA8\uB97C \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694. 0\uC6D0\uACFC \uBE48\uCE78\uC740 \uAD6C\uBD84\uD574\uC11C \uBCF4\uC874\uD569\uB2C8\uB2E4.</p></div></div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0</th><th>\uC608\uC2DC \uD300</th><th>\uC0AC\uC6A9</th><th>\uD55C\uB3C4</th><th>\uC794\uC561</th><th>\uADFC\uBB34\uC77C\uC218</th><th>\uC785\uAE08 \uC5EC\uBD80</th><th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc2(r3.name)}${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th><td>${esc2(r3.rawTeam)}</td>${["\uC0AC\uC6A9", "\uD55C\uB3C4", "\uC794\uC561", "\uADFC\uBB34\uC77C\uC790", "\uC785\uAE08\uC5EC\uBD80"].map((label) => `<td>${esc2(display(r3.totals[label]?.value))}</td>`).join("")}<td><button data-detail="${esc2(r3.id)}" data-kind="meals">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty()}</section>${localRecords("meals")}`;
 }
 function renderAttendance(content) {
   const rows = data.otRows.filter((r3) => matches(r3)), labels = [...new Set(rows.flatMap((r3) => r3.categories.map((c3) => c3.label)))];
-  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>OT\xB7\uC9C0\uAC01 \uD604\uD669</h2><p>${rows.length}\uBA85 \xB7 \uC2DC\uAC04 \uB2E8\uC704\uB294 \uBD84\uC785\uB2C8\uB2E4. \uC774\uC6D4\xB7\uC0AC\uC6A9\xB7\uC9C0\uAC01\xB7\uB9C8\uAC10\uC758 \uC608\uC2DC \uBD80\uD638\uB97C \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div>${badge("\uB2E8\uC704: \uBD84")}</div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0 / \uC608\uC2DC \uD300</th>${labels.map((l3) => `<th>${esc(l3)}</th>`).join("")}<th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc(r3.name)}<small>${esc(r3.rawTeam)}</small>${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th>${labels.map((l3) => `<td>${esc(display(r3.categories.find((c3) => c3.label === l3)?.total))}</td>`).join("")}<td><button data-detail="${esc(r3.id)}" data-kind="attendance">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty()}</section>${localRecords("attendance")}`;
+  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>OT\xB7\uC9C0\uAC01 \uD604\uD669</h2><p>${rows.length}\uBA85 \xB7 \uC2DC\uAC04 \uB2E8\uC704\uB294 \uBD84\uC785\uB2C8\uB2E4. \uC774\uC6D4\xB7\uC0AC\uC6A9\xB7\uC9C0\uAC01\xB7\uB9C8\uAC10\uC758 \uC608\uC2DC \uBD80\uD638\uB97C \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div>${badge("\uB2E8\uC704: \uBD84")}</div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0 / \uC608\uC2DC \uD300</th>${labels.map((l3) => `<th>${esc2(l3)}</th>`).join("")}<th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc2(r3.name)}<small>${esc2(r3.rawTeam)}</small>${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th>${labels.map((l3) => `<td>${esc2(display(r3.categories.find((c3) => c3.label === l3)?.total))}</td>`).join("")}<td><button data-detail="${esc2(r3.id)}" data-kind="attendance">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty()}</section>${localRecords("attendance")}`;
 }
 function localRecords(kind) {
   const rows = localRows(kind);
-  return `<section class="panel local-records"><div class="panel-heading"><div><h2>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uAE30\uB85D</h2><p>\uAC00\uC838\uC628 \uC608\uC2DC \uD569\uACC4\uC640 \uAD6C\uBD84\uD574 \uD45C\uC2DC\uD569\uB2C8\uB2E4.</p></div>${badge(`${rows.length}\uAC74`)}</div>${rows.length ? `<div class="table-scroll"><table><thead><tr><th>\uB0A0\uC9DC</th><th>\uC9C1\uC6D0</th><th>\uB0B4\uC6A9</th><th>\uBA54\uBAA8</th></tr></thead><tbody>${rows.map((r3) => `<tr><td>${esc(r3.date)}</td><th>${esc(r3.name)}</th><td>${esc(r3.label)}${r3.amount !== void 0 ? " \xB7 " + esc(number(r3.amount)) + (kind === "meals" ? "\uC6D0" : "\uBD84") : ""}</td><td class="prewrap">${esc(r3.note)}</td></tr>`).join("")}</tbody></table></div>` : empty("\uCD94\uAC00\uD55C \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>`;
-}
-function dayTable(days) {
-  const entries = Object.entries(days || {});
-  return entries.length ? `<div class="table-scroll"><table><thead><tr><th>\uB0A0\uC9DC</th><th>\uAC12</th><th>\uBA54\uBAA8</th><th>\uCD9C\uCC98</th></tr></thead><tbody>${entries.map(([day, cell]) => `<tr><th>${day}\uC77C</th><td>${esc(display(cell.value))}</td><td class="prewrap">${esc(cell.note || "\u2014")}</td><td>${sourceButton(cell.source, cell.source.cell)}</td></tr>`).join("")}</tbody></table></div>` : empty("\uAE30\uC7AC\uB41C \uC77C\uBCC4 \uB0B4\uC5ED\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.");
+  return `<section class="panel local-records"><div class="panel-heading"><div><h2>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uAE30\uB85D</h2><p>\uAC00\uC838\uC628 \uC608\uC2DC \uD569\uACC4\uC640 \uAD6C\uBD84\uD574 \uD45C\uC2DC\uD569\uB2C8\uB2E4.</p></div>${badge(`${rows.length}\uAC74`)}</div>${rows.length ? `<div class="table-scroll"><table><thead><tr><th>\uB0A0\uC9DC</th><th>\uC9C1\uC6D0</th><th>\uB0B4\uC6A9</th><th>\uBA54\uBAA8</th></tr></thead><tbody>${rows.map((r3) => `<tr><td>${esc2(r3.date)}</td><th>${esc2(r3.name)}</th><td>${esc2(r3.label)}${r3.amount !== void 0 ? " \xB7 " + esc2(number(r3.amount)) + (kind === "meals" ? "\uC6D0" : "\uBD84") : ""}</td><td class="prewrap">${esc2(r3.note)}</td></tr>`).join("")}</tbody></table></div>` : empty("\uCD94\uAC00\uD55C \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>`;
 }
 function showDetail(kind, id) {
-  const r3 = (kind === "meals" ? data.mealRows : data.otRows).find((r4) => r4.id === id);
-  if (!r3) return;
-  openDialog(`${r3.name} \xB7 ${kind === "meals" ? "\uC2DD\uB300" : "OT\xB7\uC9C0\uAC01"}`, `<p>${monthText(r3.month)} \xB7 \uC608\uC2DC \uC774\uB984 ${esc(r3.originalName)} \xB7 ${esc(r3.rawTeam)}</p>${r3.identityNeedsReview ? '<p class="notice">\uC2A4\uCF00\uC904 \uBA85\uBD80\uC640\uC758 \uC774\uB984\xB7\uD300 \uC5F0\uACB0\uC740 \uD655\uC778\uC774 \uD544\uC694\uD569\uB2C8\uB2E4. \uC608\uC2DC \uC9C1\uC6D0 \uAE30\uB85D\uC740 \uADF8\uB300\uB85C \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4.</p>' : ""}${kind === "meals" ? `<div class="detail-totals">${Object.entries(r3.totals).map(([label, c3]) => `<div><span>${esc(label)}</span><strong>${esc(display(c3.value))}</strong>${sourceButton(c3.source, c3.source.cell)}</div>`).join("")}</div>${dayTable(r3.days)}` : r3.categories.map((c3) => `<section class="category-detail"><h3>${esc(c3.label)} <span>${esc(display(c3.total))}\uBD84</span></h3>${c3.carry !== "" ? `<p>\uC774\uC6D4: ${esc(display(c3.carry))}\uBD84</p>` : ""}${dayTable(c3.days)}</section>`).join("")}${sourceButton(r3.source)}`);
+  const rows = kind === "meals" ? data.mealRows : data.otRows, initialRow = rows.find((r3) => r3.id === id);
+  if (!initialRow) return;
+  let localRecords2 = [];
+  try {
+    localRecords2 = readDraft();
+  } catch (error) {
+    toast(error.message);
+  }
+  dialogVersion++;
+  openDailyDetail({ kind, initialRow, rows, months: data.months, localRecords: localRecords2, readRecords: readDraft, storageKey: LOCAL_KEY });
 }
 function openDialog(title, body) {
   dialogVersion++;
   const container = document.querySelector("#overlays");
   container.querySelector("dialog")?.close();
-  container.innerHTML = `<dialog aria-labelledby="dialog-title"><div class="dialog-heading"><h2 id="dialog-title">${esc(title)}</h2><button data-action="close" aria-label="\uB2EB\uAE30">\uB2EB\uAE30 \u2715</button></div><div class="dialog-body">${body}</div></dialog>`;
+  container.innerHTML = `<dialog aria-labelledby="dialog-title"><div class="dialog-heading"><h2 id="dialog-title">${esc2(title)}</h2><button data-action="close" aria-label="\uB2EB\uAE30">\uB2EB\uAE30 \u2715</button></div><div class="dialog-body">${body}</div></dialog>`;
   const dialog = container.querySelector("dialog");
   dialog.showModal();
   dialog.addEventListener("click", (event) => {
@@ -12400,14 +12588,14 @@ async function showSource(source) {
     const raw = await rawData(source);
     if (version !== dialogVersion) return;
     const cell = raw.cells[source.cell], color = rawColor(raw, source.cell), meta = data.sources.find((s3) => s3.book === source.book && s3.tab === source.tab);
-    document.querySelector(".dialog-body").innerHTML = `<p>${esc(meta.label)} / ${esc(source.tab)} / ${esc(source.cell)}</p><dl><dt>\uC608\uC2DC \uAC12</dt><dd class="prewrap">${esc(display(cell?.v))}</dd><dt>\uC608\uC2DC \uC0C9\uC0C1</dt><dd>${swatch(color)} ${esc(color ? "#" + color : "\uC9C0\uC815 \uC5C6\uC74C")}</dd><dt>\uC218\uC2DD</dt><dd class="prewrap">${esc(cell?.f || "\uC5C6\uC74C")}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc(cell?.note || "\uC5C6\uC74C")}</dd></dl><a class="button" href="${esc(meta.url)}" target="_blank" rel="noopener noreferrer">\uAC80\uC218 \uC548\uB0B4 \uBCF4\uAE30 \u2197</a>`;
+    document.querySelector(".dialog-body").innerHTML = `<p>${esc2(meta.label)} / ${esc2(source.tab)} / ${esc2(source.cell)}</p><dl><dt>\uC608\uC2DC \uAC12</dt><dd class="prewrap">${esc2(display(cell?.v))}</dd><dt>\uC608\uC2DC \uC0C9\uC0C1</dt><dd>${swatch(color)} ${esc2(color ? "#" + color : "\uC9C0\uC815 \uC5C6\uC74C")}</dd><dt>\uC218\uC2DD</dt><dd class="prewrap">${esc2(cell?.f || "\uC5C6\uC74C")}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc2(cell?.note || "\uC5C6\uC74C")}</dd></dl><a class="button" href="${esc2(meta.url)}" target="_blank" rel="noopener noreferrer">\uAC80\uC218 \uC548\uB0B4 \uBCF4\uAE30 \u2197</a>`;
   } catch (error) {
     if (version === dialogVersion) document.querySelector(".dialog-body").textContent = error.message;
   }
 }
 function renderSources(content) {
   const review = [...data.mealRows, ...data.otRows].filter((r3) => r3.identityNeedsReview && matches(r3)), issues = data.issues.filter((issue) => data.mealRows.some((r3) => matches(r3) && r3.source.book === issue.source.book && r3.source.tab === issue.source.tab && r3.source.cell === issue.source.cell));
-  content.innerHTML = `<div class="metrics">${metric("\uC608\uC2DC \uC804\uCCB4", `${data.audit.tabs}\uAC1C \uD0ED`, "\uC2A4\uCF00\uC904 12 \xB7 \uC2DD\uB300 13 \xB7 OT/\uC9C0\uAC01 12")}${metric("\uBCF4\uC874\uD55C \uC140", `${number(data.audit.importedCells)}\uAC1C`, "\uC608\uC2DC\uACFC \uC140 \uAC12 \uC77C\uCE58 \uAC80\uC0AC \uC644\uB8CC")}${metric("\uBA54\uBAA8 / \uC218\uC2DD", `${number(data.audit.notes)} / ${number(data.audit.formulas)}`, "\uC608\uC2DC XLSX\uC640 \uCD9C\uCC98 \uC88C\uD45C \uBCF4\uC874")}</div><section class="panel"><div class="panel-heading"><div><h2>\uC5F0\uACB0\xB7\uD569\uACC4 \uD655\uC778</h2><p>\uC120\uD0DD\uD55C \uC6D4\xB7\uD300\uC758 \uD655\uC778 \uD56D\uBAA9\uC785\uB2C8\uB2E4. \uD655\uC778 \uC804\uC5D0\uB294 \uC608\uC2DC\uC744 \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div></div>${issues.map((i3) => `<div class="notice">${esc(i3.name)} \xB7 ${esc(i3.kind)}: \uC608\uC2DC ${number(i3.sourceTotal)}\uC6D0 / \uC77C\uBCC4 \uD569 ${number(i3.dailySum)}\uC6D0 ${sourceButton(i3.source)}</div>`).join("")}${review.length ? `<div class="review-list">${review.map((r3) => `<span>${esc(r3.name)} \xB7 ${esc(r3.rawTeam)} ${sourceButton(r3.source, "\uC774\uB984\xB7\uD300 \uD655\uC778")}</span>`).join("")}</div>` : empty("\uC774 \uC870\uAC74\uC5D0\uC11C \uC774\uB984\xB7\uD300 \uC5F0\uACB0 \uD655\uC778 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}<p class="panel-foot">\uC608\uC2DC \uC0C9\uC0C1\uC740 \uBAA8\uB450 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uBC94\uB840\uC640 \uC77C\uCE58\uD558\uC9C0 \uC54A\uB294 \uC0C9\uC740 \uC758\uBBF8\uB97C \uC784\uC758 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p></section><section class="panel"><div class="panel-heading"><div><h2>\uC608\uC2DC \uD0ED \uC804\uCCB4 \uBCF4\uAE30</h2><p>\uC774 \uC601\uC5ED\uC740 \uD300 \uD544\uD130 \uC5C6\uC774 \uC120\uD0DD\uD55C \uD0ED \uC804\uCCB4\uB97C \uBCF4\uC5EC\uC90D\uB2C8\uB2E4. \uD45C \uC544\uB798\uC758 \uCD94\uAC00 \uAE30\uB85D\uB3C4 \uD3EC\uD568\uD569\uB2C8\uB2E4.</p></div></div><div class="source-controls"><label>\uC608\uC2DC<select id="source-book">${[["schedule", "\uC2A4\uCF00\uC904"], ["meals", "\uC2DD\uB300"], ["attendance", "OT/\uC9C0\uAC01"]].map(([k3, l3]) => `<option value="${k3}" ${sourceBook === k3 ? "selected" : ""}>${l3}</option>`).join("")}</select></label><label>\uD0ED<select id="source-tab">${data.sources.filter((s3) => s3.book === sourceBook).map((s3) => `<option value="${s3.tab}" ${(sourceTab || month) === s3.tab ? "selected" : ""}>${esc(s3.tab === "\uCC38\uACE0\uC6A9" ? "\uCC38\uACE0\uC6A9" : monthText(s3.tab))}</option>`).join("")}</select></label><label>\uC140\xB7\uB0B4\uC6A9 \uAC80\uC0C9<input id="source-query" value="${esc(sourceQuery)}" placeholder="\uC608: A320 \uB610\uB294 \uC9C1\uC6D0 \uC774\uB984" maxlength="100"></label><button data-action="source-search">\uAC80\uC0C9</button></div><div id="raw-table">\uC608\uC2DC\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4\u2026</div></section>`;
+  content.innerHTML = `<div class="metrics">${metric("\uC608\uC2DC \uC804\uCCB4", `${data.audit.tabs}\uAC1C \uD0ED`, "\uC2A4\uCF00\uC904 12 \xB7 \uC2DD\uB300 13 \xB7 OT/\uC9C0\uAC01 12")}${metric("\uBCF4\uC874\uD55C \uC140", `${number(data.audit.importedCells)}\uAC1C`, "\uC608\uC2DC\uACFC \uC140 \uAC12 \uC77C\uCE58 \uAC80\uC0AC \uC644\uB8CC")}${metric("\uBA54\uBAA8 / \uC218\uC2DD", `${number(data.audit.notes)} / ${number(data.audit.formulas)}`, "\uC608\uC2DC XLSX\uC640 \uCD9C\uCC98 \uC88C\uD45C \uBCF4\uC874")}</div><section class="panel"><div class="panel-heading"><div><h2>\uC5F0\uACB0\xB7\uD569\uACC4 \uD655\uC778</h2><p>\uC120\uD0DD\uD55C \uC6D4\xB7\uD300\uC758 \uD655\uC778 \uD56D\uBAA9\uC785\uB2C8\uB2E4. \uD655\uC778 \uC804\uC5D0\uB294 \uC608\uC2DC\uC744 \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div></div>${issues.map((i3) => `<div class="notice">${esc2(i3.name)} \xB7 ${esc2(i3.kind)}: \uC608\uC2DC ${number(i3.sourceTotal)}\uC6D0 / \uC77C\uBCC4 \uD569 ${number(i3.dailySum)}\uC6D0 ${sourceButton(i3.source)}</div>`).join("")}${review.length ? `<div class="review-list">${review.map((r3) => `<span>${esc2(r3.name)} \xB7 ${esc2(r3.rawTeam)} ${sourceButton(r3.source, "\uC774\uB984\xB7\uD300 \uD655\uC778")}</span>`).join("")}</div>` : empty("\uC774 \uC870\uAC74\uC5D0\uC11C \uC774\uB984\xB7\uD300 \uC5F0\uACB0 \uD655\uC778 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}<p class="panel-foot">\uC608\uC2DC \uC0C9\uC0C1\uC740 \uBAA8\uB450 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uBC94\uB840\uC640 \uC77C\uCE58\uD558\uC9C0 \uC54A\uB294 \uC0C9\uC740 \uC758\uBBF8\uB97C \uC784\uC758 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p></section><section class="panel"><div class="panel-heading"><div><h2>\uC608\uC2DC \uD0ED \uC804\uCCB4 \uBCF4\uAE30</h2><p>\uC774 \uC601\uC5ED\uC740 \uD300 \uD544\uD130 \uC5C6\uC774 \uC120\uD0DD\uD55C \uD0ED \uC804\uCCB4\uB97C \uBCF4\uC5EC\uC90D\uB2C8\uB2E4. \uD45C \uC544\uB798\uC758 \uCD94\uAC00 \uAE30\uB85D\uB3C4 \uD3EC\uD568\uD569\uB2C8\uB2E4.</p></div></div><div class="source-controls"><label>\uC608\uC2DC<select id="source-book">${[["schedule", "\uC2A4\uCF00\uC904"], ["meals", "\uC2DD\uB300"], ["attendance", "OT/\uC9C0\uAC01"]].map(([k3, l3]) => `<option value="${k3}" ${sourceBook === k3 ? "selected" : ""}>${l3}</option>`).join("")}</select></label><label>\uD0ED<select id="source-tab">${data.sources.filter((s3) => s3.book === sourceBook).map((s3) => `<option value="${s3.tab}" ${(sourceTab || month) === s3.tab ? "selected" : ""}>${esc2(s3.tab === "\uCC38\uACE0\uC6A9" ? "\uCC38\uACE0\uC6A9" : monthText(s3.tab))}</option>`).join("")}</select></label><label>\uC140\xB7\uB0B4\uC6A9 \uAC80\uC0C9<input id="source-query" value="${esc2(sourceQuery)}" placeholder="\uC608: A320 \uB610\uB294 \uC9C1\uC6D0 \uC774\uB984" maxlength="100"></label><button data-action="source-search">\uAC80\uC0C9</button></div><div id="raw-table">\uC608\uC2DC\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4\u2026</div></section>`;
   loadRawTable();
 }
 function coordSort(a3, b3) {
@@ -12424,8 +12612,9 @@ async function loadRawTable() {
     sourcePage = Math.min(sourcePage, pages - 1);
     document.querySelector("#raw-table").innerHTML = `<div class="raw-summary"><span>\uAC80\uC0C9 ${number(coords.length)}\uC140 \xB7 ${sourcePage + 1} / ${pages}\uCABD</span><div><button data-action="raw-prev" ${sourcePage === 0 ? "disabled" : ""}>\uC774\uC804</button><button data-action="raw-next" ${sourcePage + 1 >= pages ? "disabled" : ""}>\uB2E4\uC74C</button></div></div><div class="table-scroll"><table class="raw-table"><thead><tr><th>\uC140</th><th>\uC608\uC2DC \uAC12</th><th>\uC0C9\uC0C1</th><th>\uC218\uC2DD</th><th>\uBA54\uBAA8</th></tr></thead><tbody>${coords.slice(sourcePage * pageSize, (sourcePage + 1) * pageSize).map((coord) => {
       const c3 = raw.cells[coord];
-      return `<tr><th>${sourceButton({ ...source, cell: coord }, coord)}</th><td class="prewrap">${esc(display(c3?.v))}</td><td>${swatch(rawColor(raw, coord))}</td><td class="prewrap">${esc(c3?.f || "\u2014")}</td><td class="prewrap">${esc(c3?.note || "\u2014")}</td></tr>`;
+      return `<tr><th>${sourceButton({ ...source, cell: coord }, coord)}</th><td class="prewrap">${esc2(display(c3?.v))}</td><td>${swatch(rawColor(raw, coord))}</td><td class="prewrap">${esc2(c3?.f || "\u2014")}</td><td class="prewrap">${esc2(c3?.note || "\u2014")}</td></tr>`;
     }).join("")}</tbody></table></div>${coords.length ? "" : empty()}`;
+    labelMobileTables(document.querySelector("#raw-table"));
   } catch (error) {
     if (version === renderVersion && token === loadRawTable.token) document.querySelector("#raw-table").textContent = error.message;
   }
@@ -12437,7 +12626,7 @@ function openEntry(kind = view === "meals" ? "meals" : view === "attendance" ? "
     toast("\uC120\uD0DD\uD55C \uC870\uAC74\uC758 \uC2A4\uCF00\uC904 \uBA85\uBD80\uC5D0 \uC9C1\uC6D0\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uD300\xB7\uAC80\uC0C9 \uC870\uAC74\uC744 \uBCC0\uACBD\uD574 \uC8FC\uC138\uC694.");
     return;
   }
-  openDialog(`${kind === "schedule" ? "\uC77C\uC815" : kind === "meals" ? "\uC2DD\uB300" : "OT\xB7\uC9C0\uAC01"} \uB4F1\uB85D`, `<form id="entry-form" data-kind="${kind}"><div class="form-grid"><label>\uC9C1\uC6D0<select name="person" required>${people.map((r3) => `<option value="${r3.personId}">${esc(r3.name)} \xB7 ${esc(r3.rawTeam)}</option>`).join("")}</select></label><label>\uB0A0\uC9DC<input name="date" type="date" value="${defaultDate}" required min="2026-01-01" max="2026-12-31"></label>${kind === "schedule" ? `<label>\uC77C\uC815<select name="label">${["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28", "\uD300 \uC77C\uC815", "\uAE30\uD0C0"].map((l3) => `<option>${l3}</option>`).join("")}</select></label>` : kind === "attendance" ? '<label>\uAD6C\uBD84<select name="label"><option>OT</option><option>\uACF5\uD734\uC77C OT</option><option>OT \uC0AC\uC6A9</option><option>\uC9C0\uAC01</option><option>\uC870\uC815</option></select></label>' : ""}${kind !== "schedule" ? `<label>${kind === "meals" ? "\uAE08\uC561 (\uC6D0)" : "\uC2DC\uAC04 (\uBD84)"}<input name="amount" type="number" required min="${kind === "meals" ? 0 : -1e6}" max="100000000" step="1" inputmode="numeric"></label>` : ""}<label class="full">\uBA54\uBAA8<textarea name="note" rows="3" maxlength="2000" placeholder="\uD544\uC694\uD55C \uB0B4\uC6A9\uC744 \uB0A8\uACA8 \uC8FC\uC138\uC694."></textarea></label></div><p class="notice">\uAC00\uC838\uC628 \uC608\uC2DC\uACFC \uAD6C\uBD84\uD574 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uD569\uB2C8\uB2E4.${kind === "attendance" ? " OT \uC0AC\uC6A9\xB7\uC9C0\uAC01\uC740 \uC591\uC218\uB85C \uC785\uB825\uD574\uB3C4 \uC74C\uC218\uB85C \uAE30\uB85D\uD569\uB2C8\uB2E4." : ""}</p><div class="form-actions"><button type="button" data-action="close">\uCDE8\uC18C</button><button class="primary" type="submit">\uB4F1\uB85D\uD558\uAE30</button></div><p class="form-error" role="alert"></p></form>`);
+  openDialog(`${kind === "schedule" ? "\uC77C\uC815" : kind === "meals" ? "\uC2DD\uB300" : "OT\xB7\uC9C0\uAC01"} \uB4F1\uB85D`, `<form id="entry-form" data-kind="${kind}"><div class="form-grid"><label>\uC9C1\uC6D0<select name="person" required>${people.map((r3) => `<option value="${r3.personId}">${esc2(r3.name)} \xB7 ${esc2(r3.rawTeam)}</option>`).join("")}</select></label><label>\uB0A0\uC9DC<input name="date" type="date" value="${defaultDate}" required min="2026-01-01" max="2026-12-31"></label>${kind === "schedule" ? `<label>\uC77C\uC815<select name="label">${["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28", "\uD300 \uC77C\uC815", "\uAE30\uD0C0"].map((l3) => `<option>${l3}</option>`).join("")}</select></label>` : kind === "attendance" ? '<label>\uAD6C\uBD84<select name="label"><option>OT</option><option>\uACF5\uD734\uC77C OT</option><option>OT \uC0AC\uC6A9</option><option>\uC9C0\uAC01</option><option>\uC870\uC815</option></select></label>' : ""}${kind !== "schedule" ? `<label>${kind === "meals" ? "\uAE08\uC561 (\uC6D0)" : "\uC2DC\uAC04 (\uBD84)"}<input name="amount" type="number" required min="${kind === "meals" ? 0 : -1e6}" max="100000000" step="1" inputmode="numeric"></label>` : ""}<label class="full">\uBA54\uBAA8<textarea name="note" rows="3" maxlength="2000" placeholder="\uD544\uC694\uD55C \uB0B4\uC6A9\uC744 \uB0A8\uACA8 \uC8FC\uC138\uC694."></textarea></label></div><p class="notice">\uAC00\uC838\uC628 \uC608\uC2DC\uACFC \uAD6C\uBD84\uD574 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uD569\uB2C8\uB2E4.${kind === "attendance" ? " OT \uC0AC\uC6A9\xB7\uC9C0\uAC01\uC740 \uC591\uC218\uB85C \uC785\uB825\uD574\uB3C4 \uC74C\uC218\uB85C \uAE30\uB85D\uD569\uB2C8\uB2E4." : ""}</p><div class="form-actions"><button type="button" data-action="close">\uCDE8\uC18C</button><button class="primary" type="submit">\uB4F1\uB85D\uD558\uAE30</button></div><p class="form-error" role="alert"></p></form>`);
 }
 document.addEventListener("submit", async (event) => {
   if (event.target.id !== "entry-form") return;
@@ -12468,11 +12657,6 @@ document.addEventListener("submit", async (event) => {
 document.addEventListener("click", async (event) => {
   const target = event.target.closest("button");
   if (!target) return;
-  if (target.dataset.team) {
-    team = target.dataset.team;
-    render();
-    return;
-  }
   if (target.dataset.source) {
     await showSource(JSON.parse(target.dataset.source));
     return;
@@ -12531,6 +12715,10 @@ document.addEventListener("change", (event) => {
     sourceTab = "";
     sourcePage = 0;
     if (team !== "\uC804\uCCB4" && !teamOptions().includes(team)) team = "\uC804\uCCB4";
+    render();
+  }
+  if (id === "team-filter") {
+    team = value;
     render();
   }
   if (id === "source-book") {
@@ -12598,7 +12786,7 @@ async function start() {
     document.title = "\uBDF0\uD2F0\uBE14\uB77C\uC378 \xB7 \uC9C1\uC6D0 \uC5C5\uBB34";
     render();
   } catch (error) {
-    app.innerHTML = `<main class="load-error"><h1>\uC9C1\uC6D0 \uC790\uB8CC\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.</h1><p>${esc(error.message)}</p><button data-action="retry">\uB2E4\uC2DC \uBD88\uB7EC\uC624\uAE30</button></main>`;
+    app.innerHTML = `<main class="load-error"><h1>\uC9C1\uC6D0 \uC790\uB8CC\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.</h1><p>${esc2(error.message)}</p><button data-action="retry">\uB2E4\uC2DC \uBD88\uB7EC\uC624\uAE30</button></main>`;
   }
 }
 start();
