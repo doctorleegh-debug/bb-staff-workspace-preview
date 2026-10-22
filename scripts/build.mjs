@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {build} from 'esbuild';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..'),out=path.join(root,'docs');
+fs.mkdirSync(path.join(out,'assets'),{recursive:true});
+fs.cpSync(path.join(root,'data'),out,{recursive:true});
+fs.copyFileSync(path.join(root,'src/index.html'),path.join(out,'index.html'));
+fs.copyFileSync(path.join(root,'src/logo.svg'),path.join(out,'assets/logo.svg'));
+fs.writeFileSync(path.join(out,'.nojekyll'),'');
+await build({entryPoints:[path.join(root,'src/clinic-app.js')],bundle:true,outfile:path.join(out,'app.js'),format:'esm',target:'es2022',loader:{'.woff2':'file','.woff':'file'},assetNames:'assets/fonts/[name]-[hash]',legalComments:'eof'});
+console.log('Review preview built in docs/');
