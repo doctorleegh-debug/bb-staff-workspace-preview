@@ -12157,6 +12157,50 @@ html:has(.daily-drawer[open]) {
     font-size: 12px;
   }
 }
+@media (min-width: 801px) {
+  .guide-popup {
+    width: min(760px, calc(100vw - 44px));
+  }
+  .guide-popup-body {
+    max-height: min(780px, calc(100dvh - 270px));
+  }
+  .guide-popup .picture-guide {
+    padding: 20px 24px 24px;
+  }
+  .guide-popup .guide-topic-label {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 18px;
+    font-size: 17px;
+  }
+  .guide-popup .guide-image-button img {
+    height: auto;
+    max-height: none;
+  }
+  .guide-popup .picture-guide-steps h3 {
+    font-size: 21px;
+  }
+  .guide-popup .picture-guide-steps p {
+    font-size: 18px;
+    line-height: 1.8;
+  }
+  .guide-popup-heading strong {
+    font-size: 21px;
+  }
+  .guide-popup .guide-step-navigation {
+    position: sticky;
+    bottom: 0;
+    background: var(--panel);
+    padding: 12px 0;
+    margin-top: 10px;
+  }
+}
+@media (max-width: 800px) {
+  .guide-popup .guide-image-button img {
+    height: clamp(180px, 30dvh, 280px);
+  }
+}
 
 /* review-share/src/expense.css */
 .expense-intro {
@@ -12577,4 +12621,11 @@ html:has(.daily-drawer[open]) {
   .expense-pagination {
     gap: 12px;
   }
+}
+.expense-metrics small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: 8px;
 }
