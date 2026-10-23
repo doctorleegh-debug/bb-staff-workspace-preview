@@ -13715,7 +13715,7 @@ document.addEventListener("click", async (event) => {
       if (["meal-timer", "admin-dashboard"].includes(view)) render();
       toast(ACTIVITY_TYPES[kind].label + (action === "start" ? "\uC744 \uC2DC\uC791\uD588\uC2B5\uB2C8\uB2E4." : "\uC744 \uC885\uB8CC\uD588\uC2B5\uB2C8\uB2E4."));
     } catch (e3) {
-      toast(e3.message);
+      if (revision === sessionRevision) toast(e3.message);
     } finally {
       pendingMeals.delete(id);
       target.disabled = false;
