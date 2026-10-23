@@ -5904,13 +5904,13 @@ var TableDateCell = class extends BaseComponent {
     let { date, dateProfile } = props;
     let dayMeta = getDateMeta(date, props.todayRange, null, dateProfile);
     let classNames = [CLASS_NAME].concat(getDayClassNames(dayMeta, theme));
-    let text = dateEnv.format(date, props.dayHeaderFormat);
+    let text2 = dateEnv.format(date, props.dayHeaderFormat);
     let navLinkAttrs = !dayMeta.isDisabled && props.colCnt > 1 ? buildNavLinkAttrs(this.context, date) : {};
     let publicDate = dateEnv.toDate(date);
     if (dateEnv.namedTimeZoneImpl) {
       publicDate = addMs(publicDate, 36e5);
     }
-    let renderProps = Object.assign(Object.assign(Object.assign({ date: publicDate, view: viewApi }, props.extraRenderProps), { text }), dayMeta);
+    let renderProps = Object.assign(Object.assign(Object.assign({ date: publicDate, view: viewApi }, props.extraRenderProps), { text: text2 }), dayMeta);
     return y(ContentContainer, { elTag: "th", elClasses: classNames, elAttrs: Object.assign({ role: "columnheader", colSpan: props.colSpan, "data-date": !dayMeta.isDisabled ? formatDayString(date) : void 0 }, props.extraDataAttrs), renderProps, generatorName: "dayHeaderContent", customGenerator: options.dayHeaderContent, defaultGenerator: renderInner$1, classNameGenerator: options.dayHeaderClassNames, didMount: options.dayHeaderDidMount, willUnmount: options.dayHeaderWillUnmount }, (InnerContainer) => y("div", { className: "fc-scrollgrid-sync-inner" }, !dayMeta.isDisabled && y(InnerContainer, { elTag: "a", elAttrs: navLinkAttrs, elClasses: [
       "fc-col-header-cell-cushion",
       props.isSticky && "fc-sticky"
@@ -5931,11 +5931,11 @@ var TableDowCell = class extends BaseComponent {
       isToday: false,
       isOther: false
     };
-    let text = dateEnv.format(date, props.dayHeaderFormat);
+    let text2 = dateEnv.format(date, props.dayHeaderFormat);
     let renderProps = Object.assign(Object.assign(Object.assign(Object.assign({
       // TODO: make this public?
       date
-    }, dateMeta), { view: viewApi }), props.extraRenderProps), { text });
+    }, dateMeta), { view: viewApi }), props.extraRenderProps), { text: text2 });
     return y(ContentContainer, { elTag: "th", elClasses: [
       CLASS_NAME,
       ...getDayClassNames(dateMeta, theme),
@@ -6900,8 +6900,8 @@ var WeekNumberContainer = (props) => y(ViewContextType.Consumer, null, (context)
   let { date } = props;
   let format2 = options.weekNumberFormat || props.defaultFormat;
   let num = dateEnv.computeWeekNumber(date);
-  let text = dateEnv.format(date, format2);
-  let renderProps = { num, text, date };
+  let text2 = dateEnv.format(date, format2);
+  let renderProps = { num, text: text2, date };
   return y(
     ContentContainer,
     { elRef: props.elRef, elTag: props.elTag, elAttrs: props.elAttrs, elClasses: props.elClasses, elStyle: props.elStyle, renderProps, generatorName: "weekNumberContent", customGenerator: options.weekNumberContent, defaultGenerator: renderInner, classNameGenerator: options.weekNumberClassNames, didMount: options.weekNumberDidMount, willUnmount: options.weekNumberWillUnmount },
@@ -7094,12 +7094,12 @@ var MoreLinkContainer = class extends BaseComponent {
       let { moreLinkText } = options;
       let { moreCnt } = props;
       let range = computeRange(props);
-      let text = typeof moreLinkText === "function" ? moreLinkText.call(calendarApi, moreCnt) : `+${moreCnt} ${moreLinkText}`;
-      let hint = formatWithOrdinals(options.moreLinkHint, [moreCnt], text);
+      let text2 = typeof moreLinkText === "function" ? moreLinkText.call(calendarApi, moreCnt) : `+${moreCnt} ${moreLinkText}`;
+      let hint = formatWithOrdinals(options.moreLinkHint, [moreCnt], text2);
       let renderProps = {
         num: moreCnt,
         shortText: `+${moreCnt}`,
-        text,
+        text: text2,
         view: viewApi
       };
       return y(
@@ -11792,13 +11792,13 @@ var ListViewHeaderRow = class extends BaseComponent {
     let { cellId, dayDate, todayRange } = this.props;
     let { textId } = this.state;
     let dayMeta = getDateMeta(dayDate, todayRange);
-    let text = options.listDayFormat ? dateEnv.format(dayDate, options.listDayFormat) : "";
+    let text2 = options.listDayFormat ? dateEnv.format(dayDate, options.listDayFormat) : "";
     let sideText = options.listDaySideFormat ? dateEnv.format(dayDate, options.listDaySideFormat) : "";
     let renderProps = Object.assign({
       date: dateEnv.toDate(dayDate),
       view: viewApi,
       textId,
-      text,
+      text: text2,
       sideText,
       navLinkAttrs: buildNavLinkAttrs(this.context, dayDate),
       sideNavLinkAttrs: buildNavLinkAttrs(this.context, dayDate, "day", false)
@@ -13067,8 +13067,8 @@ function restorePreviewSession(storage, people) {
 }
 function allowedRoute(session, route) {
   if (!session) return "login";
-  const employee = ["meal-timer", "roster", "team-calendar", "meals", "team-snacks", "attendance"];
-  const admin = ["admin-dashboard", "roster", "team-calendar", "meals", "team-snacks", "attendance", "sources", "feedback"];
+  const employee = ["meal-timer", "roster", "team-calendar", "meals", "team-snacks", "expenses", "attendance"];
+  const admin = ["admin-dashboard", "roster", "team-calendar", "meals", "team-snacks", "expenses", "attendance", "sources", "feedback"];
   const routes = session.role === "admin" ? admin : employee;
   return routes.includes(route) ? route : routes[0];
 }
@@ -13107,13 +13107,14 @@ function mountPreviewLogin(root, { people, themeControl: themeControl2, onLogin 
 
 // review-share/src/picture-guide.js
 var esc7 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
-var step = (image, title, text) => ({ image, title, text });
+var step = (image, title, text2) => ({ image, title, text: text2 });
 var common = {
   login: { title: "\uB85C\uADF8\uC778\xB7\uB85C\uADF8\uC544\uC6C3", steps: [step("login", "\uB0B4 \uACC4\uC815\uC73C\uB85C \uB4E4\uC5B4\uAC00\uAE30", "\uC9C1\uC6D0\uC740 \uBCF8\uC778 \uC774\uB984\uACFC \uD14C\uC2A4\uD2B8 \uBE44\uBC00\uBC88\uD638\uB97C \uC785\uB825\uD574\uC694. \uAC19\uC740 \uC774\uB984\uC774 \uC788\uC73C\uBA74 \uBCF8\uC778 \uD300\uC744 \uC120\uD0DD\uD558\uC138\uC694."), step("logout", "\uC0AC\uC6A9 \uD6C4 \uB85C\uADF8\uC544\uC6C3", "\uC624\uB978\uCABD \uC704 \uB85C\uADF8\uC544\uC6C3\uC744 \uB204\uB974\uBA74 \uB85C\uADF8\uC778 \uD654\uBA74\uC73C\uB85C \uB3CC\uC544\uAC11\uB2C8\uB2E4.")] },
   feedback: { title: "\uC758\uACAC \uB0A8\uAE30\uAE30", steps: [step("feedback-write", "\uD53C\uB4DC\uBC31\xB7\uC694\uCCAD\uC0AC\uD56D \uC5F4\uAE30", "\uBD88\uD3B8\uD588\uB358 \uD654\uBA74 \uC704\uCABD\uC758 \uD53C\uB4DC\uBC31\xB7\uC694\uCCAD\uC0AC\uD56D\uC744 \uD3BC\uCCD0 \uB0B4\uC6A9\uC744 \uC801\uC5B4\uC694."), step("feedback-saved", "\uBA54\uBAA8 \uC800\uC7A5 \uD655\uC778", "\uBA54\uBAA8 \uC800\uC7A5\uC744 \uB204\uB974\uACE0 \uC544\uB798 \uC800\uC7A5 \uB0B4\uC5ED\uC744 \uD655\uC778\uD574\uC694. \uB2E4\uB978 \uAE30\uAE30\uB85C \uC804\uB2EC\uD558\uB824\uBA74 \uB0B4 \uBA54\uBAA8 \uD30C\uC77C\uC744 \uB0B4\uB824\uBC1B\uC544 \uAD00\uB9AC\uC790\uC5D0\uAC8C \uBCF4\uB0B4 \uC8FC\uC138\uC694.")] }
 };
 var topics = {
   employee: {
+    expenses: { title: "\uC9C0\uCD9C \uC2E0\uCCAD\xB7\uACB0\uC7AC", steps: [step("expense-form", "\uB0B4\uC6A9\uACFC \uACB0\uC7AC\uC120 \uD655\uC778 \uD6C4 \uC2E0\uCCAD", "\uC9C0\uCD9C\uACB0\uC758\uC11C\uC758 \uB0B4 \uC2E0\uCCAD\uC5D0\uC11C \uC0AC\uC6A9\uC77C\xB7\uD300\xB7\uBB3C\uD488 \uB610\uB294 \uBAA9\uC801\xB7\uB2E8\uAC00\xB7\uC218\uB7C9\uC744 \uC801\uC5B4\uC694. 4\uB2E8\uACC4 \uB2F4\uB2F9\uC790\uB97C \uD655\uC778\uD558\uACE0 \uC2E0\uCCAD\uD558\uAE30\uB97C \uB204\uB974\uC138\uC694."), step("expense-list", "\uB0B4 \uC2E0\uCCAD \uC9C4\uD589 \uC0C1\uD0DC \uD655\uC778", "\uB0B4 \uC2E0\uCCAD\uC5D0\uC11C \uD604\uC7AC \uACB0\uC7AC \uB2E8\uACC4\uC640 \uC2B9\uC778\xB7\uBC18\uB824 \uACB0\uACFC\uB97C \uD655\uC778\uD574\uC694. \uC2E0\uCCAD \uB0B4\uC6A9\xB7\uACB0\uC7AC \uC774\uB825\uC744 \uD3BC\uCE58\uBA74 \uCC98\uB9AC\uC790\uC640 \uC2DC\uAC01\uC774 \uD45C\uC2DC\uB429\uB2C8\uB2E4."), step("expense-approve", "\uB0B4 \uCC28\uB840\uC5D0 \uC2B9\uC778 \uB610\uB294 \uBC18\uB824", "\uACB0\uC7AC \uB2F4\uB2F9\uC790\uB294 \uB0B4 \uACB0\uC7AC\uD568\uC744 \uC5F4\uC5B4\uC694. \uC790\uAE30 \uCC28\uB840\uC5D0\uB9CC \uC2B9\uC778\xB7\uBC18\uB824\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uBC18\uB824\uD560 \uB54C\uB294 \uC0AC\uC720\uAC00 \uD544\uC694\uD574\uC694. \uD604\uC7AC \uCD08\uC548\uC740 \uAC19\uC740 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uACC4\uC815\uC744 \uBC14\uAFD4 \uCCB4\uD5D8\uD569\uB2C8\uB2E4.")] },
     status: { title: "\uC2DD\uC0AC \uC2DC\uC791\xB7\uB2E4\uB978 \uD300 \uD604\uD669", steps: [step("status-start", "\uC2DD\uC0AC\uD558\uB7EC \uAC08 \uB54C \uC2DC\uC791", "\uB0B4 \uD558\uB8E8\uC5D0\uC11C \uC2DD\uC0AC\uC911\uC744 \uB20C\uB7EC\uC694. \uC2DC\uC791\uD558\uBA74 \uC2DD\uC0AC \uC2DC\uC791 \uC2DC\uAC01\uC774 \uD45C\uC2DC\uB429\uB2C8\uB2E4."), step("status-end", "\uC2DD\uC0AC \uD604\uD669 \uD655\uC778\xB7\uBCF5\uADC0", "\uC544\uB798\uC5D0\uC11C \uB2E4\uB978 \uD300\uC758 \uC2DD\uC0AC \uD604\uD669\uB3C4 \uBCFC \uC218 \uC788\uC5B4\uC694. \uD604\uC7AC \uC2DD\uC0AC\uC885\uB8CC \uBC84\uD2BC\uC740 \uC720\uC9C0\uB429\uB2C8\uB2E4. \uBCF5\uADC0\uD558\uBA74 \uB20C\uB7EC \uC8FC\uC138\uC694.")] },
     schedule: { title: "\uB0B4 \uADFC\uBB34\uD45C\xB7\uD734\uBB34 \uB4F1\uB85D", steps: [step("schedule-calendar", "\uB0A0\uC9DC\uC758 + \uB204\uB974\uAE30", "\uB0B4 \uADFC\uBB34\uD45C\uC5D0\uC11C \uD734\uBB34\xB7\uC5F0\uCC28\xB7\uBC18\uCC28\uB97C \uD655\uC778\uD574\uC694. \uC77C\uC815\uC744 \uCD94\uAC00\uD560 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC\uC694."), step("schedule-form", "\uB0B4\uC6A9\uC744 \uACE0\uB974\uACE0 \uB4F1\uB85D", "\uC77C\uC815 \uC885\uB958\uC640 \uBA54\uBAA8\uB97C \uC785\uB825\uD558\uACE0 \uB4F1\uB85D\uD558\uAE30\uB97C \uB204\uB974\uBA74 \uB0B4 \uADFC\uBB34\uD45C\uC640 \uD300 \uC77C\uC815\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4.")] },
     team: { title: "\uD300 \uC77C\uC815 \uBCF4\uAE30", steps: [step("team-filter", "\uBCFC \uD300 \uC120\uD0DD", "\uD300 \uC77C\uC815\uC5D0\uC11C \uC870\uD68C \uC6D4\uACFC \uD300\uC744 \uC120\uD0DD\uD574\uC694. \uC9C1\uC6D0 \uCC3E\uAE30\uB97C \uD568\uAED8 \uC4F0\uBA74 \uB354 \uC881\uD600 \uBCFC \uC218 \uC788\uC5B4\uC694."), step("duty-workers", "\uC704\uCABD\uC5D0\uC11C \uADFC\uBB34\uC790 \uD655\uC778", "\uD655\uC778\uD560 \uB0A0\uC9DC\uB97C \uACE0\uB974\uBA74 \uADFC\uBB34\xB7\uC624\uC804 \uADFC\uBB34\xB7\uC624\uD6C4 \uADFC\uBB34\xB7\uD734\uBB34 \uC778\uC6D0\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694. \uC77C\uC815\uC774 \uBE44\uC5B4 \uC788\uC73C\uBA74 \uBBF8\uAE30\uC7AC\uB85C \uB0A8\uC2B5\uB2C8\uB2E4."), step("team-calendar", "\uB2EC\uB825\uC5D0\uC11C \uC77C\uC815 \uD655\uC778", "\uC120\uD0DD\uD55C \uD300\uC758 \uC77C\uC815\uB9CC \uBCF4\uC785\uB2C8\uB2E4. \uC2DC\uD2B8 \uC9C1\uCC45 \uAE30\uC900\uC73C\uB85C \uAD8C\uD55C\uC774 \uC801\uC6A9\uB41C \uC8FC\uC784 \uC774\uC0C1 \uC9C1\uC6D0\uC740 \uBCF8\uC778 \uD300\uC6D0 \uC77C\uC815\uB3C4 \uB4F1\uB85D\uD560 \uC218 \uC788\uC5B4\uC694. \uAD00\uB9AC\uC790\uC5D0\uAC8C \uAD8C\uD55C\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.")] },
@@ -13123,6 +13124,7 @@ var topics = {
     ...common
   },
   admin: {
+    expenses: { title: "\uC9C0\uCD9C \uCDE8\uD569\xB7\uACB0\uC7AC\uC120 \uC124\uC815", steps: [step("expense-settings", "\uACB0\uC7AC \uB2F4\uB2F9\uC790 \uD655\uC778\xB7\uC124\uC815", "\uD300\uBCC4 1\uCC28 \uB2F4\uB2F9\uC790\uC640 \uCD1D\uAD04\uC2E4\uC7A5\xB7\uB300\uD45C\uC774\uC0AC\xB7\uB300\uD45C\uC6D0\uC7A5\uC744 \uC124\uC815\uD574\uC694. \uBCC0\uACBD\uC740 \uC0C8 \uC2E0\uCCAD\uBD80\uD130 \uC801\uC6A9\uB429\uB2C8\uB2E4. \uACB0\uC7AC\uB294 \uC9C0\uC815\uB41C \uB2F4\uB2F9\uC790\uC758 \uC9C1\uC6D0 \uACC4\uC815\uC5D0\uC11C \uC9C4\uD589\uD574\uC694."), step("expense-list", "\uC804\uCCB4 \uC2E0\uCCAD\uC5D0\uC11C \uC9C4\uD589 \uC0C1\uD0DC \uD655\uC778", "\uAD00\uB9AC\uC790\uB294 \uC804\uCCB4 \uC2E0\uCCAD\uC744 \uC6D4\xB7\uD300\xB7\uB0B4\uC6A9\uC73C\uB85C \uC870\uD68C\uD558\uACE0 \uB0B4\uB824\uBC1B\uC744 \uC218 \uC788\uC5B4\uC694. \uACB0\uC7AC \uC774\uB825\uC744 \uD3BC\uCCD0 \uAC01 \uB2E8\uACC4\uC758 \uCC98\uB9AC\uC790\uC640 \uC758\uACAC\uC744 \uD655\uC778\uD558\uC138\uC694."), step("expense-archive", "10\uC6D4\uBD80\uD130 \uAE30\uC874 \uC9C0\uCD9C \uC790\uB8CC \uD655\uC778", "\uAE30\uC874 \uC9C0\uCD9C \uC790\uB8CC\uB294 \uC2DC\uD2B8 \uC7A5\uBD80\uB97C \uBCF4\uC874\uD558\uB294 \uD654\uBA74\uC785\uB2C8\uB2E4. \uC2DC\uD2B8\uC758 \uD300\uC7A5\uD655\uC778 \uD45C\uC2DC\uB294 \uC571\uC758 \uCD5C\uC885 \uC2B9\uC778\uACFC \uBCC4\uAC1C\uC608\uC694. \uACF5\uAC1C \uAC80\uC218 \uB9C1\uD06C\uC5D0\uC11C\uB294 \uC0C8\uB85C \uB9CC\uB4E0 \uC608\uC2DC \uC790\uB8CC\uB85C \uBCF4\uC5EC\uC90D\uB2C8\uB2E4.")] },
     dashboard: { title: "\uC9C1\uC6D0 \uC0C1\uD0DC\xB7\uC6D4\uBCC4 \uD1B5\uACC4", steps: [step("admin-live", "\uD604\uC7AC \uC0C1\uD0DC \uD655\uC778", "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC\uC5D0\uC11C \uC2DD\uC0AC\xB7\uD734\uC2DD\xB7\uC678\uCD9C\xB7\uC678\uADFC \uC911\uC778 \uC9C1\uC6D0\uACFC \uACBD\uACFC \uC2DC\uAC04\uC744 \uD655\uC778\uD574\uC694. \uD604\uC7AC \uC0C1\uD0DC\uB294 \uC870\uD68C \uC6D4\uACFC \uAD00\uACC4\uC5C6\uC774 \uD45C\uC2DC\uB429\uB2C8\uB2E4."), step("admin-stats", "\uC6D4\xB7\uC885\uB958\uBCC4 \uD1B5\uACC4 \uD655\uC778", "\uC870\uD68C \uC6D4\xB7\uD300\xB7\uC9C1\uC6D0 \uAC80\uC0C9\uC744 \uC815\uD558\uACE0 \uC2DD\uC0AC \uAE30\uB85D \uB4F1 \uC885\uB958\uB97C \uC120\uD0DD\uD574\uC694. \uC644\uB8CC\uB41C \uAE30\uB85D\uACFC \uC6D4\uBCC4 \uC18C\uC694 \uC2DC\uAC04\uC744 \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4.")] },
     schedule: { title: "\uC9C1\uC6D0 \uD734\uBB34\xB7\uB2F4\uB2F9\uC790 \uC124\uC815", steps: [step("team-permission", "\uD300 \uC77C\uC815 \uB2F4\uB2F9\uC790 \uC9C0\uC815", "\uD300 \uC77C\uC815 \uB610\uB294 \uC9C1\uC6D0\uBCC4 \uADFC\uBB34\uD45C\uC758 \uD300\uC6D0 \uD734\uBB34 \uB4F1\uB85D \uAD8C\uD55C\uC744 \uD3BC\uCCD0\uC694. \uC2DC\uD2B8 \uC9C1\uCC45 \uAE30\uC900\uC73C\uB85C \uC801\uC6A9\uB41C \uC9C1\uC6D0\uACFC \uC9C1\uCC45\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC120\uD0DD\uC744 \uBC14\uAFB8\uACE0 \uC800\uC7A5\uD558\uAC70\uB098 \uC9C1\uCC45 \uAE30\uC900\uC73C\uB85C \uB2E4\uC2DC \uC801\uC6A9\uD560 \uC218 \uC788\uC5B4\uC694."), step("duty-workers", "\uB0A0\uC9DC\uBCC4 \uADFC\uBB34\uC790 \uD655\uC778", "\uC870\uD68C \uB0A0\uC9DC\uC758 \uADFC\uBB34\xB7\uBC18\uCC28\xB7\uD734\uBB34 \uB4F1\uB85D\uC744 \uD655\uC778\uD574\uC694. \uBBF8\uAE30\uC7AC\uB97C \uADFC\uBB34\uB85C \uC790\uB3D9 \uCC98\uB9AC\uD558\uC9C0 \uC54A\uC73C\uBA70 \uB20C\uB7EC\uC11C \uBA85\uB2E8\uC744 \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4."), step("admin-schedule-picker", "\uC9C1\uC6D0\xB7\uB0A0\uC9DC \uC120\uD0DD", "\uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D\uC5D0\uC11C \uC9C1\uC6D0\uACFC \uC6D4\uC744 \uC120\uD0DD\uD558\uACE0 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC\uC694."), step("admin-schedule-form", "\uD734\uBB34 \uC885\uB958 \uB4F1\uB85D", "\uD734\uBB34\xB7\uC5F0\uCC28\xB7\uBC18\uCC28 \uB4F1 \uC885\uB958\uC640 \uBA54\uBAA8\uB97C \uD655\uC778\uD558\uACE0 \uB4F1\uB85D\uD558\uAE30\uB97C \uB204\uB974\uC138\uC694. \uC120\uD0DD\uD55C \uC9C1\uC6D0\uC758 \uADFC\uBB34\uD45C\uC5D0\uB3C4 \uBC18\uC601\uB429\uB2C8\uB2E4.")] },
     receipt: { title: "\uC2DD\uB300 \uCDE8\uD569\xB7\uB2E4\uC6B4\uB85C\uB4DC", steps: [step("admin-receipts", "\uC6D4\xB7\uD300\xB7\uC9C1\uC6D0\uC73C\uB85C \uCC3E\uAE30", "\uB300\uC2DC\uBCF4\uB4DC\uC758 \uC2DD\uB300 \uC81C\uCD9C \uAE30\uB85D\uC5D0\uC11C \uD300\xB7\uC9C1\uC6D0\uC744 \uC120\uD0DD\uD574\uC694. \uC2DD\uB300 \uBAA8\uC544\uBCF4\uAE30\uB85C \uB2EC\uB825\uC744 \uD3BC\uCE58\uACE0 \uB0A0\uC9DC\uBCC4 \uC0AC\uC9C4\uC744 \uD655\uC778\uD558\uC138\uC694."), step("admin-receipt-calendar", "\uB0A0\uC9DC\uBCC4 \uB4F1\uB85D \uD655\uC778", "\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uD574\uB2F9 \uB0A0\uC9DC\uC758 \uB0B4\uC5ED\uC774 \uC544\uB798\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4. \uC0AC\uC9C4 \uBCF4\uAE30\uB97C \uB204\uB974\uBA74 \uD06C\uAC8C \uBCFC \uC218 \uC788\uC5B4\uC694."), step("admin-receipt-download", "\uC870\uD68C \uC870\uAC74\uC73C\uB85C \uB2E4\uC6B4\uB85C\uB4DC", "\uC870\uD68C \uC601\uC218\uC99D ZIP \uB2E4\uC6B4\uB85C\uB4DC\uB97C \uB204\uB974\uBA74 \uC120\uD0DD\uD55C \uC6D4\xB7\uD300\xB7\uC9C1\uC6D0\uC758 \uC0AC\uC9C4\uACFC \uC2DD\uB300 \uBAA9\uB85D\uC744 \uBC1B\uC2B5\uB2C8\uB2E4. \uAE08\uC561\uB9CC \uC800\uC7A5\uD55C \uB0B4\uC5ED\uB3C4 \uBAA9\uB85D\uC5D0 \uD3EC\uD568\uB429\uB2C8\uB2E4.")] },
@@ -13132,7 +13134,7 @@ var topics = {
     login: { title: "\uB85C\uADF8\uC778\xB7\uB85C\uADF8\uC544\uC6C3", steps: [step("admin-login", "\uAD00\uB9AC\uC790\uB85C \uB4E4\uC5B4\uAC00\uAE30", "\uAD00\uB9AC\uC790 \uB85C\uADF8\uC778\uC744 \uC120\uD0DD\uD55C \uB4A4 \uAD00\uB9AC\uC790 \uC544\uC774\uB514\uC640 \uBE44\uBC00\uBC88\uD638\uB85C \uB4E4\uC5B4\uAC00\uC138\uC694."), step("logout", "\uC0AC\uC6A9 \uD6C4 \uB85C\uADF8\uC544\uC6C3", "\uC624\uB978\uCABD \uC704 \uB85C\uADF8\uC544\uC6C3\uC73C\uB85C \uC138\uC158\uC744 \uC885\uB8CC\uD558\uC138\uC694. \uC9C1\uC6D0 \uACC4\uC815\uC73C\uB85C \uBC14\uAFC0 \uB54C\uC5D0\uB3C4 \uBA3C\uC800 \uB85C\uADF8\uC544\uC6C3\uD569\uB2C8\uB2E4.")] }
   }
 };
-var routeTopic = { "meal-timer": "status", roster: "schedule", "team-calendar": "team", meals: "receipt", "team-snacks": "snacks", attendance: "daily", "admin-dashboard": "dashboard", feedback: "notes" };
+var routeTopic = { expenses: "expenses", "meal-timer": "status", roster: "schedule", "team-calendar": "team", meals: "receipt", "team-snacks": "snacks", attendance: "daily", "admin-dashboard": "dashboard", feedback: "notes" };
 var guideAssets = [...new Set(Object.values(topics).flatMap((role) => Object.values(role).flatMap((topic) => topic.steps.map((s3) => s3.image + ".png"))))];
 function mountPictureGuide({ role, view: view2, state = {} }) {
   const available = topics[role], initial = routeTopic[view2], sameView = state.role === role && state.view === view2;
@@ -13242,7 +13244,7 @@ function mountPictureGuide({ role, view: view2, state = {} }) {
 // review-share/src/preview-feedback.js
 var FEEDBACK_PREFIX = "bb-staff:public-preview:review-note:v1:";
 var FEEDBACK_MAX_BYTES = 2e7;
-var FEEDBACK_VIEWS = ["meal-timer", "roster", "team-calendar", "meals", "team-snacks", "attendance", "admin-dashboard", "sources", "feedback"];
+var FEEDBACK_VIEWS = ["meal-timer", "roster", "team-calendar", "meals", "team-snacks", "expenses", "attendance", "admin-dashboard", "sources", "feedback"];
 function validateFeedback(value, people) {
   if (!value || typeof value !== "object" || typeof value.id !== "string" || !/^note-[a-zA-Z0-9-]{1,80}$/.test(value.id) || !["employee", "admin"].includes(value.role) || !FEEDBACK_VIEWS.includes(value.view) || typeof value.text !== "string" || !value.text.trim() || value.text.length > 4e3 || typeof value.createdAt !== "string" || !Number.isFinite(Date.parse(value.createdAt))) throw new Error("\uBA54\uBAA8 \uD30C\uC77C\uC758 \uD615\uC2DD \uB610\uB294 \uB0B4\uC6A9\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
   const person = value.role === "employee" ? people.find((p3) => p3.personId === value.personId) : null;
@@ -13278,11 +13280,11 @@ function saveFeedback(storage, people, value) {
   storage.setItem(key, JSON.stringify(note));
   return true;
 }
-function parseFeedbackFile(text, people) {
-  if (typeof text !== "string" || new TextEncoder().encode(text).byteLength > FEEDBACK_MAX_BYTES) throw new Error("\uBA54\uBAA8 \uD30C\uC77C\uC740 20MB \uC774\uB0B4\uB85C \uAC00\uC838\uC640 \uC8FC\uC138\uC694.");
+function parseFeedbackFile(text2, people) {
+  if (typeof text2 !== "string" || new TextEncoder().encode(text2).byteLength > FEEDBACK_MAX_BYTES) throw new Error("\uBA54\uBAA8 \uD30C\uC77C\uC740 20MB \uC774\uB0B4\uB85C \uAC00\uC838\uC640 \uC8FC\uC138\uC694.");
   let file;
   try {
-    file = JSON.parse(text);
+    file = JSON.parse(text2);
   } catch {
     throw new Error("\uC62C\uBC14\uB978 \uBA54\uBAA8 JSON \uD30C\uC77C\uC744 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694.");
   }
@@ -13297,7 +13299,7 @@ function feedbackFile(notes) {
 
 // review-share/src/workspace-help.js
 var esc8 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
-var titles = { "meal-timer": "\uB0B4 \uD558\uB8E8", roster: "\uADFC\uBB34\uD45C", "team-calendar": "\uD300 \uC77C\uC815", meals: "\uC2DD\uB300", "team-snacks": "\uD300 \uAC04\uC2DD\uBE44", attendance: "OT\xB7\uC9C0\uAC01", "admin-dashboard": "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", sources: "\uAC80\uC218 \uC790\uB8CC", feedback: "\uBA54\uBAA8\uCDE8\uD569" };
+var titles = { expenses: "\uC9C0\uCD9C\uACB0\uC758\uC11C", "meal-timer": "\uB0B4 \uD558\uB8E8", roster: "\uADFC\uBB34\uD45C", "team-calendar": "\uD300 \uC77C\uC815", meals: "\uC2DD\uB300", "team-snacks": "\uD300 \uAC04\uC2DD\uBE44", attendance: "OT\xB7\uC9C0\uAC01", "admin-dashboard": "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", sources: "\uAC80\uC218 \uC790\uB8CC", feedback: "\uBA54\uBAA8\uCDE8\uD569" };
 var drafts = /* @__PURE__ */ new Map();
 var mine = (note, session) => note.role === session.role && (session.role === "admin" || note.personId === session.personId);
 function download(notes) {
@@ -13630,20 +13632,430 @@ function mountSnacks({ root, session, person, teams, months, month: month2, team
   } };
 }
 
+// review-share/src/expense-store.js
+var EXPENSE_KEY = "bb-staff:public-preview:expenses:v1";
+var EXPENSE_CONFIG_KEY = "bb-staff:public-preview:expense-approvers:v1";
+var STAGES = ["\uD300\uC7A5", "\uCD1D\uAD04\uC2E4\uC7A5", "\uB300\uD45C\uC774\uC0AC", "\uB300\uD45C\uC6D0\uC7A5"];
+var EXPENSE_CATEGORIES = ["\uCFE0\uD321", "\uC720\uB2C8\uD3FC", "\uBB34\uC804\uAE30", "\uBA85\uCC30", "\uC6B0\uCCB4\uAD6D", "\uAE30\uD0C0"];
+var fail = (message) => {
+  throw new Error(message);
+};
+var text = (v3, max, required = false) => typeof v3 === "string" && v3.length <= max && (!required || v3.trim().length > 0);
+var numeric = (v3) => Number.isSafeInteger(v3) && v3 >= 0 && v3 <= 1e8;
+var teamsOf = (people) => [...new Set(people.flatMap((p3) => p3.teams || []))];
+var one = (people) => people.length === 1 ? people[0].personId : "";
+function firstApproverCandidates(people, team2) {
+  const teamPeople = people.filter((p3) => p3.teams.includes(team2));
+  for (const titles2 of [["\uD300\uC7A5"], ["\uD30C\uD2B8\uC7A5"], ["\uCD1D\uAD04\uC2E4\uC7A5"], ["\uC2E4\uC7A5"]]) {
+    const rows = teamPeople.filter((p3) => titles2.includes(p3.jobTitle));
+    if (rows.length) return rows;
+  }
+  return [];
+}
+function defaultExpenseConfig(people) {
+  return { teams: Object.fromEntries(teamsOf(people).map((t3) => [t3, one(firstApproverCandidates(people, t3))])), general: one(people.filter((p3) => p3.jobTitle === "\uCD1D\uAD04\uC2E4\uC7A5")), ceo: one(people.filter((p3) => p3.jobTitle === "\uB300\uD45C\uC774\uC0AC")), director: one(people.filter((p3) => p3.teams.includes("\uB300\uD45C") && p3.jobTitle?.startsWith("Dr."))) };
+}
+function validateConfig(config2, people) {
+  if (!config2 || typeof config2 !== "object" || !config2.teams || typeof config2.teams !== "object" || Array.isArray(config2.teams)) fail("\uACB0\uC7AC \uB2F4\uB2F9\uC790 \uC124\uC815 \uD615\uC2DD\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694. \uAE30\uC874 \uC124\uC815\uC740 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4.");
+  for (const key of ["general", "ceo", "director"]) if (typeof config2[key] !== "string" || config2[key] && !people.some((p3) => p3.personId === config2[key])) fail("\uACB0\uC7AC \uB2F4\uB2F9\uC790\uB97C \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+  for (const [team2, id] of Object.entries(config2.teams)) if (!teamsOf(people).includes(team2) || typeof id !== "string" || id && !people.some((p3) => p3.personId === id && p3.teams.includes(team2))) fail("\uD300\uBCC4 \uACB0\uC7AC \uB2F4\uB2F9\uC790\uB97C \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+  return config2;
+}
+function readExpenseConfig(storage, people) {
+  const raw = storage.getItem(EXPENSE_CONFIG_KEY);
+  return raw === null ? defaultExpenseConfig(people) : validateConfig(JSON.parse(raw), people);
+}
+var locked = (key, work, locks = globalThis.navigator?.locks) => locks ? locks.request(key, async () => work()) : Promise.resolve().then(work);
+function saveExpenseConfig(storage, people, session, config2, expected, { locks, guard = () => {
+} } = {}) {
+  return locked(EXPENSE_CONFIG_KEY, () => {
+    guard();
+    if (session?.role !== "admin") fail("\uAD00\uB9AC\uC790\uB9CC \uACB0\uC7AC\uC120\uC744 \uC124\uC815\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.");
+    validateConfig(config2, people);
+    if (storage.getItem(EXPENSE_CONFIG_KEY) !== expected) fail("\uB2E4\uB978 \uD0ED\uC5D0\uC11C \uACB0\uC7AC\uC120\uC774 \uBCC0\uACBD\uB410\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C\uACE0\uCE68\uD574 \uC8FC\uC138\uC694.");
+    const raw = JSON.stringify(config2);
+    storage.setItem(EXPENSE_CONFIG_KEY, raw);
+    return raw;
+  }, locks);
+}
+function validateRecord(r3) {
+  if (!r3 || !text(r3.id, 100, true) || !text(r3.applicantId, 100, true) || !text(r3.name, 100, true) || !text(r3.team, 60, true) || !text(r3.item, 200, true) || !text(r3.note, 2e3) || !text(r3.payment, 60) || !text(r3.category, 40, true) || !text(r3.date, 10, true) || !numeric(r3.amount) || !numeric(r3.unitPrice) || !Number.isSafeInteger(r3.quantity) || r3.quantity < 1 || r3.quantity > 1e4 || r3.unitPrice * r3.quantity !== r3.amount || !Number.isInteger(r3.revision) || r3.revision < 1 || !["pending", "approved", "rejected", "cancelled"].includes(r3.status) || !Number.isInteger(r3.step) || r3.step < 0 || r3.step > 4 || !Array.isArray(r3.route) || r3.route.length !== 4 || !Array.isArray(r3.history) || r3.history.length > 20) fail("\uC9C0\uCD9C\uACB0\uC758\uC11C \uC800\uC7A5 \uD615\uC2DD\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694. \uAE30\uC874 \uB0B4\uC6A9\uC740 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4.");
+  if (r3.route.some((s3, i3) => !s3 || s3.label !== STAGES[i3] || !text(s3.personId, 100, true) || !text(s3.name, 100, true)) || r3.history.some((h3) => !h3 || !text(h3.actorId, 100, true) || !text(h3.at, 40, true) || !text(h3.note, 2e3) || !["submit", "approve", "reject", "cancel"].includes(h3.action) || !Number.isInteger(h3.step) || h3.step < 0 || h3.step > 4) || !text(r3.submittedAt, 40, true) || !text(r3.updatedAt, 40, true)) fail("\uC9C0\uCD9C\uACB0\uC758\uC11C \uACB0\uC7AC \uC774\uB825\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+  if (r3.status === "approved" && r3.step !== 4 || r3.status === "pending" && r3.step >= 4) fail("\uC9C0\uCD9C\uACB0\uC758\uC11C \uACB0\uC7AC \uC21C\uC11C\uB97C \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+  return r3;
+}
+function readExpenses(storage) {
+  const raw = storage.getItem(EXPENSE_KEY);
+  if (raw === null) return [];
+  const rows = JSON.parse(raw);
+  if (!Array.isArray(rows) || rows.length > 1e4) fail("\uC9C0\uCD9C\uACB0\uC758\uC11C \uC800\uC7A5 \uBAA9\uB85D\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+  rows.forEach(validateRecord);
+  if (new Set(rows.map((r3) => r3.id)).size !== rows.length) fail("\uC911\uBCF5\uB41C \uC9C0\uCD9C\uACB0\uC758\uC11C \uBC88\uD638\uB97C \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+  return rows;
+}
+function approvalRoute(people, config2, team2, firstId) {
+  validateConfig(config2, people);
+  const first = config2.teams[team2] || firstId;
+  if (!first || !config2.teams[team2] && !firstApproverCandidates(people, team2).some((p3) => p3.personId === first)) fail("1\uCC28 \uACB0\uC7AC \uB2F4\uB2F9\uC790\uB97C \uC120\uD0DD\uD574 \uC8FC\uC138\uC694. \uB2F4\uB2F9\uC790\uAC00 \uC5C6\uC73C\uBA74 \uAD00\uB9AC\uC790\uC5D0\uAC8C \uACB0\uC7AC\uC120 \uC124\uC815\uC744 \uC694\uCCAD\uD574 \uC8FC\uC138\uC694.");
+  return [first, config2.general, config2.ceo, config2.director].map((id, i3) => {
+    const person = people.find((p3) => p3.personId === id);
+    if (!person) fail(STAGES[i3] + " \uACB0\uC7AC \uB2F4\uB2F9\uC790\uB97C \uC124\uC815\uD574 \uC8FC\uC138\uC694.");
+    return { label: STAGES[i3], personId: id, name: person.name };
+  });
+}
+function submitExpense(storage, people, session, input, { locks, guard = () => {
+}, now = () => (/* @__PURE__ */ new Date()).toISOString() } = {}) {
+  return locked(EXPENSE_KEY, () => {
+    guard();
+    const person = session?.role === "employee" && people.find((p3) => p3.personId === session.personId);
+    if (!person) fail("\uC9C1\uC6D0 \uACC4\uC815\uC73C\uB85C \uC2E0\uCCAD\uD574 \uC8FC\uC138\uC694.");
+    if (!person.teams.includes(input.team)) fail("\uBCF8\uC778\uC774 \uC18C\uC18D\uB41C \uD300\uC73C\uB85C \uC2E0\uCCAD\uD574 \uC8FC\uC138\uC694.");
+    if (typeof input.date !== "string" || !/^2026-(10|11|12)-\d{2}$/.test(input.date) || (!Number.isFinite(Date.parse(input.date + "T12:00:00Z")) || (/* @__PURE__ */ new Date(input.date + "T12:00:00Z")).toISOString().slice(0, 10) !== input.date)) fail("2026\uB144 10\uC6D4 \uC774\uD6C4\uC758 \uC62C\uBC14\uB978 \uC0AC\uC6A9\uC77C\uC744 \uC785\uB825\uD574 \uC8FC\uC138\uC694.");
+    if (!text(input.item, 200, true) || !text(input.note ?? "", 2e3) || !text(input.payment ?? "", 60) || !EXPENSE_CATEGORIES.includes(input.category) || !numeric(input.unitPrice) || !Number.isSafeInteger(input.quantity) || input.quantity < 1 || input.quantity > 1e4 || !numeric(input.unitPrice * input.quantity)) fail("\uBB3C\uD488\xB7\uC0AC\uC6A9 \uBAA9\uC801, \uB2E8\uAC00\uC640 \uC218\uB7C9\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+    const route = approvalRoute(people, readExpenseConfig(storage, people), input.team, input.firstId);
+    if (route.some((s3) => s3.personId === person.personId)) fail("\uC2E0\uCCAD\uC790\uAC00 \uACB0\uC7AC\uC120\uC5D0 \uD3EC\uD568\uB418\uC5B4 \uC788\uC2B5\uB2C8\uB2E4. \uAD00\uB9AC\uC790\uC5D0\uAC8C \uB300\uCCB4 \uACB0\uC7AC\uC790 \uC9C0\uC815\uC744 \uC694\uCCAD\uD574 \uC8FC\uC138\uC694.");
+    const at = now(), row = { id: crypto.randomUUID(), revision: 1, applicantId: person.personId, name: person.name, team: input.team, date: input.date, item: input.item.trim(), category: input.category, unitPrice: input.unitPrice, quantity: input.quantity, amount: input.unitPrice * input.quantity, payment: (input.payment || "").trim(), note: (input.note || "").trim(), status: "pending", step: 0, route, submittedAt: at, updatedAt: at, history: [{ action: "submit", actorId: person.personId, step: 0, at, note: "" }] };
+    validateRecord(row);
+    const rows = readExpenses(storage);
+    rows.push(row);
+    storage.setItem(EXPENSE_KEY, JSON.stringify(rows));
+    return row;
+  }, locks);
+}
+function canDecide(row, session) {
+  return session?.role === "employee" && row.status === "pending" && row.applicantId !== session.personId && row.route[row.step]?.personId === session.personId;
+}
+function decideExpense(storage, session, { id, revision, action, note = "" }, { locks, guard = () => {
+}, now = () => (/* @__PURE__ */ new Date()).toISOString() } = {}) {
+  return locked(EXPENSE_KEY, () => {
+    guard();
+    const rows = readExpenses(storage), row = rows.find((r3) => r3.id === id);
+    if (!row || row.revision !== revision) fail("\uB2E4\uB978 \uD0ED\uC5D0\uC11C \uCC98\uB9AC\uB41C \uC2E0\uCCAD\uC785\uB2C8\uB2E4. \uBAA9\uB85D\uC744 \uC0C8\uB85C\uACE0\uCE68\uD574 \uC8FC\uC138\uC694.");
+    if (!["approve", "reject", "cancel"].includes(action) || !text(note, 2e3) || action === "reject" && !note.trim()) fail("\uBC18\uB824 \uC0AC\uC720\uB97C \uC785\uB825\uD574 \uC8FC\uC138\uC694.");
+    if (action === "cancel") {
+      if (session?.role !== "employee" || row.applicantId !== session.personId || row.status !== "pending") fail("\uC9C4\uD589 \uC911\uC778 \uBCF8\uC778 \uC2E0\uCCAD\uB9CC \uCDE8\uC18C\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.");
+      row.status = "cancelled";
+    } else {
+      if (!canDecide(row, session)) fail("\uD604\uC7AC \uB2E8\uACC4\uC758 \uACB0\uC7AC \uB2F4\uB2F9\uC790\uB9CC \uCC98\uB9AC\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.");
+      if (action === "reject") row.status = "rejected";
+    }
+    const at = now();
+    row.history.push({ action, actorId: session.personId, step: row.step, at, note: note.trim() });
+    if (action === "approve") {
+      row.step++;
+      if (row.step === 4) row.status = "approved";
+    }
+    row.revision++;
+    row.updatedAt = at;
+    validateRecord(row);
+    storage.setItem(EXPENSE_KEY, JSON.stringify(rows));
+    return row;
+  }, locks);
+}
+function visibleExpenses(rows, session) {
+  return session?.role === "admin" ? rows : session?.role === "employee" ? rows.filter((r3) => r3.applicantId === session.personId || r3.route.some((s3) => s3.personId === session.personId)) : [];
+}
+function expenseStatus(row) {
+  return { approved: "\uCD5C\uC885 \uC2B9\uC778", rejected: "\uBC18\uB824", cancelled: "\uC2E0\uCCAD \uCDE8\uC18C" }[row.status] || STAGES[row.step] + " \uACB0\uC7AC \uB300\uAE30";
+}
+function expenseCSV(headers, rows) {
+  const cell = (v3) => '"' + String(v3 ?? "").replace(/^[\s]*[=+@-]/, (m3) => "'" + m3).replaceAll('"', '""') + '"';
+  return "\uFEFF" + [headers, ...rows].map((r3) => r3.map(cell).join(",")).join("\r\n");
+}
+
+// review-share/src/expense-view.js
+var esc11 = (v3) => String(v3 ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
+var won3 = (v3) => Number(v3).toLocaleString("ko-KR") + "\uC6D0";
+var empty = (v3) => `<p class="empty">${esc11(v3)}</p>`;
+var stamp = (v3) => new Date(v3).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", hour12: false });
+var monthOf = (v3) => v3.slice(2, 4) + v3.slice(5, 7);
+var download2 = (name, headers, rows) => {
+  const url = URL.createObjectURL(new Blob([expenseCSV(headers, rows)], { type: "text/csv;charset=utf-8" })), a3 = document.createElement("a");
+  a3.href = url;
+  a3.download = name;
+  a3.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1e3);
+};
+var routeHTML = (route, step2 = -1, status = "pending") => `<ol class="expense-route">${STAGES.map((label, i3) => `<li class="${i3 < step2 ? "is-done" : i3 === step2 ? "is-current" : ""}"><span>${i3 + 1}. ${label}</span><strong>${esc11(route?.[i3]?.name || "\uB2F4\uB2F9\uC790 \uBBF8\uC124\uC815")}</strong><small>${i3 < step2 ? "\uC2B9\uC778 \uC644\uB8CC" : i3 === step2 ? status === "rejected" ? "\uBC18\uB824" : status === "cancelled" ? "\uCDE8\uC18C" : "\uD604\uC7AC \uACB0\uC7AC \uB2E8\uACC4" : "\uC21C\uC11C\uB300\uB85C \uACB0\uC7AC"}</small></li>`).join("")}</ol>`;
+function mountExpenses({ root, session, people, month: month2, toast: toast2, viewState = {}, guard: sessionGuard = () => {
+} }) {
+  const admin = session.role === "admin", person = people.find((p3) => p3.personId === session.personId), tabs = admin ? [["all", "\uC804\uCCB4 \uC2E0\uCCAD"], ["archive", "\uAE30\uC874 \uC9C0\uCD9C \uC790\uB8CC"], ["settings", "\uACB0\uC7AC\uC120 \uC124\uC815"]] : [["mine", "\uB0B4 \uC2E0\uCCAD"], ["inbox", "\uB0B4 \uACB0\uC7AC\uD568"]];
+  const decisionDrafts = /* @__PURE__ */ new Map(), openDetails = /* @__PURE__ */ new Set();
+  let disposed = false, busy = false, records = [], config2, configRaw, archive = null, archiveError = "", archiveLoading = false, page = 0;
+  let tab = tabs.some((t3) => t3[0] === viewState.tab) ? viewState.tab : tabs[0][0], selectedMonth = viewState.month || (month2 >= "2610" ? month2 : "2610"), team2 = viewState.team || "", search2 = viewState.search || "";
+  const guard = () => {
+    if (disposed) throw new Error("\uD654\uBA74\uC774 \uBC14\uB00C\uC5C8\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+    sessionGuard();
+  };
+  root.innerHTML = `<section class="panel expense-intro"><div><span class="expense-eyebrow">\uC9C0\uCD9C \uC2E0\uCCAD \xB7 \uC21C\uCC28 \uACB0\uC7AC</span><h2>\uC2E0\uCCAD\uBD80\uD130 \uCD5C\uC885 \uC2B9\uC778\uAE4C\uC9C0</h2><p>\uD300\uC7A5 \u2192 \uCD1D\uAD04\uC2E4\uC7A5 \u2192 \uB300\uD45C\uC774\uC0AC \u2192 \uB300\uD45C\uC6D0\uC7A5</p></div><span class="badge">4\uB2E8\uACC4 \uACB0\uC7AC</span></section><p class="notice">\uD604\uC7AC\uB294 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uACC4\uC815\uC744 \uBC14\uAFD4 \uCCB4\uD5D8\uD558\uB294 \uCD08\uC548\uC785\uB2C8\uB2E4. \uB2E4\uB978 \uAE30\uAE30\uB85C \uC2E0\uCCAD\xB7\uACB0\uC7AC\uAC00 \uC804\uB2EC\uB418\uC9C0\uB294 \uC54A\uC2B5\uB2C8\uB2E4.</p><nav class="expense-tabs" aria-label="\uC9C0\uCD9C\uACB0\uC758\uC11C \uBA54\uB274">${tabs.map(([id, title]) => `<button data-expense-tab="${id}" aria-pressed="${id === tab}">${title}</button>`).join("")}</nav><p class="expense-error" role="alert"></p><div class="expense-body"></div>`;
+  const body = root.querySelector(".expense-body"), error = root.querySelector(".expense-error");
+  const name = (id) => people.find((p3) => p3.personId === id)?.name || id;
+  const remember = () => Object.assign(viewState, { tab, month: selectedMonth, team: team2, search: search2 });
+  function setError(e3) {
+    error.textContent = e3.message || String(e3);
+  }
+  function read() {
+    records = visibleExpenses(readExpenses(localStorage), session);
+    configRaw = localStorage.getItem(EXPENSE_CONFIG_KEY);
+    config2 = readExpenseConfig(localStorage, people);
+  }
+  function filtered() {
+    return records.filter((r3) => monthOf(r3.date) === selectedMonth && (!team2 || r3.team === team2) && (!search2 || [r3.name, r3.item, r3.note, r3.team].some((v3) => v3.includes(search2))) && (admin || tab === "mine" ? admin || r3.applicantId === session.personId : r3.route.some((s3) => s3.personId === session.personId)));
+  }
+  function controls(teams) {
+    return `<div class="expense-filters"><label>\uC870\uD68C \uC6D4<select data-expense-month>${["2610", "2611", "2612"].map((m3) => `<option value="${m3}" ${m3 === selectedMonth ? "selected" : ""}>2026\uB144 ${Number(m3.slice(2))}\uC6D4</option>`).join("")}</select></label><label>\uD300 \uC120\uD0DD<select data-expense-team><option value="">\uC804\uCCB4 \uD300</option>${teams.map((t3) => `<option value="${esc11(t3)}" ${t3 === team2 ? "selected" : ""}>${esc11(t3)}</option>`).join("")}</select></label><label>\uB0B4\uC6A9 \uCC3E\uAE30<input type="search" data-expense-search value="${esc11(search2)}" maxlength="100" placeholder="\uC774\uB984, \uBB3C\uD488 \uB610\uB294 \uC0AC\uC6A9 \uBAA9\uC801"></label><button data-expense-export>\uC870\uD68C \uB0B4\uC5ED \uB2E4\uC6B4\uB85C\uB4DC</button></div>`;
+  }
+  function bindControls() {
+    body.querySelector("[data-expense-month]").onchange = (e3) => {
+      selectedMonth = e3.target.value;
+      page = 0;
+      remember();
+      paint();
+    };
+    body.querySelector("[data-expense-team]").onchange = (e3) => {
+      team2 = e3.target.value;
+      page = 0;
+      remember();
+      paint();
+    };
+    const input = body.querySelector("[data-expense-search]");
+    input.oninput = () => {
+      search2 = input.value;
+      page = 0;
+      remember();
+      paintList();
+    };
+    body.querySelector("[data-expense-export]").onclick = () => {
+      try {
+        if (tab === "archive") {
+          const rows = archiveRows();
+          download2(`\uAE30\uC874\uC9C0\uCD9C_${selectedMonth}.csv`, ["\uC6D4", "\uBD84\uB958", "\uBB3C\uD488", "\uC6D0\uBCF8 \uD300", "\uB2E8\uAC00", "\uC218\uB7C9", "\uC8FC\uBB38\uAE08\uC561", "\uD300\uC7A5\uD655\uC778", "\uC6D0\uBCF8 \uD589", "\uBA54\uBAA8"], rows.map((r3) => [r3.month, r3.category, r3.item, r3.rawTeam, r3.unitPrice, r3.quantity, r3.amount, r3.teamApproval, r3.source.row, Object.values(r3.notes || {}).join(" / ")]));
+        } else {
+          read();
+          const rows = filtered();
+          download2(`\uC9C0\uCD9C\uACB0\uC758\uC11C_${selectedMonth}.csv`, ["\uC0AC\uC6A9\uC77C", "\uC791\uC131\uC790", "\uD300", "\uBB3C\uD488\xB7\uC0AC\uC6A9 \uBAA9\uC801", "\uBD84\uB958", "\uB2E8\uAC00", "\uC218\uB7C9", "\uAE08\uC561", "\uCE74\uB4DC\xB7\uACB0\uC81C\uC218\uB2E8", "\uC0C1\uD0DC", "\uBA54\uBAA8"], rows.map((r3) => [r3.date, r3.name, r3.team, r3.item, r3.category, r3.unitPrice, r3.quantity, r3.amount, r3.payment, expenseStatus(r3), r3.note]));
+        }
+      } catch (e3) {
+        setError(e3);
+      }
+    };
+  }
+  function cards(rows) {
+    return rows.length ? rows.map((r3) => `<article class="expense-card" data-expense-id="${esc11(r3.id)}"><header><div><span class="expense-meta">${esc11(r3.date)} \xB7 ${esc11(r3.team)} \xB7 ${esc11(r3.name)}</span><h3>${esc11(r3.item)}</h3></div><strong>${won3(r3.amount)}</strong></header><div class="expense-card-status"><span class="badge">${esc11(expenseStatus(r3))}</span>${canDecide(r3, session) ? '<span class="expense-action-hint">\uB0B4 \uACB0\uC7AC \uCC28\uB840</span>' : ""}</div>${routeHTML(r3.route, r3.step, r3.status)}<details ${openDetails.has(r3.id) ? "open" : ""}><summary>\uC2E0\uCCAD \uB0B4\uC6A9 \xB7 \uACB0\uC7AC \uC774\uB825</summary><dl class="expense-details"><div><dt>\uBD84\uB958</dt><dd>${esc11(r3.category)}</dd></div><div><dt>\uB2E8\uAC00 \xD7 \uC218\uB7C9</dt><dd>${won3(r3.unitPrice)} \xD7 ${r3.quantity}</dd></div><div><dt>\uCE74\uB4DC\xB7\uACB0\uC81C\uC218\uB2E8</dt><dd>${esc11(r3.payment || "\uBBF8\uAE30\uC7AC")}</dd></div><div><dt>\uC2E0\uCCAD \uC2DC\uAC01</dt><dd>${esc11(stamp(r3.submittedAt))}</dd></div></dl><p class="expense-memo">${esc11(r3.note || "\uBA54\uBAA8 \uC5C6\uC74C")}</p><ol class="expense-history">${r3.history.map((h3) => `<li><strong>${esc11({ submit: "\uC2E0\uCCAD", approve: STAGES[h3.step] + " \uC2B9\uC778", reject: STAGES[h3.step] + " \uBC18\uB824", cancel: "\uC2E0\uCCAD \uCDE8\uC18C" }[h3.action])}</strong> \xB7 ${esc11(name(h3.actorId))}<small>${esc11(stamp(h3.at))}</small>${h3.note ? `<p>${esc11(h3.note)}</p>` : ""}</li>`).join("")}</ol></details>${canDecide(r3, session) ? `<form class="expense-decision" data-record="${esc11(r3.id)}" data-revision="${r3.revision}"><label>\uACB0\uC7AC \uC758\uACAC <small>\uBC18\uB824\uD560 \uB54C\uB294 \uC0AC\uC720\uB97C \uC801\uC5B4 \uC8FC\uC138\uC694.</small><textarea name="note" maxlength="2000" rows="2" placeholder="\uC758\uACAC \uB610\uB294 \uBC18\uB824 \uC0AC\uC720">${esc11(decisionDrafts.get(r3.id) || "")}</textarea></label><div class="form-actions"><button type="submit" name="decision" value="reject">\uBC18\uB824</button><button type="submit" name="decision" value="approve" class="primary">${esc11(STAGES[r3.step])} \uC2B9\uC778</button></div></form>` : !admin && r3.applicantId === session.personId && r3.status === "pending" ? `<button data-expense-cancel="${esc11(r3.id)}" data-revision="${r3.revision}">\uC2E0\uCCAD \uCDE8\uC18C</button>` : ""}</article>`).join("") : empty(tab === "inbox" ? "\uC774\uB2EC\uC5D0 \uB098\uC5D0\uAC8C \uBC30\uC815\uB41C \uACB0\uC7AC\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4." : "\uC774\uB2EC\uC5D0 \uB4F1\uB85D\uB41C \uC9C0\uCD9C \uC2E0\uCCAD\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.");
+  }
+  function paintList() {
+    if (disposed || tab === "settings") return;
+    const list = body.querySelector(".expense-list"), metrics = body.querySelector(".expense-metrics");
+    if (!list) return;
+    if (tab === "archive") {
+      if (archiveError) {
+        metrics.innerHTML = "";
+        list.innerHTML = `<p class="notice">${esc11(archiveError)}</p><button data-expense-retry>\uB2E4\uC2DC \uBD88\uB7EC\uC624\uAE30</button>`;
+        list.querySelector("button").onclick = loadArchive;
+        return;
+      }
+      if (!archive) {
+        list.innerHTML = empty("\uAE30\uC874 \uC9C0\uCD9C \uC790\uB8CC\uB97C \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4.");
+        return;
+      }
+      const rows = archiveRows(), all = archive.rows.filter((r3) => r3.month === selectedMonth), summary = archive.summaries.find((s3) => s3.month === selectedMonth);
+      page = Math.min(page, Math.max(0, Math.ceil(rows.length / 20) - 1));
+      metrics.innerHTML = `<div><span>\uC870\uD68C \uB0B4\uC5ED</span><strong>${rows.length}\uAC74</strong></div><div><span>\uC870\uD68C \uAE08\uC561</span><strong>${won3(rows.reduce((s3, r3) => s3 + r3.amount, 0))}</strong></div><div><span>\uC804\uCCB4 \uC6D4 \uD569\uACC4 \xB7 ${all.length}\uAC74</span><strong>${won3(summary?.sourceTotal ?? 0)}</strong></div>`;
+      list.innerHTML = rows.length ? rows.slice(page * 20, page * 20 + 20).map((r3) => {
+        const issues = archive.issues.filter((i3) => i3.id === r3.id);
+        return `<article class="expense-card expense-archive-card"><header><div><span class="expense-meta">${esc11(r3.category)} \xB7 ${esc11(r3.rawTeam || "\uD300 \uBBF8\uAE30\uC7AC")} \xB7 ${esc11(r3.source.tab)} / ${r3.source.row}\uD589</span><h3>${esc11(r3.item)}</h3></div><strong>${won3(r3.amount)}</strong></header><dl class="expense-details"><div><dt>\uB2E8\uAC00</dt><dd>${r3.unitPrice === null || r3.unitPrice === "" ? "\uBBF8\uAE30\uC7AC" : won3(r3.unitPrice)}</dd></div><div><dt>\uC218\uB7C9</dt><dd>${esc11(r3.quantity === null || r3.quantity === "" ? "\uBBF8\uAE30\uC7AC" : r3.quantity)}</dd></div><div><dt>\uC2DC\uD2B8 \uD300\uC7A5\uD655\uC778</dt><dd>${esc11(r3.teamApproval || "\uBBF8\uAE30\uC7AC")}</dd></div><div><dt>\uC0AC\uC6A9\uC77C \xB7 \uC791\uC131\uC790</dt><dd>\uC6D0\uBCF8\uC5D0 \uBBF8\uAE30\uC7AC</dd></div></dl>${issues.length ? `<p class="notice">${issues.map((i3) => esc11(i3.kind)).join(" \xB7 ")}. \uC8FC\uBB38\uAE08\uC561\uC740 \uC6D0\uBCF8\uAC12\uC744 \uC720\uC9C0\uD588\uC2B5\uB2C8\uB2E4.</p>` : ""}${Object.keys(r3.notes || {}).length ? `<details><summary>\uC6D0\uBCF8 \uBA54\uBAA8</summary><p class="expense-memo">${esc11(Object.entries(r3.notes).map(([cell, note]) => cell + " " + note).join("\n"))}</p></details>` : ""}</article>`;
+      }).join("") + `<div class="expense-pagination"><button data-expense-prev ${page === 0 ? "disabled" : ""}>\uC774\uC804</button><span>${page + 1} / ${Math.ceil(rows.length / 20)}</span><button data-expense-next ${(page + 1) * 20 >= rows.length ? "disabled" : ""}>\uB2E4\uC74C</button></div>` : empty("\uC774\uB2EC\uC5D0 \uC800\uC7A5\uB41C \uAE30\uC874 \uC9C0\uCD9C \uC790\uB8CC\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.");
+      list.querySelector("[data-expense-prev]")?.addEventListener("click", () => {
+        page--;
+        paintList();
+      });
+      list.querySelector("[data-expense-next]")?.addEventListener("click", () => {
+        page++;
+        paintList();
+      });
+    } else {
+      const rows = filtered().toSorted((a3, b3) => b3.submittedAt.localeCompare(a3.submittedAt));
+      metrics.innerHTML = `<div><span>\uC870\uD68C \uC2E0\uCCAD</span><strong>${rows.length}\uAC74</strong></div><div><span>\uC2E0\uCCAD \uAE08\uC561</span><strong>${won3(rows.reduce((s3, r3) => s3 + r3.amount, 0))}</strong></div><div><span>${tab === "inbox" ? "\uB0B4 \uCC28\uB840" : "\uACB0\uC7AC \uC9C4\uD589 \uC911"}</span><strong>${rows.filter((r3) => tab === "inbox" ? canDecide(r3, session) : r3.status === "pending").length}\uAC74</strong></div>`;
+      list.querySelectorAll("[data-expense-id]").forEach((card) => {
+        const id = card.dataset.expenseId;
+        if (card.querySelector("details")?.open) openDetails.add(id);
+        else openDetails.delete(id);
+      });
+      list.innerHTML = cards(rows);
+      list.querySelectorAll(".expense-decision textarea").forEach((input) => input.oninput = () => decisionDrafts.set(input.closest("form").dataset.record, input.value));
+      list.querySelectorAll(".expense-decision").forEach((form) => form.onsubmit = (event) => {
+        event.preventDefault();
+        mutate(() => decideExpense(localStorage, session, { id: form.dataset.record, revision: Number(form.dataset.revision), action: event.submitter.value, note: form.elements.note.value }, { guard }), "\uACB0\uC7AC \uB0B4\uC6A9\uC744 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4.");
+      });
+      list.querySelectorAll("[data-expense-cancel]").forEach((button) => button.onclick = () => {
+        if (confirm("\uC774 \uC9C0\uCD9C \uC2E0\uCCAD\uC744 \uCDE8\uC18C\uD560\uAE4C\uC694?")) mutate(() => decideExpense(localStorage, session, { id: button.dataset.expenseCancel, revision: Number(button.dataset.revision), action: "cancel" }, { guard }), "\uC2E0\uCCAD\uC744 \uCDE8\uC18C\uD588\uC2B5\uB2C8\uB2E4.");
+      });
+    }
+  }
+  const archiveRows = () => archive.rows.filter((r3) => r3.month === selectedMonth && (!team2 || r3.rawTeam === team2) && (!search2 || [r3.item, r3.rawTeam, r3.category].some((v3) => v3?.includes(search2))));
+  async function loadArchive() {
+    if (archiveLoading || disposed) return;
+    archiveLoading = true;
+    archiveError = "";
+    paintList();
+    try {
+      const response = await fetch("./expense-data.json");
+      if (!response.ok) throw new Error("\uAE30\uC874 \uC9C0\uCD9C \uC790\uB8CC \uC751\uB2F5 " + response.status);
+      const data2 = await response.json();
+      if (!Array.isArray(data2.rows) || !Array.isArray(data2.summaries) || !Array.isArray(data2.issues)) throw new Error("\uAE30\uC874 \uC9C0\uCD9C \uC790\uB8CC \uD615\uC2DD\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+      if (disposed) return;
+      archive = data2;
+      if (tab === "archive") paint();
+    } catch (e3) {
+      if (!disposed) {
+        archiveError = e3.message;
+        paintList();
+      }
+    } finally {
+      archiveLoading = false;
+    }
+  }
+  function formHTML() {
+    const prefix = `20${selectedMonth.slice(0, 2)}-${selectedMonth.slice(2)}`, today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(/* @__PURE__ */ new Date()), date = today.startsWith(prefix) ? today : prefix + "-01";
+    return `<details class="expense-register" ${records.some((r3) => r3.applicantId === person.personId) ? "" : "open"}><summary>+ \uC9C0\uCD9C\uACB0\uC758\uC11C \uC2E0\uCCAD</summary><form data-expense-form><p>\uC791\uC131\uC790 <strong>${esc11(person.name)}</strong> \xB7 \uC544\uB798 \uACB0\uC7AC\uC120\uC744 \uD655\uC778\uD55C \uB4A4 \uC2E0\uCCAD\uD574 \uC8FC\uC138\uC694.</p><div class="form-grid"><label>\uC0AC\uC6A9 \uC608\uC815\uC77C \xB7 \uC0AC\uC6A9\uC77C<input type="date" name="date" min="2026-10-01" max="2026-12-31" value="${date}" required></label><label>\uC2E0\uCCAD \uD300<select name="team">${person.teams.map((t3) => `<option value="${esc11(t3)}">${esc11(t3)}</option>`).join("")}</select></label><label>\uBD84\uB958<select name="category">${EXPENSE_CATEGORIES.map((t3) => `<option>${t3}</option>`).join("")}</select></label><label>\uBB3C\uD488 \xB7 \uC0AC\uC6A9 \uBAA9\uC801<input name="item" required maxlength="200" placeholder="\uC608: \uD300 \uC5C5\uBB34\uC6A9 \uD0A4\uBCF4\uB4DC \uAD6C\uB9E4"></label><label>\uB2E8\uAC00 (\uC6D0)<input name="unitPrice" type="number" min="0" max="100000000" step="1" inputmode="numeric" required placeholder="\uC608: 25000"></label><label>\uC218\uB7C9<input name="quantity" type="number" min="1" max="10000" step="1" value="1" required></label><label>\uCE74\uB4DC \xB7 \uACB0\uC81C\uC218\uB2E8 (\uC120\uD0DD)<input name="payment" maxlength="60" placeholder="\uC608: \uAE30\uC5C5\uCE74\uB4DC"></label><label data-first-label>1\uCC28 \uACB0\uC7AC \uB2F4\uB2F9\uC790<select name="firstId"></select></label></div><label>\uBA54\uBAA8 (\uC120\uD0DD)<textarea name="note" maxlength="2000" rows="3" placeholder="\uD655\uC778\uD560 \uB0B4\uC6A9\uC744 \uB0A8\uACA8 \uC8FC\uC138\uC694."></textarea></label><div class="expense-form-route"></div><div class="expense-submit-row"><div><span>\uC2E0\uCCAD \uAE08\uC561</span><strong data-expense-amount>0\uC6D0</strong></div><button type="submit" class="primary">\uC2E0\uCCAD\uD558\uAE30</button></div><p class="form-error" role="alert"></p></form></details>`;
+  }
+  function bindForm() {
+    const form = body.querySelector("[data-expense-form]");
+    if (!form) return;
+    const route = () => {
+      const t3 = form.elements.team.value, fixed = config2.teams[t3], candidates = fixed ? people.filter((p3) => p3.personId === fixed) : firstApproverCandidates(people, t3), select = form.elements.firstId, old = select.value;
+      select.innerHTML = (candidates.length !== 1 ? '<option value="">\uB2F4\uB2F9\uC790 \uC120\uD0DD</option>' : "") + candidates.map((p3) => `<option value="${esc11(p3.personId)}">${esc11(p3.name)} \xB7 ${esc11(p3.jobTitle || "\uB2F4\uB2F9\uC790")}</option>`).join("");
+      if (candidates.some((p3) => p3.personId === old)) select.value = old;
+      select.required = true;
+      select.disabled = !!fixed;
+      preview();
+    };
+    const preview = () => {
+      const ids = [form.elements.firstId.value, config2.general, config2.ceo, config2.director];
+      form.querySelector(".expense-form-route").innerHTML = routeHTML(ids.map((id) => people.find((p3) => p3.personId === id)));
+    };
+    form.elements.team.onchange = route;
+    form.elements.firstId.onchange = preview;
+    route();
+    const total = () => {
+      const amount = Number(form.elements.unitPrice.value) * Number(form.elements.quantity.value);
+      form.querySelector("[data-expense-amount]").textContent = Number.isSafeInteger(amount) && amount >= 0 && amount <= 1e8 ? won3(amount) : "\uAE08\uC561 \uD655\uC778 \uD544\uC694";
+    };
+    form.elements.unitPrice.oninput = total;
+    form.elements.quantity.oninput = total;
+    form.onsubmit = (event) => {
+      event.preventDefault();
+      const f3 = new FormData(form);
+      mutate(() => submitExpense(localStorage, people, session, { date: f3.get("date"), team: f3.get("team"), category: f3.get("category"), item: f3.get("item"), unitPrice: Number(f3.get("unitPrice")), quantity: Number(f3.get("quantity")), payment: f3.get("payment"), note: f3.get("note"), firstId: form.elements.firstId.value }, { guard }), "\uC9C0\uCD9C\uACB0\uC758\uC11C\uB97C \uC2E0\uCCAD\uD588\uC2B5\uB2C8\uB2E4.", form.querySelector(".form-error"));
+    };
+  }
+  function settings() {
+    const teams = [...new Set(people.flatMap((p3) => p3.teams))], options = (list, id) => '<option value="">\uBBF8\uC124\uC815</option>' + list.map((p3) => `<option value="${esc11(p3.personId)}" ${p3.personId === id ? "selected" : ""}>${esc11(p3.name)} \xB7 ${esc11(p3.rawTeam)} \xB7 ${esc11(p3.jobTitle || "\uC9C1\uCC45 \uBBF8\uAE30\uC7AC")}</option>`).join("");
+    body.innerHTML = `<section class="panel expense-settings"><h2>\uACB0\uC7AC \uB2F4\uB2F9\uC790 \uC124\uC815</h2><p>\uC2DC\uD2B8 \uC9C1\uCC45\uC73C\uB85C \uD655\uC778\uB418\uB294 \uB2F4\uB2F9\uC790\uB97C \uAE30\uBCF8 \uD45C\uC2DC\uD588\uC2B5\uB2C8\uB2E4. \uC5EC\uB7EC \uD6C4\uBCF4\uAC00 \uC788\uC73C\uBA74 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694. \uBCC0\uACBD \uC0AC\uD56D\uC740 \uC0C8 \uC2E0\uCCAD\uBD80\uD130 \uC801\uC6A9\uB418\uBA70 \uC774\uBBF8 \uC2E0\uCCAD\uB41C \uACB0\uC7AC\uC120\uC740 \uC720\uC9C0\uB429\uB2C8\uB2E4.</p><p>\uC2E0\uCCAD\uC790 \uBCF8\uC778\uC774 \uACB0\uC7AC\uC120\uC5D0 \uC788\uC73C\uBA74 \uC2E0\uCCAD\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. \uD574\uB2F9 \uAC74\uC758 \uB300\uCCB4 \uACB0\uC7AC\uC790\uB97C \uC9C0\uC815\uD55C \uB4A4 \uC2E0\uCCAD\uD574 \uC8FC\uC138\uC694.</p><form data-expense-settings><h3>1\uCC28 \xB7 \uD300\uBCC4 \uB2F4\uB2F9\uC790</h3><div class="form-grid">${teams.map((t3) => `<label>${esc11(t3)}<select data-config-team="${esc11(t3)}">${options(people.filter((p3) => p3.teams.includes(t3)), config2.teams[t3])}</select></label>`).join("")}</div><h3>2\uCC28 \u2192 3\uCC28 \u2192 4\uCC28 \uB2F4\uB2F9\uC790</h3><div class="form-grid">${[["general", "\uCD1D\uAD04\uC2E4\uC7A5"], ["ceo", "\uB300\uD45C\uC774\uC0AC"], ["director", "\uB300\uD45C\uC6D0\uC7A5"]].map(([key, title]) => `<label>${title}<select name="${key}">${options(people, config2[key])}</select></label>`).join("")}</div><div class="form-actions"><button type="submit" class="primary">\uACB0\uC7AC\uC120 \uC800\uC7A5</button></div><p class="form-error" role="alert"></p></form></section>`;
+    const form = body.querySelector("form"), expected = configRaw;
+    form.onsubmit = (event) => {
+      event.preventDefault();
+      const next = { teams: Object.fromEntries([...form.querySelectorAll("[data-config-team]")].map((s3) => [s3.dataset.configTeam, s3.value])), general: form.elements.general.value, ceo: form.elements.ceo.value, director: form.elements.director.value };
+      mutate(() => saveExpenseConfig(localStorage, people, session, next, expected, { guard }), "\uC0C8 \uC2E0\uCCAD\uC5D0 \uC801\uC6A9\uD560 \uACB0\uC7AC\uC120\uC744 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4.", form.querySelector(".form-error"));
+    };
+  }
+  function paint() {
+    if (disposed) return;
+    remember();
+    root.querySelectorAll("[data-expense-tab]").forEach((b3) => {
+      b3.setAttribute("aria-pressed", String(b3.dataset.expenseTab === tab));
+      b3.disabled = busy;
+    });
+    if (tab === "settings") {
+      settings();
+      return;
+    }
+    const teams = tab === "archive" ? [...new Set((archive?.rows || []).map((r3) => r3.rawTeam).filter(Boolean))] : admin ? [...new Set(people.flatMap((p3) => p3.teams))] : [...new Set(records.flatMap((r3) => r3.team).concat(person.teams))];
+    if (team2 && !teams.includes(team2)) team2 = "";
+    body.innerHTML = (tab === "mine" ? `<section class="panel">${formHTML()}</section>` : "") + `<section class="panel expense-records">${tab === "archive" ? `<div class="expense-archive-note"><h2>${archive?.preview ? "\uACF5\uAC1C \uAC80\uC218\uC6A9 \uC608\uC2DC" : "\uC2DC\uD2B8\uC5D0\uC11C \uAC00\uC838\uC628 \uAE30\uC874"} \uC9C0\uCD9C \uC790\uB8CC</h2><p>2026\uB144 10\uC6D4\uBD80\uD130 \uBCF4\uC874\uD55C \uC7A5\uBD80\uC785\uB2C8\uB2E4. \uC0AC\uC6A9\uC77C\xB7\uC791\uC131\uC790\uAC00 \uC5C6\uB294 \uD56D\uBAA9\uC740 \uC784\uC758\uB85C \uCC44\uC6B0\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uC2DC\uD2B8\uC758 \uD300\uC7A5 \uD655\uC778 \uD45C\uC2DC\uB294 \uC774 \uC571\uC758 4\uB2E8\uACC4 \uCD5C\uC885 \uC2B9\uC778\uACFC \uBCC4\uAC1C\uC785\uB2C8\uB2E4.</p></div>` : ""}${controls(teams)}<div class="expense-metrics"></div><div class="expense-list"></div></section>`;
+    bindControls();
+    bindForm();
+    paintList();
+    if (tab === "archive" && !archive && !archiveError) loadArchive();
+  }
+  async function mutate(work, message, target = error) {
+    if (busy || disposed) return;
+    busy = true;
+    target.textContent = "";
+    root.querySelectorAll("button").forEach((b3) => b3.disabled = true);
+    try {
+      const result = await work();
+      if (disposed) return;
+      if (result?.history?.length === 1) selectedMonth = monthOf(result.date);
+      read();
+      paint();
+      toast2(message);
+    } catch (e3) {
+      if (!disposed) target.textContent = e3.message;
+    } finally {
+      busy = false;
+      if (!disposed) {
+        root.querySelectorAll("button").forEach((b3) => b3.disabled = false);
+        if (tab === "archive") paintList();
+      }
+    }
+  }
+  root.querySelectorAll("[data-expense-tab]").forEach((button) => button.onclick = () => {
+    if (busy) return;
+    tab = button.dataset.expenseTab;
+    team2 = "";
+    page = 0;
+    error.textContent = "";
+    try {
+      read();
+      paint();
+    } catch (e3) {
+      setError(e3);
+      body.innerHTML = empty("\uC800\uC7A5\uB41C \uB0B4\uC6A9\uC740 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uD655\uC778 \uD6C4 \uB2E4\uC2DC \uC5F4\uC5B4 \uC8FC\uC138\uC694.");
+    }
+  });
+  function refresh() {
+    if (disposed) return;
+    try {
+      read();
+      if (body.querySelector(".expense-decision") && document.activeElement?.closest(".expense-decision")) {
+        error.textContent = "\uB2E4\uB978 \uD0ED\uC5D0\uC11C \uAE30\uB85D\uC774 \uBC14\uB00C\uC5C8\uC2B5\uB2C8\uB2E4. \uC791\uC131 \uC911\uC778 \uC758\uACAC\uC740 \uC720\uC9C0\uD588\uC2B5\uB2C8\uB2E4. \uB0B4 \uACB0\uC7AC\uD568\uC744 \uB2E4\uC2DC \uB20C\uB7EC \uCD5C\uC2E0 \uC0C1\uD0DC\uB97C \uD655\uC778\uD574 \uC8FC\uC138\uC694.";
+        return;
+      }
+      error.textContent = "";
+      if (tab === "settings" || tab === "mine") error.textContent = "\uB2E4\uB978 \uD0ED\uC5D0\uC11C \uAE30\uB85D \uB610\uB294 \uACB0\uC7AC\uC120\uC774 \uBC14\uB00C\uC5C8\uC2B5\uB2C8\uB2E4. \uC81C\uCD9C \uC2DC \uCD5C\uC2E0 \uC124\uC815\uC744 \uC801\uC6A9\uD569\uB2C8\uB2E4. \uACB0\uC7AC\uC120 \uC124\uC815\uC740 \uB2E4\uC2DC \uC5F4\uC5B4 \uC8FC\uC138\uC694.";
+      paintList();
+    } catch (e3) {
+      setError(e3);
+      body.querySelector(".expense-list")?.replaceChildren();
+    }
+  }
+  try {
+    read();
+    paint();
+  } catch (e3) {
+    setError(e3);
+    body.innerHTML = empty("\uC800\uC7A5\uB41C \uB0B4\uC6A9\uC740 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uD655\uC778 \uD6C4 \uB2E4\uC2DC \uC5F4\uC5B4 \uC8FC\uC138\uC694.");
+  }
+  return { refresh, dispose() {
+    disposed = true;
+  } };
+}
+
 // review-share/src/clinic-app.js
 initializeTheme();
 var app = document.querySelector("#app");
-var esc11 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
+var esc12 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
 var number = (value) => typeof value === "number" ? value.toLocaleString("ko-KR") : String(value ?? "");
 var display = (value) => value === "" || value === void 0 || value === null ? "\u2014" : number(value);
 var localDate = (date = /* @__PURE__ */ new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-var monthOf = (date) => date.slice(2, 4) + date.slice(5, 7);
+var monthOf2 = (date) => date.slice(2, 4) + date.slice(5, 7);
 var dateOf2 = (month2, day = 1) => `20${month2.slice(0, 2)}-${month2.slice(2)}-${String(day).padStart(2, "0")}`;
 var monthText = (month2) => `20${month2.slice(0, 2)}\uB144 ${Number(month2.slice(2))}\uC6D4`;
-var menus = [["feedback", "\uBA54\uBAA8\uCDE8\uD569", "\uC9C1\uC6D0\xB7\uAD00\uB9AC\uC790 \uC758\uACAC\uC744 \uD55C\uACF3\uC5D0", "file"], ["admin-dashboard", "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", "\uC9C1\uC6D0 \uC0C1\uD0DC\uC640 \uC6D4\uAC04 \uAE30\uB85D", "chart"], ["team-calendar", "\uD300 \uC77C\uC815", "\uD734\uBB34\uC640 \uD300 \uC77C\uC815\uC744 \uD55C\uB208\uC5D0", "calendar"], ["roster", "\uC9C1\uC6D0\uBCC4 \uADFC\uBB34\uD45C", "\uC9C1\uC6D0 \xD7 \uB0A0\uC9DC\uB85C \uBE44\uAD50", "grid"], ["meal-timer", "\uB0B4 \uD558\uB8E8", "\uADFC\uBB34 \uC0C1\uD0DC\uC640 \uB0B4 \uC5C5\uBB34", "clock"], ["meals", "\uC2DD\uB300", "\uC0AC\uC6A9 \uD55C\uB3C4\uC640 \uC2DD\uB300 \uAE30\uB85D", "meal"], ["team-snacks", "\uD300 \uAC04\uC2DD\uBE44", "\uD300\uBCC4 \uAC04\uC2DD \uC8FC\uBB38\uACFC \uC0AC\uC6A9 \uAE08\uC561", "meal"], ["attendance", "OT\xB7\uC9C0\uAC01", "\uC774\uC6D4\uBD80\uD130 \uC0AC\uC6A9\xB7\uB9C8\uAC10\uAE4C\uC9C0", "chart"], ["sources", "\uC608\uC2DC\xB7\uAC80\uC99D", "37\uAC1C \uD0ED\uACFC \uC608\uC2DC \uAE30\uB85D \uD655\uC778", "file"]];
+var menus = [["feedback", "\uBA54\uBAA8\uCDE8\uD569", "\uC9C1\uC6D0\xB7\uAD00\uB9AC\uC790 \uC758\uACAC\uC744 \uD55C\uACF3\uC5D0", "file"], ["admin-dashboard", "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", "\uC9C1\uC6D0 \uC0C1\uD0DC\uC640 \uC6D4\uAC04 \uAE30\uB85D", "chart"], ["team-calendar", "\uD300 \uC77C\uC815", "\uD734\uBB34\uC640 \uD300 \uC77C\uC815\uC744 \uD55C\uB208\uC5D0", "calendar"], ["roster", "\uC9C1\uC6D0\uBCC4 \uADFC\uBB34\uD45C", "\uC9C1\uC6D0 \xD7 \uB0A0\uC9DC\uB85C \uBE44\uAD50", "grid"], ["meal-timer", "\uB0B4 \uD558\uB8E8", "\uADFC\uBB34 \uC0C1\uD0DC\uC640 \uB0B4 \uC5C5\uBB34", "clock"], ["meals", "\uC2DD\uB300", "\uC0AC\uC6A9 \uD55C\uB3C4\uC640 \uC2DD\uB300 \uAE30\uB85D", "meal"], ["team-snacks", "\uD300 \uAC04\uC2DD\uBE44", "\uD300\uBCC4 \uAC04\uC2DD \uC8FC\uBB38\uACFC \uC0AC\uC6A9 \uAE08\uC561", "meal"], ["expenses", "\uC9C0\uCD9C\uACB0\uC758\uC11C", "\uC2E0\uCCAD\uACFC 4\uB2E8\uACC4 \uACB0\uC7AC", "file"], ["attendance", "OT\xB7\uC9C0\uAC01", "\uC774\uC6D4\uBD80\uD130 \uC0AC\uC6A9\xB7\uB9C8\uAC10\uAE4C\uC9C0", "chart"], ["sources", "\uC608\uC2DC\xB7\uAC80\uC99D", "37\uAC1C \uD0ED\uACFC \uC608\uC2DC \uAE30\uB85D \uD655\uC778", "file"]];
 var paths = { calendar: "M5 3v4M19 3v4M3 10h18M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2ZM7 14h2m3 0h2m3 0h1M7 18h2m3 0h2", grid: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z", clock: "M12 8v5l3 2M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z", meal: "M4 3v7m3-7v7M2 7h7M5.5 10v11M18 3c-4 4-4 9 0 9V3Zm0 9v9", chart: "M3 3v18h18M7 17v-6m5 6V7m5 10V4", file: "M14 3H5v18h14V8l-5-5Zm0 0v5h5M8 12h8m-8 4h8" };
 var icon = (key) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[key] || paths.file}"/></svg>`;
-var badge = (label, cls = "") => `<span class="badge ${cls}">${esc11(label)}</span>`;
+var badge = (label, cls = "") => `<span class="badge ${cls}">${esc12(label)}</span>`;
 var swatch = (color) => /^[A-Fa-f0-9]{6}$/.test(color || "") ? `<i class="swatch" style="--source-color:#${color}" title="\uC608\uC2DC \uC0C9\uC0C1 #${color}" aria-label="\uC608\uC2DC \uC0C9\uC0C1 #${color}"></i>` : "";
 var data;
 var calendar;
@@ -13663,6 +14075,7 @@ var receiptViewState = {};
 var feedbackViewState = {};
 var guideViewState = {};
 var dutyViewState = {};
+var expenseViewState = {};
 var LOCAL_KEY = "bb-staff:public-preview:v1";
 var authSession = null;
 var employees = [];
@@ -13676,6 +14089,7 @@ var activityKind = "meal";
 var signedInPerson;
 var receiptController;
 var snackController;
+var expenseController;
 function changeSession(session) {
   sessionRevision++;
   clearTimeout(searchTimeout);
@@ -13696,8 +14110,8 @@ function changeSession(session) {
   sourceQuery = "";
   sourceTab = "";
   sourcePage = 0;
-  month = data.months.includes(monthOf(localDate())) ? monthOf(localDate()) : data.months.at(-1);
-  for (const state of [receiptViewState, feedbackViewState, guideViewState, dutyViewState]) for (const key of Object.keys(state)) delete state[key];
+  month = data.months.includes(monthOf2(localDate())) ? monthOf2(localDate()) : data.months.at(-1);
+  for (const state of [receiptViewState, feedbackViewState, guideViewState, dutyViewState, expenseViewState]) for (const key of Object.keys(state)) delete state[key];
   try {
     if (session) sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
     else sessionStorage.removeItem(SESSION_KEY);
@@ -13746,13 +14160,13 @@ async function saveDraft(row, validate = () => {
   return navigator.locks ? navigator.locks.request(LOCAL_KEY, work) : work();
 }
 function sourceButton(source, label = "\uC608\uC2DC \uBCF4\uAE30") {
-  return source ? `<button class="text-button" data-source="${esc11(JSON.stringify(source))}">${esc11(label)} \u2197</button>` : "";
+  return source ? `<button class="text-button" data-source="${esc12(JSON.stringify(source))}">${esc12(label)} \u2197</button>` : "";
 }
 function metric2(label, value, detail = "") {
-  return `<div class="metric"><span>${esc11(label)}</span><strong>${esc11(value)}</strong><small>${esc11(detail)}</small></div>`;
+  return `<div class="metric"><span>${esc12(label)}</span><strong>${esc12(value)}</strong><small>${esc12(detail)}</small></div>`;
 }
-function empty(message = "\uC120\uD0DD\uD55C \uC870\uAC74\uC758 \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.") {
-  return `<div class="empty">${esc11(message)}</div>`;
+function empty2(message = "\uC120\uD0DD\uD55C \uC870\uAC74\uC758 \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.") {
+  return `<div class="empty">${esc12(message)}</div>`;
 }
 function teamOptions() {
   return [...new Set([...data.roster, ...data.mealRows, ...data.otRows].filter((r3) => r3.month === month).flatMap((r3) => r3.teams))];
@@ -13761,10 +14175,10 @@ function shell() {
   const personal = previewMode === "employee", titles2 = { roster: ["\uB0B4 \uADFC\uBB34\uD45C", "\uB098\uC758 \uD734\uBB34\uC640 \uADFC\uBB34 \uC77C\uC815"], meals: ["\uB0B4 \uC2DD\uB300", "\uC0AC\uC6A9 \uD55C\uB3C4\uC640 \uC794\uC561, \uC2DD\uB300 \uAE30\uB85D"], attendance: ["\uB0B4 OT\xB7\uC9C0\uAC01", "\uB098\uC758 \uC6D4\uBCC4 \uAE30\uB85D"] };
   const shownMenus = menus.map((m3) => personal && titles2[m3[0]] ? [m3[0], ...titles2[m3[0]], m3[3]] : m3), current = shownMenus.find((m3) => m3[0] === view), teams = teamOptions(), visibleMenus = shownMenus.filter((m3) => personal ? !["admin-dashboard", "sources", "feedback"].includes(m3[0]) : m3[0] !== "meal-timer");
   if (personal) {
-    const order = ["meal-timer", "roster", "team-calendar", "meals", "team-snacks", "attendance"];
+    const order = ["meal-timer", "roster", "team-calendar", "meals", "team-snacks", "expenses", "attendance"];
     visibleMenus.sort((a3, b3) => order.indexOf(a3[0]) - order.indexOf(b3[0]));
   }
-  app.innerHTML = `<aside class="sidebar"><a class="brand" href="#/${personal ? "meal-timer" : "admin-dashboard"}"><img class="brand-mark" src="./assets/clinic-logo.png" width="52" height="52" alt="\uBDF0\uD2F0\uBE14\uB77C\uC378 \uB85C\uACE0"><span>\uBDF0\uD2F0\uBE14\uB77C\uC378<small>\uD568\uAED8\uD558\uB294 \uD558\uB8E8</small></span></a><div class="nav-caption">${personal ? "\uB098\uC758 \uC5C5\uBB34" : "\uC9C1\uC6D0 \uC5C5\uBB34 \uAD00\uB9AC"}</div><nav aria-label="\uC9C1\uC6D0 \uC5C5\uBB34 \uBA54\uB274">${visibleMenus.map(([id, title, desc, key]) => `<a class="nav-card ${view === id ? "selected" : ""}" href="#/${id}" ${view === id ? 'aria-current="page"' : ""}>${icon(key)}<span><strong>${title}</strong><small>${desc}</small></span><span class="nav-arrow">\u203A</span></a>`).join("")}</nav><div class="sidebar-note"><span class="status-dot"></span>${personal ? esc11(signedInPerson.name) + " \uB2D8" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}<small>${personal ? esc11(signedInPerson.rawTeam) + " \xB7 \uD14C\uC2A4\uD2B8 \uB85C\uADF8\uC778" : "\uC9C1\uC6D0 \uC0C1\uD0DC \xB7 \uAE30\uB85D \xB7 \uC601\uC218\uC99D"}</small></div></aside><div class="main"><header class="topbar"><span class="login-role-badge">${personal ? "\uC9C1\uC6D0 \uD654\uBA74" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}</span><span class="signed-in-person">${personal ? esc11(signedInPerson.name) + " \uB2D8 \xB7 " + esc11(signedInPerson.rawTeam) : "\uBDF0\uD2F0\uBE14\uB77C\uC378 \uAD00\uB9AC\uC790"}</span>${themeControl()}<span class="date-label">${new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "long" }).format(/* @__PURE__ */ new Date())}</span><button type="button" class="logout-button" data-action="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v16h5M14 8l4 4-4 4M8 12h12"/></svg><span>\uB85C\uADF8\uC544\uC6C3</span></button></header><main><div id="workspace-help"></div><div class="page-heading"><div><h1>${current[1]}</h1><p>${current[2]}</p></div>${view === "admin-dashboard" ? '<button class="primary" data-action="staff-leave">+ \uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D</button>' : ["sources", "meal-timer", "feedback", "team-snacks"].includes(view) ? "" : `<button class="primary" data-action="${personal && view === "meals" ? "receipt-new" : "new"}">+ ${view === "meals" ? "\uC2DD\uB300" : view === "attendance" ? "OT\xB7\uC9C0\uAC01" : "\uC77C\uC815"} \uB4F1\uB85D</button>`}</div>${["meal-timer", "feedback"].includes(view) ? "" : `<section class="filters" aria-label="\uC870\uD68C \uD544\uD130"><div class="filter-top"><label class="month-field">\uC870\uD68C \uC6D4<select id="month-filter">${data.months.map((m3) => `<option value="${m3}" ${m3 === month ? "selected" : ""}>${monthText(m3)}</option>`).join("")}</select></label>${personalView() ? `<p class="personal-filter-note">${esc11(signedInPerson.name)} \uB2D8\uC758 \uAE30\uB85D\uC785\uB2C8\uB2E4.</p>` : `<label class="search-field">\uC9C1\uC6D0 \uCC3E\uAE30<input id="staff-search" type="search" value="${esc11(search)}" placeholder="\uC9C1\uC6D0 \uC774\uB984 \uB610\uB294 \uD300" maxlength="100"></label><label class="team-field">\uD300 \uC120\uD0DD<select id="team-filter">${["\uC804\uCCB4", ...teams].map((t3) => `<option value="${esc11(t3)}" ${team === t3 ? "selected" : ""}>${esc11(t3)}${t3 === "\uC804\uCCB4" ? "" : "\uD300"}</option>`).join("")}</select></label><span class="filter-note">\uD654\uBA74\uC744 \uBC14\uAFD4\uB3C4 \uC6D4\uACFC \uD300\uC774 \uC720\uC9C0\uB3FC\uC694.</span>`}</div></section>`}<div id="content" aria-live="polite"></div></main><footer>\uBDF0\uD2F0\uBE14\uB77C\uC378 \uC9C1\uC6D0 \uC5C5\uBB34 \xB7 \uC608\uC2DC \uAC00\uC838\uC628 \uB0A0\uC9DC ${esc11(data.importedAt?.slice(0, 10))}<span>\uCD94\uAC00\uD55C \uAE30\uB85D\uACFC \uC0AC\uC9C4\uC740 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</span></footer></div>`;
+  app.innerHTML = `<aside class="sidebar"><a class="brand" href="#/${personal ? "meal-timer" : "admin-dashboard"}"><img class="brand-mark" src="./assets/clinic-logo.png" width="52" height="52" alt="\uBDF0\uD2F0\uBE14\uB77C\uC378 \uB85C\uACE0"><span>\uBDF0\uD2F0\uBE14\uB77C\uC378<small>\uD568\uAED8\uD558\uB294 \uD558\uB8E8</small></span></a><div class="nav-caption">${personal ? "\uB098\uC758 \uC5C5\uBB34" : "\uC9C1\uC6D0 \uC5C5\uBB34 \uAD00\uB9AC"}</div><nav aria-label="\uC9C1\uC6D0 \uC5C5\uBB34 \uBA54\uB274">${visibleMenus.map(([id, title, desc, key]) => `<a class="nav-card ${view === id ? "selected" : ""}" href="#/${id}" ${view === id ? 'aria-current="page"' : ""}>${icon(key)}<span><strong>${title}</strong><small>${desc}</small></span><span class="nav-arrow">\u203A</span></a>`).join("")}</nav><div class="sidebar-note"><span class="status-dot"></span>${personal ? esc12(signedInPerson.name) + " \uB2D8" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}<small>${personal ? esc12(signedInPerson.rawTeam) + " \xB7 \uD14C\uC2A4\uD2B8 \uB85C\uADF8\uC778" : "\uC9C1\uC6D0 \uC0C1\uD0DC \xB7 \uAE30\uB85D \xB7 \uC601\uC218\uC99D"}</small></div></aside><div class="main"><header class="topbar"><span class="login-role-badge">${personal ? "\uC9C1\uC6D0 \uD654\uBA74" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}</span><span class="signed-in-person">${personal ? esc12(signedInPerson.name) + " \uB2D8 \xB7 " + esc12(signedInPerson.rawTeam) : "\uBDF0\uD2F0\uBE14\uB77C\uC378 \uAD00\uB9AC\uC790"}</span>${themeControl()}<span class="date-label">${new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "long" }).format(/* @__PURE__ */ new Date())}</span><button type="button" class="logout-button" data-action="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v16h5M14 8l4 4-4 4M8 12h12"/></svg><span>\uB85C\uADF8\uC544\uC6C3</span></button></header><main><div id="workspace-help"></div><div class="page-heading"><div><h1>${current[1]}</h1><p>${current[2]}</p></div>${view === "admin-dashboard" ? '<button class="primary" data-action="staff-leave">+ \uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D</button>' : ["sources", "meal-timer", "feedback", "team-snacks", "expenses"].includes(view) ? "" : `<button class="primary" data-action="${personal && view === "meals" ? "receipt-new" : "new"}">+ ${view === "meals" ? "\uC2DD\uB300" : view === "attendance" ? "OT\xB7\uC9C0\uAC01" : "\uC77C\uC815"} \uB4F1\uB85D</button>`}</div>${["meal-timer", "feedback", "expenses"].includes(view) ? "" : `<section class="filters" aria-label="\uC870\uD68C \uD544\uD130"><div class="filter-top"><label class="month-field">\uC870\uD68C \uC6D4<select id="month-filter">${data.months.map((m3) => `<option value="${m3}" ${m3 === month ? "selected" : ""}>${monthText(m3)}</option>`).join("")}</select></label>${personalView() ? `<p class="personal-filter-note">${esc12(signedInPerson.name)} \uB2D8\uC758 \uAE30\uB85D\uC785\uB2C8\uB2E4.</p>` : `<label class="search-field">\uC9C1\uC6D0 \uCC3E\uAE30<input id="staff-search" type="search" value="${esc12(search)}" placeholder="\uC9C1\uC6D0 \uC774\uB984 \uB610\uB294 \uD300" maxlength="100"></label><label class="team-field">\uD300 \uC120\uD0DD<select id="team-filter">${["\uC804\uCCB4", ...teams].map((t3) => `<option value="${esc12(t3)}" ${team === t3 ? "selected" : ""}>${esc12(t3)}${t3 === "\uC804\uCCB4" ? "" : "\uD300"}</option>`).join("")}</select></label><span class="filter-note">\uD654\uBA74\uC744 \uBC14\uAFD4\uB3C4 \uC6D4\uACFC \uD300\uC774 \uC720\uC9C0\uB3FC\uC694.</span>`}</div></section>`}<div id="content" aria-live="polite"></div></main><footer>\uBDF0\uD2F0\uBE14\uB77C\uC378 \uC9C1\uC6D0 \uC5C5\uBB34 \xB7 \uC608\uC2DC \uAC00\uC838\uC628 \uB0A0\uC9DC ${esc12(data.importedAt?.slice(0, 10))}<span>\uCD94\uAC00\uD55C \uAE30\uB85D\uACFC \uC0AC\uC9C4\uC740 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</span></footer></div>`;
 }
 function render() {
   if (!data) return;
@@ -13774,6 +14188,8 @@ function render() {
   receiptController = null;
   snackController?.dispose();
   snackController = null;
+  expenseController?.dispose();
+  expenseController = null;
   helpController?.dispose();
   helpController = null;
   if (!retainedFeedback) feedbackController?.dispose();
@@ -13788,24 +14204,24 @@ function render() {
   view = allowedRoute(authSession, requested);
   if (view !== requested) history.replaceState(null, "", "#/" + view);
   shell();
-  document.querySelector("main").insertAdjacentHTML("afterbegin", '<div class="notice" role="note"><strong>\uACF5\uAC1C \uCD08\uC548 \uAC80\uC218\uC6A9</strong> \xB7 \uBBF8\uB9AC \uCC44\uC6CC\uC9C4 \uC77C\uC815\xB7\uC2DD\uB300\xB7OT\uB294 \uC608\uC2DC\uC785\uB2C8\uB2E4. \uC9C1\uC811 \uC785\uB825\uD55C \uAE30\uB85D\uACFC \uAC80\uC218 \uBA54\uBAA8\uB294 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</div>');
+  document.querySelector("main").insertAdjacentHTML("afterbegin", '<div class="notice" role="note"><strong>\uACF5\uAC1C \uCD08\uC548 \uAC80\uC218\uC6A9</strong> \xB7 \uBBF8\uB9AC \uCC44\uC6CC\uC9C4 \uC77C\uC815\xB7\uC2DD\uB300\xB7OT\xB7\uC9C0\uCD9C\uC740 \uC608\uC2DC\uC785\uB2C8\uB2E4. \uC9C1\uC811 \uC785\uB825\uD55C \uAE30\uB85D\uACFC \uAC80\uC218 \uBA54\uBAA8\uB294 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</div>');
   const content = document.querySelector("#content");
   helpController = mountWorkspaceHelp(document.querySelector("#workspace-help"), { session: authSession, view, people: employees, toast, guideState: guideViewState, onSaved: () => feedbackController?.refresh() });
   try {
     ({ feedback: (root) => {
       feedbackController = mountFeedbackCollection(root, { people: employees, toast, viewState: feedbackViewState });
-    }, "admin-dashboard": (root) => renderMealManager(root, retainedFeedback), "team-calendar": renderCalendar, roster: renderRoster, "meal-timer": renderTimers, meals: renderMeals, "team-snacks": renderSnacks, attendance: renderAttendance, sources: renderSources })[view](content);
+    }, "admin-dashboard": (root) => renderMealManager(root, retainedFeedback), "team-calendar": renderCalendar, roster: renderRoster, "meal-timer": renderTimers, meals: renderMeals, "team-snacks": renderSnacks, expenses: renderExpenses, attendance: renderAttendance, sources: renderSources })[view](content);
     labelMobileTables(content);
   } catch (error) {
     retainedFeedback?.controller?.dispose();
-    content.innerHTML = empty("\uD654\uBA74\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C\uACE0\uCE68 \uD6C4 \uB2E4\uC2DC \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+    content.innerHTML = empty2("\uD654\uBA74\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C\uACE0\uCE68 \uD6C4 \uB2E4\uC2DC \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
     toast(error.message);
     console.error(error);
   }
 }
 function calendarRows() {
   const visibleIds = new Set(rosterRows().map((r3) => r3.personId));
-  const imported = data.scheduleEvents.filter((e3) => monthOf(e3.date) === month && (!e3.personId || visibleIds.has(e3.personId)));
+  const imported = data.scheduleEvents.filter((e3) => monthOf2(e3.date) === month && (!e3.personId || visibleIds.has(e3.personId)));
   return [...imported, ...localRows("schedule")];
 }
 function allDrafts() {
@@ -13829,12 +14245,18 @@ function attachDutyPanel(content, people) {
   content.insertAdjacentHTML("afterbegin", '<div id="duty-area"></div>');
   mountSchedulePanel({ root: content.querySelector("#duty-area"), people, roster: data.roster, records: allDrafts, month, session: authSession, employees, person: signedInPerson, toast, viewState: dutyViewState });
 }
+function renderExpenses(content) {
+  const revision = sessionRevision;
+  expenseController = mountExpenses({ root: content, session: authSession, people: employees, month, toast, viewState: expenseViewState, guard: () => {
+    if (revision !== sessionRevision) throw new Error("\uB85C\uADF8\uC778 \uC815\uBCF4\uAC00 \uBCC0\uACBD\uB410\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+  } });
+}
 function renderSnacks(content) {
   snackController = mountSnacks({ root: content, session: authSession, person: signedInPerson, teams: teamOptions(), months: data.months, month, team, search, toast });
 }
 function renderCalendar(content) {
   const events = calendarRows(), people = rosterRows();
-  content.innerHTML = `<div class="metrics">${metric2("\uC870\uD68C \uC9C1\uC6D0", `${new Set(people.map((r3) => r3.personId)).size}\uBA85`, team === "\uC804\uCCB4" ? "\uC774\uB2EC \uC2A4\uCF00\uC904 \uBA85\uBD80" : `${team}\uD300`)}${metric2("\uC77C\uC815 \uD45C\uC2DC", `${events.length}\uAC74`, "\uACF5\uD1B5 \uC77C\uC815 \uD3EC\uD568")}${metric2("\uC608\uC2DC \uC0C9\uC0C1", `${events.filter((r3) => r3.unresolved).length}\uAC74`, "\uC758\uBBF8 \uD655\uC778 \uC804\uC5D0\uB3C4 \uC608\uC2DC \uC0C9\uC0C1 \uBCF4\uC874")}</div><section class="panel calendar-panel"><div class="panel-heading"><div><h2>${team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${esc11(team)}\uD300`}\uC758 \uC77C\uC815</h2><p>\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC77C\uC815 \uB4F1\uB85D, \uAE30\uB85D\uC744 \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694.</p></div><span class="legend-dot">\u25CF \uD734\uBB34\xB7\uD734\uAC00\u3000<span>\u25CF \uC608\uC2DC \uC0C9\uC0C1</span></span></div><div id="calendar"></div></section>`;
+  content.innerHTML = `<div class="metrics">${metric2("\uC870\uD68C \uC9C1\uC6D0", `${new Set(people.map((r3) => r3.personId)).size}\uBA85`, team === "\uC804\uCCB4" ? "\uC774\uB2EC \uC2A4\uCF00\uC904 \uBA85\uBD80" : `${team}\uD300`)}${metric2("\uC77C\uC815 \uD45C\uC2DC", `${events.length}\uAC74`, "\uACF5\uD1B5 \uC77C\uC815 \uD3EC\uD568")}${metric2("\uC608\uC2DC \uC0C9\uC0C1", `${events.filter((r3) => r3.unresolved).length}\uAC74`, "\uC758\uBBF8 \uD655\uC778 \uC804\uC5D0\uB3C4 \uC608\uC2DC \uC0C9\uC0C1 \uBCF4\uC874")}</div><section class="panel calendar-panel"><div class="panel-heading"><div><h2>${team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${esc12(team)}\uD300`}\uC758 \uC77C\uC815</h2><p>\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC77C\uC815 \uB4F1\uB85D, \uAE30\uB85D\uC744 \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694.</p></div><span class="legend-dot">\u25CF \uD734\uBB34\xB7\uD734\uAC00\u3000<span>\u25CF \uC608\uC2DC \uC0C9\uC0C1</span></span></div><div id="calendar"></div></section>`;
   calendar = new Calendar(document.querySelector("#calendar"), {
     plugins: [index, index2, index3],
     locale: l45,
@@ -13887,21 +14309,21 @@ function renderCalendar(content) {
 }
 function findDayColor(event) {
   if (!event.source) return "";
-  const r3 = data.roster.find((r4) => r4.personId === event.personId && r4.month === monthOf(event.date));
+  const r3 = data.roster.find((r4) => r4.personId === event.personId && r4.month === monthOf2(event.date));
   return r3?.days[Number(event.date.slice(-2))]?.color || "";
 }
 function showSchedule(record) {
-  openDialog(`${record.name || "\uACF5\uD1B5"} \xB7 ${record.label}`, `<dl><dt>\uB0A0\uC9DC</dt><dd>${esc11(record.date)}</dd><dt>\uD300</dt><dd>${esc11(record.teams?.join(" \xB7 ") || "\uACF5\uD1B5")}</dd><dt>\uC608\uC2DC \uD45C\uC2DC</dt><dd>${swatch(record.color || findDayColor(record))} ${esc11(record.rawValue || record.label)}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc11(record.note || "\uBA54\uBAA8 \uC5C6\uC74C")}</dd></dl>${record.unresolved ? '<p class="notice">\uC608\uC2DC \uC0C9\uC0C1\uC744 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uC758\uBBF8\uB294 \uC544\uC9C1 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>' : ""}${sourceButton(record.source)}${record.local ? '<p class="notice">\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uC77C\uC815\uC785\uB2C8\uB2E4.</p>' : ""}`);
+  openDialog(`${record.name || "\uACF5\uD1B5"} \xB7 ${record.label}`, `<dl><dt>\uB0A0\uC9DC</dt><dd>${esc12(record.date)}</dd><dt>\uD300</dt><dd>${esc12(record.teams?.join(" \xB7 ") || "\uACF5\uD1B5")}</dd><dt>\uC608\uC2DC \uD45C\uC2DC</dt><dd>${swatch(record.color || findDayColor(record))} ${esc12(record.rawValue || record.label)}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc12(record.note || "\uBA54\uBAA8 \uC5C6\uC74C")}</dd></dl>${record.unresolved ? '<p class="notice">\uC608\uC2DC \uC0C9\uC0C1\uC744 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uC758\uBBF8\uB294 \uC544\uC9C1 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>' : ""}${sourceButton(record.source)}${record.local ? '<p class="notice">\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uC77C\uC815\uC785\uB2C8\uB2E4.</p>' : ""}`);
 }
 function renderRoster(content) {
   if (previewMode === "employee") {
     const people2 = rosterRows();
-    content.innerHTML = `<section class="panel personal-roster"><div class="panel-heading"><div><h2>${monthText(month)} \uB0B4 \uADFC\uBB34\uD45C</h2><p>${esc11(signedInPerson.name)} \uB2D8 \xB7 \uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694.</p></div></div>${people2.length ? mobileRoster(people2) : empty("\uC774\uB2EC\uC758 \uADFC\uBB34\uD45C\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>${localRecords("schedule")}`;
+    content.innerHTML = `<section class="panel personal-roster"><div class="panel-heading"><div><h2>${monthText(month)} \uB0B4 \uADFC\uBB34\uD45C</h2><p>${esc12(signedInPerson.name)} \uB2D8 \xB7 \uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694.</p></div></div>${people2.length ? mobileRoster(people2) : empty2("\uC774\uB2EC\uC758 \uADFC\uBB34\uD45C\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>${localRecords("schedule")}`;
     attachDutyPanel(content, rosterRows());
     return;
   }
   const people = rosterRows(), added = localRows("schedule"), count = new Date(2e3 + Number(month.slice(0, 2)), Number(month.slice(2)), 0).getDate(), days = Array.from({ length: count }, (_3, i3) => i3 + 1);
-  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${monthText(month)} \uADFC\uBB34\uD45C</h2><p>${people.length}\uBA85 \xB7 \uC608\uC2DC \uC0C9\uC0C1\uC744 \uADF8\uB300\uB85C \uBCF4\uC874\uD588\uC5B4\uC694. \uBE48\uCE78\uC740 \uBBF8\uAE30\uC7AC \uC0C1\uD0DC\uC785\uB2C8\uB2E4.</p></div><span class="desktop-roster-hint">${badge("\uAC00\uB85C\uB85C \uC2A4\uD06C\uB864")}</span><span class="mobile-roster-hint">\uC9C1\uC6D0\uC744 \uB20C\uB7EC \uC6D4\uAC04 \uADFC\uBB34\uD45C \uD655\uC778</span></div><div class="table-scroll roster-scroll"><table class="roster-table"><thead><tr><th class="sticky-cell">\uC9C1\uC6D0 / \uD300</th>${days.map((d2) => `<th>${d2}<small>${new Intl.DateTimeFormat("ko-KR", { weekday: "short" }).format(/* @__PURE__ */ new Date(dateOf2(month, d2) + "T12:00:00"))}</small></th>`).join("")}</tr></thead><tbody>${people.map((r3) => `<tr><th class="sticky-cell"><strong>${esc11(r3.name)}</strong><small>${esc11(r3.rawTeam)}${r3.role ? " \xB7 " + esc11(r3.role) : ""}</small></th>${days.map((d2) => `<td>${rosterDayCell(r3, d2, added)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>${mobileRoster(people)}${people.length ? "" : empty()}</section>${localRecords("schedule")}`;
+  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${monthText(month)} \uADFC\uBB34\uD45C</h2><p>${people.length}\uBA85 \xB7 \uC608\uC2DC \uC0C9\uC0C1\uC744 \uADF8\uB300\uB85C \uBCF4\uC874\uD588\uC5B4\uC694. \uBE48\uCE78\uC740 \uBBF8\uAE30\uC7AC \uC0C1\uD0DC\uC785\uB2C8\uB2E4.</p></div><span class="desktop-roster-hint">${badge("\uAC00\uB85C\uB85C \uC2A4\uD06C\uB864")}</span><span class="mobile-roster-hint">\uC9C1\uC6D0\uC744 \uB20C\uB7EC \uC6D4\uAC04 \uADFC\uBB34\uD45C \uD655\uC778</span></div><div class="table-scroll roster-scroll"><table class="roster-table"><thead><tr><th class="sticky-cell">\uC9C1\uC6D0 / \uD300</th>${days.map((d2) => `<th>${d2}<small>${new Intl.DateTimeFormat("ko-KR", { weekday: "short" }).format(/* @__PURE__ */ new Date(dateOf2(month, d2) + "T12:00:00"))}</small></th>`).join("")}</tr></thead><tbody>${people.map((r3) => `<tr><th class="sticky-cell"><strong>${esc12(r3.name)}</strong><small>${esc12(r3.rawTeam)}${r3.role ? " \xB7 " + esc12(r3.role) : ""}</small></th>${days.map((d2) => `<td>${rosterDayCell(r3, d2, added)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>${mobileRoster(people)}${people.length ? "" : empty2()}</section>${localRecords("schedule")}`;
   attachDutyPanel(content, people);
 }
 function labelMobileTables(root) {
@@ -13916,11 +14338,11 @@ function labelMobileTables(root) {
 }
 function mobileRoster(people) {
   const added = localRows("schedule");
-  return '<div class="mobile-roster">' + people.map((r3, i3) => `<details class="mobile-roster-person" ${i3 === 0 ? "open" : ""}><summary><strong>${esc11(r3.name)}</strong><span>${esc11(r3.rawTeam)}${r3.role ? " \xB7 " + esc11(r3.role) : ""}</span></summary><div class="mobile-roster-month"><div class="daily-weekdays">${["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"].map((w4) => "<span>" + w4 + "</span>").join("")}</div><div class="mobile-roster-days">${calendarDays(month).map((day) => day ? rosterDayCell(r3, day, added, true) : '<span class="mobile-roster-blank"></span>').join("")}</div></div></details>`).join("") + "</div>";
+  return '<div class="mobile-roster">' + people.map((r3, i3) => `<details class="mobile-roster-person" ${i3 === 0 ? "open" : ""}><summary><strong>${esc12(r3.name)}</strong><span>${esc12(r3.rawTeam)}${r3.role ? " \xB7 " + esc12(r3.role) : ""}</span></summary><div class="mobile-roster-month"><div class="daily-weekdays">${["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"].map((w4) => "<span>" + w4 + "</span>").join("")}</div><div class="mobile-roster-days">${calendarDays(month).map((day) => day ? rosterDayCell(r3, day, added, true) : '<span class="mobile-roster-blank"></span>').join("")}</div></div></details>`).join("") + "</div>";
 }
 function showRosterDay(row, day) {
   const cell = row.days[day], added = addedSchedule(localRows("schedule"), row, day);
-  openDialog(esc11(row.name) + " \xB7 " + dateOf2(row.month, day), `${cell ? '<section class="notice"><h3>\uAC00\uC838\uC628 \uC77C\uC815</h3><p>' + swatch(cell.color) + " " + esc11(cell.value || cell.colorMeaning || cell.label || "\uC0C9\uC0C1 \uD45C\uC2DC") + '</p><p class="prewrap">' + esc11(cell.note || "") + "</p>" + sourceButton(cell.source) + "</section>" : ""}${added.map((r3) => '<section class="daily-record"><h3>' + esc11(r3.label) + '</h3><p class="prewrap">' + esc11(r3.note || "\uBA54\uBAA8 \uC5C6\uC74C") + "</p><small>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uB4F1\uB85D\uD55C \uC77C\uC815</small></section>").join("")}`);
+  openDialog(esc12(row.name) + " \xB7 " + dateOf2(row.month, day), `${cell ? '<section class="notice"><h3>\uAC00\uC838\uC628 \uC77C\uC815</h3><p>' + swatch(cell.color) + " " + esc12(cell.value || cell.colorMeaning || cell.label || "\uC0C9\uC0C1 \uD45C\uC2DC") + '</p><p class="prewrap">' + esc12(cell.note || "") + "</p>" + sourceButton(cell.source) + "</section>" : ""}${added.map((r3) => '<section class="daily-record"><h3>' + esc12(r3.label) + '</h3><p class="prewrap">' + esc12(r3.note || "\uBA54\uBAA8 \uC5C6\uC74C") + "</p><small>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uB4F1\uB85D\uD55C \uC77C\uC815</small></section>").join("")}`);
 }
 function schedulePeople(targetMonth) {
   return [...new Map(data.roster.filter((p3) => p3.month === targetMonth).map((p3) => [p3.personId, p3])).values()];
@@ -13932,7 +14354,7 @@ function openSchedulePicker(leaveOnly = false) {
   function paint() {
     const people = scheduleCandidates(pickerMonth);
     if (!people.some((p3) => p3.personId === selectedPerson)) selectedPerson = people[0]?.personId || "";
-    area.innerHTML = `<div class="schedule-picker-fields"><label>\uC870\uD68C \uC6D4<select data-picker-month>${data.months.map((m3) => '<option value="' + m3 + '" ' + (m3 === pickerMonth ? "selected" : "") + ">" + monthText(m3) + "</option>").join("")}</select></label>${previewMode === "employee" && people.length === 1 ? "<p>" + esc11(signedInPerson.name) + " \uB2D8\uC758 \uC77C\uC815</p>" : "<label>\uC9C1\uC6D0<select data-picker-person>" + people.map((p3) => '<option value="' + esc11(p3.personId) + '" ' + (p3.personId === selectedPerson ? "selected" : "") + ">" + esc11(p3.name) + " \xB7 " + esc11(p3.rawTeam) + "</option>").join("") + "</select></label>"}</div><p>\uB4F1\uB85D\uD560 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC \uC8FC\uC138\uC694.</p><div class="schedule-picker-calendar">${schedulePickerDays(pickerMonth)}</div>`;
+    area.innerHTML = `<div class="schedule-picker-fields"><label>\uC870\uD68C \uC6D4<select data-picker-month>${data.months.map((m3) => '<option value="' + m3 + '" ' + (m3 === pickerMonth ? "selected" : "") + ">" + monthText(m3) + "</option>").join("")}</select></label>${previewMode === "employee" && people.length === 1 ? "<p>" + esc12(signedInPerson.name) + " \uB2D8\uC758 \uC77C\uC815</p>" : "<label>\uC9C1\uC6D0<select data-picker-person>" + people.map((p3) => '<option value="' + esc12(p3.personId) + '" ' + (p3.personId === selectedPerson ? "selected" : "") + ">" + esc12(p3.name) + " \xB7 " + esc12(p3.rawTeam) + "</option>").join("") + "</select></label>"}</div><p>\uB4F1\uB85D\uD560 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC \uC8FC\uC138\uC694.</p><div class="schedule-picker-calendar">${schedulePickerDays(pickerMonth)}</div>`;
   }
   dialog.addEventListener("change", (event) => {
     if (event.target.hasAttribute("data-picker-month")) {
@@ -14001,7 +14423,7 @@ function tickTimers() {
 }
 function renderMeals(content) {
   const rows = data.mealRows.filter((r3) => matches(r3));
-  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${previewMode === "employee" ? "\uAC00\uC838\uC628 \uB0B4 \uC2DD\uB300 \uB0B4\uC5ED" : "\uAC00\uC838\uC628 \uC9C1\uC6D0\uBCC4 \uC2DD\uB300 \uB0B4\uC5ED"}</h2><p>\uAC00\uC838\uC628 \uC790\uB8CC\uC758 \uC77C\uBCC4 \uBCF4\uAE30\uC785\uB2C8\uB2E4. \uCD94\uAC00 \uC785\uB825\uAE4C\uC9C0 \uD569\uCE5C \uD604\uC7AC \uC0AC\uC6A9\uC561\xB7\uC794\uC561\uC740 \uB9E8 \uC704\uC5D0\uC11C \uD655\uC778\uD574\uC694. 0\uC6D0\uACFC \uBE48\uCE78\uC740 \uAD6C\uBD84\uD569\uB2C8\uB2E4.</p></div></div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0</th><th>\uC608\uC2DC \uD300</th><th>\uC0AC\uC6A9</th><th>\uD55C\uB3C4</th><th>\uC794\uC561</th><th>\uADFC\uBB34\uC77C\uC218</th><th>\uC785\uAE08 \uC5EC\uBD80</th><th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc11(r3.name)}${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th><td>${esc11(r3.rawTeam)}</td>${["\uC0AC\uC6A9", "\uD55C\uB3C4", "\uC794\uC561", "\uADFC\uBB34\uC77C\uC790", "\uC785\uAE08\uC5EC\uBD80"].map((label) => `<td>${esc11(display(r3.totals[label]?.value))}</td>`).join("")}<td><button data-detail="${esc11(r3.id)}" data-kind="meals">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty()}</section>${localRecords("meals")}`;
+  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${previewMode === "employee" ? "\uAC00\uC838\uC628 \uB0B4 \uC2DD\uB300 \uB0B4\uC5ED" : "\uAC00\uC838\uC628 \uC9C1\uC6D0\uBCC4 \uC2DD\uB300 \uB0B4\uC5ED"}</h2><p>\uAC00\uC838\uC628 \uC790\uB8CC\uC758 \uC77C\uBCC4 \uBCF4\uAE30\uC785\uB2C8\uB2E4. \uCD94\uAC00 \uC785\uB825\uAE4C\uC9C0 \uD569\uCE5C \uD604\uC7AC \uC0AC\uC6A9\uC561\xB7\uC794\uC561\uC740 \uB9E8 \uC704\uC5D0\uC11C \uD655\uC778\uD574\uC694. 0\uC6D0\uACFC \uBE48\uCE78\uC740 \uAD6C\uBD84\uD569\uB2C8\uB2E4.</p></div></div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0</th><th>\uC608\uC2DC \uD300</th><th>\uC0AC\uC6A9</th><th>\uD55C\uB3C4</th><th>\uC794\uC561</th><th>\uADFC\uBB34\uC77C\uC218</th><th>\uC785\uAE08 \uC5EC\uBD80</th><th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc12(r3.name)}${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th><td>${esc12(r3.rawTeam)}</td>${["\uC0AC\uC6A9", "\uD55C\uB3C4", "\uC794\uC561", "\uADFC\uBB34\uC77C\uC790", "\uC785\uAE08\uC5EC\uBD80"].map((label) => `<td>${esc12(display(r3.totals[label]?.value))}</td>`).join("")}<td><button data-detail="${esc12(r3.id)}" data-kind="meals">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty2()}</section>${localRecords("meals")}`;
   content.insertAdjacentHTML("afterbegin", '<div id="meal-budget"></div><div id="receipt-area"></div>');
   const budgetRoot = content.querySelector("#meal-budget");
   function updateBudget(receipts, unavailable = false) {
@@ -14016,11 +14438,11 @@ function renderMeals(content) {
 }
 function renderAttendance(content) {
   const rows = data.otRows.filter((r3) => matches(r3)), labels = [...new Set(rows.flatMap((r3) => r3.categories.map((c3) => c3.label)))];
-  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>OT\xB7\uC9C0\uAC01 \uD604\uD669</h2><p>${rows.length}\uBA85 \xB7 \uC2DC\uAC04 \uB2E8\uC704\uB294 \uBD84\uC785\uB2C8\uB2E4. \uC774\uC6D4\xB7\uC0AC\uC6A9\xB7\uC9C0\uAC01\xB7\uB9C8\uAC10\uC758 \uC608\uC2DC \uBD80\uD638\uB97C \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div>${badge("\uB2E8\uC704: \uBD84")}</div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0 / \uC608\uC2DC \uD300</th>${labels.map((l3) => `<th>${esc11(l3)}</th>`).join("")}<th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc11(r3.name)}<small>${esc11(r3.rawTeam)}</small>${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th>${labels.map((l3) => `<td>${esc11(display(r3.categories.find((c3) => c3.label === l3)?.total))}</td>`).join("")}<td><button data-detail="${esc11(r3.id)}" data-kind="attendance">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty()}</section>${localRecords("attendance")}`;
+  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>OT\xB7\uC9C0\uAC01 \uD604\uD669</h2><p>${rows.length}\uBA85 \xB7 \uC2DC\uAC04 \uB2E8\uC704\uB294 \uBD84\uC785\uB2C8\uB2E4. \uC774\uC6D4\xB7\uC0AC\uC6A9\xB7\uC9C0\uAC01\xB7\uB9C8\uAC10\uC758 \uC608\uC2DC \uBD80\uD638\uB97C \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div>${badge("\uB2E8\uC704: \uBD84")}</div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0 / \uC608\uC2DC \uD300</th>${labels.map((l3) => `<th>${esc12(l3)}</th>`).join("")}<th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc12(r3.name)}<small>${esc12(r3.rawTeam)}</small>${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th>${labels.map((l3) => `<td>${esc12(display(r3.categories.find((c3) => c3.label === l3)?.total))}</td>`).join("")}<td><button data-detail="${esc12(r3.id)}" data-kind="attendance">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty2()}</section>${localRecords("attendance")}`;
 }
 function localRecords(kind) {
   const rows = localRows(kind);
-  return `<section class="panel local-records"><div class="panel-heading"><div><h2>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uAE30\uB85D</h2><p>\uAC00\uC838\uC628 \uC608\uC2DC \uD569\uACC4\uC640 \uAD6C\uBD84\uD574 \uD45C\uC2DC\uD569\uB2C8\uB2E4.</p></div>${badge(`${rows.length}\uAC74`)}</div>${rows.length ? `<div class="table-scroll"><table><thead><tr><th>\uB0A0\uC9DC</th><th>\uC9C1\uC6D0</th><th>\uB0B4\uC6A9</th><th>\uBA54\uBAA8</th></tr></thead><tbody>${rows.map((r3) => `<tr><td>${esc11(r3.date)}</td><th>${esc11(r3.name)}</th><td>${esc11(r3.label)}${r3.amount !== void 0 ? " \xB7 " + esc11(number(r3.amount)) + (kind === "meals" ? "\uC6D0" : "\uBD84") : ""}</td><td class="prewrap">${esc11(r3.note)}</td></tr>`).join("")}</tbody></table></div>` : empty("\uCD94\uAC00\uD55C \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>`;
+  return `<section class="panel local-records"><div class="panel-heading"><div><h2>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uAE30\uB85D</h2><p>\uAC00\uC838\uC628 \uC608\uC2DC \uD569\uACC4\uC640 \uAD6C\uBD84\uD574 \uD45C\uC2DC\uD569\uB2C8\uB2E4.</p></div>${badge(`${rows.length}\uAC74`)}</div>${rows.length ? `<div class="table-scroll"><table><thead><tr><th>\uB0A0\uC9DC</th><th>\uC9C1\uC6D0</th><th>\uB0B4\uC6A9</th><th>\uBA54\uBAA8</th></tr></thead><tbody>${rows.map((r3) => `<tr><td>${esc12(r3.date)}</td><th>${esc12(r3.name)}</th><td>${esc12(r3.label)}${r3.amount !== void 0 ? " \xB7 " + esc12(number(r3.amount)) + (kind === "meals" ? "\uC6D0" : "\uBD84") : ""}</td><td class="prewrap">${esc12(r3.note)}</td></tr>`).join("")}</tbody></table></div>` : empty2("\uCD94\uAC00\uD55C \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>`;
 }
 function showDetail(kind, id) {
   const rows = (kind === "meals" ? data.mealRows : data.otRows).filter((r3) => previewMode === "admin" || r3.personId === signedInPerson.personId), initialRow = rows.find((r3) => r3.id === id);
@@ -14038,7 +14460,7 @@ function openDialog(title, body) {
   dialogVersion++;
   const container = document.querySelector("#overlays");
   container.querySelector("dialog")?.close();
-  container.innerHTML = `<dialog aria-labelledby="dialog-title"><div class="dialog-heading"><h2 id="dialog-title">${esc11(title)}</h2><button data-action="close" aria-label="\uB2EB\uAE30">\uB2EB\uAE30 \u2715</button></div><div class="dialog-body">${body}</div></dialog>`;
+  container.innerHTML = `<dialog aria-labelledby="dialog-title"><div class="dialog-heading"><h2 id="dialog-title">${esc12(title)}</h2><button data-action="close" aria-label="\uB2EB\uAE30">\uB2EB\uAE30 \u2715</button></div><div class="dialog-body">${body}</div></dialog>`;
   const dialog = container.querySelector("dialog");
   dialog.showModal();
   dialog.addEventListener("click", (event) => {
@@ -14071,14 +14493,14 @@ async function showSource(source) {
     const raw = await rawData(source);
     if (version !== dialogVersion) return;
     const cell = raw.cells[source.cell], color = rawColor(raw, source.cell), meta = data.sources.find((s3) => s3.book === source.book && s3.tab === source.tab);
-    document.querySelector(".dialog-body").innerHTML = `<p>${esc11(meta.label)} / ${esc11(source.tab)} / ${esc11(source.cell)}</p><dl><dt>\uC608\uC2DC \uAC12</dt><dd class="prewrap">${esc11(display(cell?.v))}</dd><dt>\uC608\uC2DC \uC0C9\uC0C1</dt><dd>${swatch(color)} ${esc11(color ? "#" + color : "\uC9C0\uC815 \uC5C6\uC74C")}</dd><dt>\uC218\uC2DD</dt><dd class="prewrap">${esc11(cell?.f || "\uC5C6\uC74C")}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc11(cell?.note || "\uC5C6\uC74C")}</dd></dl><a class="button" href="${esc11(meta.url)}" target="_blank" rel="noopener noreferrer">\uAC80\uC218 \uC548\uB0B4 \uBCF4\uAE30 \u2197</a>`;
+    document.querySelector(".dialog-body").innerHTML = `<p>${esc12(meta.label)} / ${esc12(source.tab)} / ${esc12(source.cell)}</p><dl><dt>\uC608\uC2DC \uAC12</dt><dd class="prewrap">${esc12(display(cell?.v))}</dd><dt>\uC608\uC2DC \uC0C9\uC0C1</dt><dd>${swatch(color)} ${esc12(color ? "#" + color : "\uC9C0\uC815 \uC5C6\uC74C")}</dd><dt>\uC218\uC2DD</dt><dd class="prewrap">${esc12(cell?.f || "\uC5C6\uC74C")}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc12(cell?.note || "\uC5C6\uC74C")}</dd></dl><a class="button" href="${esc12(meta.url)}" target="_blank" rel="noopener noreferrer">\uAC80\uC218 \uC548\uB0B4 \uBCF4\uAE30 \u2197</a>`;
   } catch (error) {
     if (version === dialogVersion) document.querySelector(".dialog-body").textContent = error.message;
   }
 }
 function renderSources(content) {
   const review = [...data.mealRows, ...data.otRows].filter((r3) => r3.identityNeedsReview && matches(r3)), issues = data.issues.filter((issue) => data.mealRows.some((r3) => matches(r3) && r3.source.book === issue.source.book && r3.source.tab === issue.source.tab && r3.source.cell === issue.source.cell));
-  content.innerHTML = `<div class="metrics">${metric2("\uC608\uC2DC \uC804\uCCB4", `${data.audit.tabs}\uAC1C \uD0ED`, "\uC2A4\uCF00\uC904 12 \xB7 \uC2DD\uB300 13 \xB7 OT/\uC9C0\uAC01 12")}${metric2("\uBCF4\uC874\uD55C \uC140", `${number(data.audit.importedCells)}\uAC1C`, "\uC608\uC2DC\uC640 \uC140 \uAC12 \uC77C\uCE58 \uAC80\uC0AC \uC644\uB8CC")}${metric2("\uBA54\uBAA8 / \uC218\uC2DD", `${number(data.audit.notes)} / ${number(data.audit.formulas)}`, "\uC608\uC2DC XLSX\uC640 \uCD9C\uCC98 \uC88C\uD45C \uBCF4\uC874")}</div><section class="panel"><div class="panel-heading"><div><h2>\uC5F0\uACB0\xB7\uD569\uACC4 \uD655\uC778</h2><p>\uC120\uD0DD\uD55C \uC6D4\xB7\uD300\uC758 \uD655\uC778 \uD56D\uBAA9\uC785\uB2C8\uB2E4. \uD655\uC778 \uC804\uC5D0\uB294 \uC608\uC2DC\uC744 \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div></div>${issues.map((i3) => `<div class="notice">${esc11(i3.name)} \xB7 ${esc11(i3.kind)}: \uC608\uC2DC ${number(i3.sourceTotal)}\uC6D0 / \uC77C\uBCC4 \uD569 ${number(i3.dailySum)}\uC6D0 ${sourceButton(i3.source)}</div>`).join("")}${review.length ? `<div class="review-list">${review.map((r3) => `<span>${esc11(r3.name)} \xB7 ${esc11(r3.rawTeam)} ${sourceButton(r3.source, "\uC774\uB984\xB7\uD300 \uD655\uC778")}</span>`).join("")}</div>` : empty("\uC774 \uC870\uAC74\uC5D0\uC11C \uC774\uB984\xB7\uD300 \uC5F0\uACB0 \uD655\uC778 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}<p class="panel-foot">\uC608\uC2DC \uC0C9\uC0C1\uC740 \uBAA8\uB450 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uBC94\uB840\uC640 \uC77C\uCE58\uD558\uC9C0 \uC54A\uB294 \uC0C9\uC740 \uC758\uBBF8\uB97C \uC784\uC758 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p></section><section class="panel"><div class="panel-heading"><div><h2>\uC608\uC2DC \uD0ED \uC804\uCCB4 \uBCF4\uAE30</h2><p>\uC774 \uC601\uC5ED\uC740 \uD300 \uD544\uD130 \uC5C6\uC774 \uC120\uD0DD\uD55C \uD0ED \uC804\uCCB4\uB97C \uBCF4\uC5EC\uC90D\uB2C8\uB2E4. \uD45C \uC544\uB798\uC758 \uCD94\uAC00 \uAE30\uB85D\uB3C4 \uD3EC\uD568\uD569\uB2C8\uB2E4.</p></div></div><div class="source-controls"><label>\uC608\uC2DC<select id="source-book">${[["schedule", "\uC2A4\uCF00\uC904"], ["meals", "\uC2DD\uB300"], ["attendance", "OT/\uC9C0\uAC01"]].map(([k3, l3]) => `<option value="${k3}" ${sourceBook === k3 ? "selected" : ""}>${l3}</option>`).join("")}</select></label><label>\uD0ED<select id="source-tab">${data.sources.filter((s3) => s3.book === sourceBook).map((s3) => `<option value="${s3.tab}" ${(sourceTab || month) === s3.tab ? "selected" : ""}>${esc11(s3.tab === "\uCC38\uACE0\uC6A9" ? "\uCC38\uACE0\uC6A9" : monthText(s3.tab))}</option>`).join("")}</select></label><label>\uC140\xB7\uB0B4\uC6A9 \uAC80\uC0C9<input id="source-query" value="${esc11(sourceQuery)}" placeholder="\uC608: A320 \uB610\uB294 \uC9C1\uC6D0 \uC774\uB984" maxlength="100"></label><button data-action="source-search">\uAC80\uC0C9</button></div><div id="raw-table">\uC608\uC2DC\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4\u2026</div></section>`;
+  content.innerHTML = `<div class="metrics">${metric2("\uC608\uC2DC \uC804\uCCB4", `${data.audit.tabs}\uAC1C \uD0ED`, "\uC2A4\uCF00\uC904 12 \xB7 \uC2DD\uB300 13 \xB7 OT/\uC9C0\uAC01 12")}${metric2("\uBCF4\uC874\uD55C \uC140", `${number(data.audit.importedCells)}\uAC1C`, "\uC608\uC2DC\uC640 \uC140 \uAC12 \uC77C\uCE58 \uAC80\uC0AC \uC644\uB8CC")}${metric2("\uBA54\uBAA8 / \uC218\uC2DD", `${number(data.audit.notes)} / ${number(data.audit.formulas)}`, "\uC608\uC2DC XLSX\uC640 \uCD9C\uCC98 \uC88C\uD45C \uBCF4\uC874")}</div><section class="panel"><div class="panel-heading"><div><h2>\uC5F0\uACB0\xB7\uD569\uACC4 \uD655\uC778</h2><p>\uC120\uD0DD\uD55C \uC6D4\xB7\uD300\uC758 \uD655\uC778 \uD56D\uBAA9\uC785\uB2C8\uB2E4. \uD655\uC778 \uC804\uC5D0\uB294 \uC608\uC2DC\uC744 \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div></div>${issues.map((i3) => `<div class="notice">${esc12(i3.name)} \xB7 ${esc12(i3.kind)}: \uC608\uC2DC ${number(i3.sourceTotal)}\uC6D0 / \uC77C\uBCC4 \uD569 ${number(i3.dailySum)}\uC6D0 ${sourceButton(i3.source)}</div>`).join("")}${review.length ? `<div class="review-list">${review.map((r3) => `<span>${esc12(r3.name)} \xB7 ${esc12(r3.rawTeam)} ${sourceButton(r3.source, "\uC774\uB984\xB7\uD300 \uD655\uC778")}</span>`).join("")}</div>` : empty2("\uC774 \uC870\uAC74\uC5D0\uC11C \uC774\uB984\xB7\uD300 \uC5F0\uACB0 \uD655\uC778 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}<p class="panel-foot">\uC608\uC2DC \uC0C9\uC0C1\uC740 \uBAA8\uB450 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uBC94\uB840\uC640 \uC77C\uCE58\uD558\uC9C0 \uC54A\uB294 \uC0C9\uC740 \uC758\uBBF8\uB97C \uC784\uC758 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p></section><section class="panel"><div class="panel-heading"><div><h2>\uC608\uC2DC \uD0ED \uC804\uCCB4 \uBCF4\uAE30</h2><p>\uC774 \uC601\uC5ED\uC740 \uD300 \uD544\uD130 \uC5C6\uC774 \uC120\uD0DD\uD55C \uD0ED \uC804\uCCB4\uB97C \uBCF4\uC5EC\uC90D\uB2C8\uB2E4. \uD45C \uC544\uB798\uC758 \uCD94\uAC00 \uAE30\uB85D\uB3C4 \uD3EC\uD568\uD569\uB2C8\uB2E4.</p></div></div><div class="source-controls"><label>\uC608\uC2DC<select id="source-book">${[["schedule", "\uC2A4\uCF00\uC904"], ["meals", "\uC2DD\uB300"], ["attendance", "OT/\uC9C0\uAC01"]].map(([k3, l3]) => `<option value="${k3}" ${sourceBook === k3 ? "selected" : ""}>${l3}</option>`).join("")}</select></label><label>\uD0ED<select id="source-tab">${data.sources.filter((s3) => s3.book === sourceBook).map((s3) => `<option value="${s3.tab}" ${(sourceTab || month) === s3.tab ? "selected" : ""}>${esc12(s3.tab === "\uCC38\uACE0\uC6A9" ? "\uCC38\uACE0\uC6A9" : monthText(s3.tab))}</option>`).join("")}</select></label><label>\uC140\xB7\uB0B4\uC6A9 \uAC80\uC0C9<input id="source-query" value="${esc12(sourceQuery)}" placeholder="\uC608: A320 \uB610\uB294 \uC9C1\uC6D0 \uC774\uB984" maxlength="100"></label><button data-action="source-search">\uAC80\uC0C9</button></div><div id="raw-table">\uC608\uC2DC\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4\u2026</div></section>`;
   loadRawTable();
 }
 function coordSort(a3, b3) {
@@ -14095,8 +14517,8 @@ async function loadRawTable() {
     sourcePage = Math.min(sourcePage, pages - 1);
     document.querySelector("#raw-table").innerHTML = `<div class="raw-summary"><span>\uAC80\uC0C9 ${number(coords.length)}\uC140 \xB7 ${sourcePage + 1} / ${pages}\uCABD</span><div><button data-action="raw-prev" ${sourcePage === 0 ? "disabled" : ""}>\uC774\uC804</button><button data-action="raw-next" ${sourcePage + 1 >= pages ? "disabled" : ""}>\uB2E4\uC74C</button></div></div><div class="table-scroll"><table class="raw-table"><thead><tr><th>\uC140</th><th>\uC608\uC2DC \uAC12</th><th>\uC0C9\uC0C1</th><th>\uC218\uC2DD</th><th>\uBA54\uBAA8</th></tr></thead><tbody>${coords.slice(sourcePage * pageSize, (sourcePage + 1) * pageSize).map((coord) => {
       const c3 = raw.cells[coord];
-      return `<tr><th>${sourceButton({ ...source, cell: coord }, coord)}</th><td class="prewrap">${esc11(display(c3?.v))}</td><td>${swatch(rawColor(raw, coord))}</td><td class="prewrap">${esc11(c3?.f || "\u2014")}</td><td class="prewrap">${esc11(c3?.note || "\u2014")}</td></tr>`;
-    }).join("")}</tbody></table></div>${coords.length ? "" : empty()}`;
+      return `<tr><th>${sourceButton({ ...source, cell: coord }, coord)}</th><td class="prewrap">${esc12(display(c3?.v))}</td><td>${swatch(rawColor(raw, coord))}</td><td class="prewrap">${esc12(c3?.f || "\u2014")}</td><td class="prewrap">${esc12(c3?.note || "\u2014")}</td></tr>`;
+    }).join("")}</tbody></table></div>${coords.length ? "" : empty2()}`;
     labelMobileTables(document.querySelector("#raw-table"));
   } catch (error) {
     if (version === renderVersion && token === loadRawTable.token) document.querySelector("#raw-table").textContent = error.message;
@@ -14104,12 +14526,12 @@ async function loadRawTable() {
 }
 loadRawTable.token = 0;
 function openEntry(kind = view === "meals" ? "meals" : view === "attendance" ? "attendance" : "schedule", date, personId = "", leaveOnly = false) {
-  const defaultDate = date || (monthOf(localDate()) === month ? localDate() : dateOf2(month)), people = kind === "schedule" ? scheduleCandidates(monthOf(defaultDate)) : previewMode === "employee" ? [signedInPerson] : schedulePeople(monthOf(defaultDate));
+  const defaultDate = date || (monthOf2(localDate()) === month ? localDate() : dateOf2(month)), people = kind === "schedule" ? scheduleCandidates(monthOf2(defaultDate)) : previewMode === "employee" ? [signedInPerson] : schedulePeople(monthOf2(defaultDate));
   if (!people.length) {
     toast("\uC120\uD0DD\uD55C \uC870\uAC74\uC758 \uC2A4\uCF00\uC904 \uBA85\uBD80\uC5D0 \uC9C1\uC6D0\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uD300\xB7\uAC80\uC0C9 \uC870\uAC74\uC744 \uBCC0\uACBD\uD574 \uC8FC\uC138\uC694.");
     return;
   }
-  openDialog(`${leaveOnly ? "\uC9C1\uC6D0 \uD734\uBB34" : kind === "schedule" ? "\uC77C\uC815" : kind === "meals" ? "\uC2DD\uB300" : "OT\xB7\uC9C0\uAC01"} \uB4F1\uB85D`, `<form id="entry-form" data-kind="${kind}"><div class="form-grid">${previewMode === "employee" && (kind !== "schedule" || people.length === 1) ? `<label>\uC9C1\uC6D0<input value="${esc11(signedInPerson.name)}" readonly><input type="hidden" name="person" value="${esc11(signedInPerson.personId)}"></label>` : `<label>\uC9C1\uC6D0<select name="person" required>${people.map((r3) => `<option value="${r3.personId}">${esc11(r3.name)} \xB7 ${esc11(r3.rawTeam)}</option>`).join("")}</select></label>`}<label>\uB0A0\uC9DC<input name="date" type="date" value="${defaultDate}" required min="2026-01-01" max="2026-12-31"></label>${kind === "schedule" ? `<label>\uC77C\uC815<select name="label">${(leaveOnly ? ["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28"] : ["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28", "\uADFC\uBB34", "\uD300 \uC77C\uC815", "\uAE30\uD0C0"]).map((l3) => `<option>${l3}</option>`).join("")}</select></label>` : kind === "attendance" ? '<label>\uAD6C\uBD84<select name="label"><option>OT</option><option>\uACF5\uD734\uC77C OT</option><option>OT \uC0AC\uC6A9</option><option>\uC9C0\uAC01</option><option>\uC870\uC815</option></select></label>' : ""}${kind !== "schedule" ? `<label>${kind === "meals" ? "\uAE08\uC561 (\uC6D0)" : "\uC2DC\uAC04 (\uBD84)"}<input name="amount" type="number" required min="${kind === "meals" ? 0 : -1e6}" max="100000000" step="1" inputmode="numeric"></label>` : ""}<label class="full">\uBA54\uBAA8<textarea name="note" rows="3" maxlength="2000" placeholder="\uD544\uC694\uD55C \uB0B4\uC6A9\uC744 \uB0A8\uACA8 \uC8FC\uC138\uC694."></textarea></label></div><p class="notice">\uAC00\uC838\uC628 \uC608\uC2DC\uC640 \uAD6C\uBD84\uD574 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uD569\uB2C8\uB2E4.${kind === "attendance" ? " OT \uC0AC\uC6A9\xB7\uC9C0\uAC01\uC740 \uC591\uC218\uB85C \uC785\uB825\uD574\uB3C4 \uC74C\uC218\uB85C \uAE30\uB85D\uD569\uB2C8\uB2E4." : ""}</p><div class="form-actions"><button type="button" data-action="close">\uCDE8\uC18C</button><button class="primary" type="submit">\uB4F1\uB85D\uD558\uAE30</button></div><p class="form-error" role="alert"></p></form>`);
+  openDialog(`${leaveOnly ? "\uC9C1\uC6D0 \uD734\uBB34" : kind === "schedule" ? "\uC77C\uC815" : kind === "meals" ? "\uC2DD\uB300" : "OT\xB7\uC9C0\uAC01"} \uB4F1\uB85D`, `<form id="entry-form" data-kind="${kind}"><div class="form-grid">${previewMode === "employee" && (kind !== "schedule" || people.length === 1) ? `<label>\uC9C1\uC6D0<input value="${esc12(signedInPerson.name)}" readonly><input type="hidden" name="person" value="${esc12(signedInPerson.personId)}"></label>` : `<label>\uC9C1\uC6D0<select name="person" required>${people.map((r3) => `<option value="${r3.personId}">${esc12(r3.name)} \xB7 ${esc12(r3.rawTeam)}</option>`).join("")}</select></label>`}<label>\uB0A0\uC9DC<input name="date" type="date" value="${defaultDate}" required min="2026-01-01" max="2026-12-31"></label>${kind === "schedule" ? `<label>\uC77C\uC815<select name="label">${(leaveOnly ? ["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28"] : ["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28", "\uADFC\uBB34", "\uD300 \uC77C\uC815", "\uAE30\uD0C0"]).map((l3) => `<option>${l3}</option>`).join("")}</select></label>` : kind === "attendance" ? '<label>\uAD6C\uBD84<select name="label"><option>OT</option><option>\uACF5\uD734\uC77C OT</option><option>OT \uC0AC\uC6A9</option><option>\uC9C0\uAC01</option><option>\uC870\uC815</option></select></label>' : ""}${kind !== "schedule" ? `<label>${kind === "meals" ? "\uAE08\uC561 (\uC6D0)" : "\uC2DC\uAC04 (\uBD84)"}<input name="amount" type="number" required min="${kind === "meals" ? 0 : -1e6}" max="100000000" step="1" inputmode="numeric"></label>` : ""}<label class="full">\uBA54\uBAA8<textarea name="note" rows="3" maxlength="2000" placeholder="\uD544\uC694\uD55C \uB0B4\uC6A9\uC744 \uB0A8\uACA8 \uC8FC\uC138\uC694."></textarea></label></div><p class="notice">\uAC00\uC838\uC628 \uC608\uC2DC\uC640 \uAD6C\uBD84\uD574 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uD569\uB2C8\uB2E4.${kind === "attendance" ? " OT \uC0AC\uC6A9\xB7\uC9C0\uAC01\uC740 \uC591\uC218\uB85C \uC785\uB825\uD574\uB3C4 \uC74C\uC218\uB85C \uAE30\uB85D\uD569\uB2C8\uB2E4." : ""}</p><div class="form-actions"><button type="button" data-action="close">\uCDE8\uC18C</button><button class="primary" type="submit">\uB4F1\uB85D\uD558\uAE30</button></div><p class="form-error" role="alert"></p></form>`);
   if (personId && people.some((p3) => p3.personId === personId)) document.querySelector("#entry-form [name=person]").value = personId;
 }
 document.addEventListener("submit", async (event) => {
@@ -14122,18 +14544,18 @@ document.addEventListener("submit", async (event) => {
   try {
     const values = new FormData(form), kind = form.dataset.kind, date = String(values.get("date"));
     if (!/^2026-\d{2}-\d{2}$/.test(date) || localDate(/* @__PURE__ */ new Date(date + "T12:00:00")) !== date) throw new Error("\uB0A0\uC9DC\uB97C \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
-    const person = kind === "schedule" ? scheduleCandidates(monthOf(date)).find((p3) => p3.personId === values.get("person")) : previewMode === "employee" ? values.get("person") === signedInPerson.personId ? signedInPerson : null : schedulePeople(monthOf(date)).find((p3) => p3.personId === values.get("person"));
+    const person = kind === "schedule" ? scheduleCandidates(monthOf2(date)).find((p3) => p3.personId === values.get("person")) : previewMode === "employee" ? values.get("person") === signedInPerson.personId ? signedInPerson : null : schedulePeople(monthOf2(date)).find((p3) => p3.personId === values.get("person"));
     if (!person) throw new Error("\uD574\uB2F9 \uC6D4\uC758 \uC9C1\uC6D0\uC744 \uB2E4\uC2DC \uC120\uD0DD\uD574 \uC8FC\uC138\uC694.");
     const label = String(values.get("label") || (kind === "meals" ? "\uC2DD\uB300" : ""));
     let amount = kind === "schedule" ? void 0 : Number(values.get("amount"));
     if (kind !== "schedule" && (!Number.isSafeInteger(amount) || Math.abs(amount) > 1e8 || kind === "meals" && amount < 0)) throw new Error("\uAE08\uC561 \uB610\uB294 \uC2DC\uAC04\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
     if (kind === "attendance" && ["OT \uC0AC\uC6A9", "\uC9C0\uAC01"].includes(label)) amount = -Math.abs(amount);
-    await saveDraft({ id: crypto.randomUUID(), kind, personId: person.personId, name: person.name, teams: person.teams, rawTeam: person.rawTeam, date, month: monthOf(date), label, note: String(values.get("note")).trim(), amount, local: true, createdAt: (/* @__PURE__ */ new Date()).toISOString() }, () => {
+    await saveDraft({ id: crypto.randomUUID(), kind, personId: person.personId, name: person.name, teams: person.teams, rawTeam: person.rawTeam, date, month: monthOf2(date), label, note: String(values.get("note")).trim(), amount, local: true, createdAt: (/* @__PURE__ */ new Date()).toISOString() }, () => {
       if (revision !== sessionRevision || !authSession) throw new Error("\uB85C\uADF8\uC778 \uC0C1\uD0DC\uAC00 \uBCC0\uACBD\uB410\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uB85C\uADF8\uC778\uD574 \uC8FC\uC138\uC694.");
-      if (kind === "schedule" && !scheduleCandidates(monthOf(date)).some((p3) => p3.personId === person.personId)) throw new Error("\uD300 \uC77C\uC815 \uB4F1\uB85D \uAD8C\uD55C\uC774 \uBCC0\uACBD\uB410\uC2B5\uB2C8\uB2E4. \uC9C1\uC6D0\uC744 \uB2E4\uC2DC \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
+      if (kind === "schedule" && !scheduleCandidates(monthOf2(date)).some((p3) => p3.personId === person.personId)) throw new Error("\uD300 \uC77C\uC815 \uB4F1\uB85D \uAD8C\uD55C\uC774 \uBCC0\uACBD\uB410\uC2B5\uB2C8\uB2E4. \uC9C1\uC6D0\uC744 \uB2E4\uC2DC \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
     });
     if (revision !== sessionRevision) return;
-    month = monthOf(date);
+    month = monthOf2(date);
     document.querySelector("dialog")?.close();
     render();
     toast("\uB4F1\uB85D\uD588\uC2B5\uB2C8\uB2E4.");
@@ -14199,7 +14621,7 @@ document.addEventListener("click", async (event) => {
     if (previewMode !== "admin" || mealDemo) return;
     const p3 = mealPeople(data.roster, month).find((r3) => r3.personId === target.dataset.personId), kind = target.dataset.adminEnd;
     if (!p3 || !ACTIVITY_TYPES[kind]) return;
-    openDialog("\uC0C1\uD0DC \uC885\uB8CC \uCC98\uB9AC", `<p>${esc11(p3.name)} \uB2D8\uC758 ${ACTIVITY_TYPES[kind].label}\uC744 \uC9C0\uAE08 \uC2DC\uAC01\uC73C\uB85C \uC885\uB8CC\uD560\uAE4C\uC694?</p><div class="form-actions"><button data-action="close">\uCDE8\uC18C</button><button class="primary" data-admin-end-confirm="${kind}" data-expected-active="${esc11(target.dataset.activeId)}" data-person-id="${esc11(p3.personId)}">\uC885\uB8CC \uAE30\uB85D\uD558\uAE30</button></div>`);
+    openDialog("\uC0C1\uD0DC \uC885\uB8CC \uCC98\uB9AC", `<p>${esc12(p3.name)} \uB2D8\uC758 ${ACTIVITY_TYPES[kind].label}\uC744 \uC9C0\uAE08 \uC2DC\uAC01\uC73C\uB85C \uC885\uB8CC\uD560\uAE4C\uC694?</p><div class="form-actions"><button data-action="close">\uCDE8\uC18C</button><button class="primary" data-admin-end-confirm="${kind}" data-expected-active="${esc12(target.dataset.activeId)}" data-person-id="${esc12(p3.personId)}">\uC885\uB8CC \uAE30\uB85D\uD558\uAE30</button></div>`);
     return;
   }
   if (target.dataset.activityTab) {
@@ -14255,8 +14677,8 @@ document.addEventListener("click", async (event) => {
 document.addEventListener("change", (event) => {
   if (!authSession) return;
   if (event.target.matches("#entry-form [name=date]") && document.querySelector("#entry-form select[name=person]")) {
-    const select = document.querySelector("#entry-form [name=person]"), selected = select.value, people = document.querySelector("#entry-form").dataset.kind === "schedule" ? scheduleCandidates(monthOf(event.target.value)) : schedulePeople(monthOf(event.target.value));
-    select.innerHTML = '<option value="">\uC9C1\uC6D0\uC744 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694</option>' + people.map((p3) => '<option value="' + esc11(p3.personId) + '">' + esc11(p3.name) + " \xB7 " + esc11(p3.rawTeam) + "</option>").join("");
+    const select = document.querySelector("#entry-form [name=person]"), selected = select.value, people = document.querySelector("#entry-form").dataset.kind === "schedule" ? scheduleCandidates(monthOf2(event.target.value)) : schedulePeople(monthOf2(event.target.value));
+    select.innerHTML = '<option value="">\uC9C1\uC6D0\uC744 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694</option>' + people.map((p3) => '<option value="' + esc12(p3.personId) + '">' + esc12(p3.name) + " \xB7 " + esc12(p3.rawTeam) + "</option>").join("");
     select.value = people.some((p3) => p3.personId === selected) ? selected : "";
     return;
   }
@@ -14330,6 +14752,10 @@ addEventListener("storage", (event) => {
     receiptController?.refresh();
     return;
   }
+  if ([EXPENSE_KEY, EXPENSE_CONFIG_KEY].includes(event.key)) {
+    expenseController?.refresh();
+    return;
+  }
   if (event.key === SNACK_KEY) {
     snackController?.refresh();
     return;
@@ -14340,7 +14766,7 @@ addEventListener("storage", (event) => {
     return;
   }
   if (event.key === LOCAL_KEY) {
-    if (view === "team-snacks") return;
+    if (["team-snacks", "expenses"].includes(view)) return;
     if (view === "meals") {
       receiptController?.refresh();
       const area = document.querySelector(".local-records");
@@ -14368,11 +14794,11 @@ async function start() {
     }
     previewMode = authSession?.role || "employee";
     signedInPerson = employees.find((p3) => p3.personId === authSession?.personId);
-    month = data.months.includes(monthOf(localDate())) ? monthOf(localDate()) : data.months.at(-1);
+    month = data.months.includes(monthOf2(localDate())) ? monthOf2(localDate()) : data.months.at(-1);
     document.title = "\uBDF0\uD2F0\uBE14\uB77C\uC378 \xB7 \uC9C1\uC6D0 \uC5C5\uBB34";
     render();
   } catch (error) {
-    app.innerHTML = `<main class="load-error"><h1>\uC9C1\uC6D0 \uC790\uB8CC\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.</h1><p>${esc11(error.message)}</p><button data-action="retry">\uB2E4\uC2DC \uBD88\uB7EC\uC624\uAE30</button></main>`;
+    app.innerHTML = `<main class="load-error"><h1>\uC9C1\uC6D0 \uC790\uB8CC\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.</h1><p>${esc12(error.message)}</p><button data-action="retry">\uB2E4\uC2DC \uBD88\uB7EC\uC624\uAE30</button></main>`;
   }
 }
 start();

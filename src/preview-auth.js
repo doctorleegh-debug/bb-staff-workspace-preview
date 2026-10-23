@@ -22,8 +22,8 @@ export function restorePreviewSession(storage,people){
 }
 export function allowedRoute(session,route){
  if(!session)return'login';
- const employee=['meal-timer','roster','team-calendar','meals','team-snacks','attendance'];
- const admin=['admin-dashboard','roster','team-calendar','meals','team-snacks','attendance','sources','feedback'];
+ const employee=['meal-timer','roster','team-calendar','meals','team-snacks','expenses','attendance'];
+ const admin=['admin-dashboard','roster','team-calendar','meals','team-snacks','expenses','attendance','sources','feedback'];
  const routes=session.role==='admin'?admin:employee;
  return routes.includes(route)?route:routes[0];
 }

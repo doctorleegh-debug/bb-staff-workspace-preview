@@ -1,7 +1,7 @@
 // Review-only notes. Remove the UI and this module from the production build.
 export const FEEDBACK_PREFIX='bb-staff:public-preview:review-note:v1:';
 export const FEEDBACK_MAX_BYTES=20000000;
-export const FEEDBACK_VIEWS=['meal-timer','roster','team-calendar','meals','team-snacks','attendance','admin-dashboard','sources','feedback'];
+export const FEEDBACK_VIEWS=['meal-timer','roster','team-calendar','meals','team-snacks','expenses','attendance','admin-dashboard','sources','feedback'];
 export function validateFeedback(value,people){
  if(!value||typeof value!=='object'||typeof value.id!=='string'||!/^note-[a-zA-Z0-9-]{1,80}$/.test(value.id)||!['employee','admin'].includes(value.role)||!FEEDBACK_VIEWS.includes(value.view)||typeof value.text!=='string'||!value.text.trim()||value.text.length>4000||typeof value.createdAt!=='string'||!Number.isFinite(Date.parse(value.createdAt)))throw new Error('메모 파일의 형식 또는 내용을 확인해 주세요.');
  const person=value.role==='employee'?people.find(p=>p.personId===value.personId):null;

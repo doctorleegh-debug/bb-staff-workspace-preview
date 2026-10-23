@@ -1,7 +1,7 @@
 import {mountPictureGuide} from './picture-guide.js';
 import {FEEDBACK_PREFIX,FEEDBACK_MAX_BYTES,readFeedback,saveFeedback,parseFeedbackFile,feedbackFile} from './preview-feedback.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const titles={'meal-timer':'내 하루',roster:'근무표','team-calendar':'팀 일정',meals:'식대','team-snacks':'팀 간식비',attendance:'OT·지각','admin-dashboard':'관리자 대시보드',sources:'검수 자료',feedback:'메모취합'};
+const titles={expenses:'지출결의서','meal-timer':'내 하루',roster:'근무표','team-calendar':'팀 일정',meals:'식대','team-snacks':'팀 간식비',attendance:'OT·지각','admin-dashboard':'관리자 대시보드',sources:'검수 자료',feedback:'메모취합'};
 const drafts=new Map();
 const mine=(note,session)=>note.role===session.role&&(session.role==='admin'||note.personId===session.personId);
 function download(notes){
