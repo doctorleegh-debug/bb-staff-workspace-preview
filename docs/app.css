@@ -10929,6 +10929,58 @@ html:has(.daily-drawer[open]) {
   font-weight: 700;
   color: var(--muted);
 }
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: 0 3px 14px #172b4d08;
+}
+.topbar .logout-button,
+:root[data-theme=dark] .topbar .logout-button {
+  min-height: 48px;
+  min-width: 126px;
+  flex-shrink: 0;
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+}
+.topbar .logout-button:hover,
+:root[data-theme=dark] .topbar .logout-button:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+.logout-button svg {
+  width: 22px;
+  height: 22px;
+}
+@media (max-width: 800px) {
+  .topbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 12px;
+  }
+  .topbar .login-role-badge {
+    display: none;
+  }
+  .topbar .signed-in-person {
+    grid-column: 1/-1;
+    font-size: 16px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .topbar .theme-toggle {
+    justify-self: start;
+    min-width: 0;
+    padding: 10px 12px;
+  }
+  .topbar .logout-button {
+    justify-self: end;
+    min-width: 114px;
+    padding: 10px 12px;
+  }
+}
 .workspace-support {
   border: 1px solid var(--line);
   border-radius: 16px;
