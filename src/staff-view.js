@@ -7,7 +7,7 @@ const duration=value=>value===null?'—':clockText(value);
 const metric=(label,value,note)=>`<div class="meal-stat"><span>${label}</span><strong>${esc(value)}</strong><small>${note}</small></div>`;
 export function employeeStatusView({person,state}){
  const active=state.active[0],descriptions={meal:'식사하러 갈 때 눌러 주세요.',rest:'휴식을 시작할 때 눌러 주세요.',outing:'잠시 외출할 때 눌러 주세요.',offsite:'외부 업무를 시작할 때 눌러 주세요.'};
- return `<section class="panel employee-status-home"><div class="employee-welcome"><span class="employee-avatar" aria-hidden="true">유</span><div><p>${esc(person.rawTeam)}</p><h2>${esc(person.name)} 님, 안녕하세요.</h2><p>지금 상태를 알려 주세요.</p></div><span class="badge" role="status">${active?ACTIVITY_TYPES[active.kind].status:'근무중'}</span></div>
+ return `<section class="panel employee-status-home"><div class="employee-welcome"><span class="employee-avatar" aria-hidden="true">${esc(Array.from(person.name||'')[0]||'')}</span><div><p>${esc(person.rawTeam)}</p><h2>${esc(person.name)} 님, 안녕하세요.</h2><p>지금 상태를 알려 주세요.</p></div><span class="badge" role="status">${active?ACTIVITY_TYPES[active.kind].status:'근무중'}</span></div>
  <div class="employee-status-actions">${Object.entries(ACTIVITY_TYPES).map(([kind,type])=>{
   const current=state.active.some(r=>r.kind===kind),disabled=(!current&&state.active.length>0)||(!current&&state.errors.length>0);
   return `<article class="status-action ${current?'is-active':''}"><h3>${type.label}</h3><p>${current?'돌아오면 아래 버튼을 눌러 주세요.':descriptions[kind]}</p><button class="${current?'end-meal':'primary'}" data-staff-kind="${kind}" data-staff-action="${current?'end':'start'}" data-expected-active="${esc(state.active.find(r=>r.kind===kind)?.id||'')}" ${disabled?'disabled':''}>${current?type.label+'종료':type.status}</button></article>`;

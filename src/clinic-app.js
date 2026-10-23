@@ -7,13 +7,15 @@ import koLocale from '@fullcalendar/core/locales/ko';
 import { timerState, clockText, MEAL_PREFIX } from './meal-timer.js';
 import { openDailyDetail, calendarDays } from './daily-detail.js';
 import { mealPeople, mealMonth, buildMealDashboard, demoMealRecords } from './meal-dashboard.js';
-import { ACTIVITY_PREFIX, ACTIVITY_TYPES, previewPerson, readStaffState, updateStaffActivity, recordsForActivity } from './staff-activity.js';
+import { ACTIVITY_PREFIX, ACTIVITY_TYPES, readStaffState, updateStaffActivity, recordsForActivity } from './staff-activity.js';
 import { employeeStatusView, activityDashboardView } from './staff-view.js';
 import { mountReceipts } from './receipt-view.js';
 import { RECEIPT_SIGNAL } from './receipt-store.js';
 import './clinic.css';
 import {initializeTheme,themeControl} from './theme.js';
 import {rosterDayCell,addedSchedule,schedulePickerDays} from './schedule-view.js';
+import {SESSION_KEY,employeeDirectory,restorePreviewSession,allowedRoute,mountPreviewLogin} from './preview-auth.js';
+import {mountWorkspaceHelp,mountFeedbackCollection} from './workspace-help.js';
 initializeTheme();
 
 const app=document.querySelector('#app');
@@ -24,7 +26,7 @@ const localDate=(date=new Date())=>`${date.getFullYear()}-${String(date.getMonth
 const monthOf=date=>date.slice(2,4)+date.slice(5,7);
 const dateOf=(month,day=1)=>`20${month.slice(0,2)}-${month.slice(2)}-${String(day).padStart(2,'0')}`;
 const monthText=month=>`20${month.slice(0,2)}년 ${Number(month.slice(2))}월`;
-const menus=[['admin-dashboard','관리자 대시보드','직원 상태와 월간 기록','chart'],['team-calendar','팀 일정','휴무와 팀 일정을 한눈에','calendar'],['roster','직원별 근무표','직원 × 날짜로 비교','grid'],['meal-timer','내 하루','근무 상태와 내 업무','clock'],['meals','식대·영수증','사용 내역과 영수증 모아보기','meal'],['attendance','OT·지각','이월부터 사용·마감까지','chart'],['sources','예시·검증','37개 탭과 예시 기록 확인','file']];
+const menus=[['feedback','메모취합','직원·관리자 의견을 한곳에','file'],['admin-dashboard','관리자 대시보드','직원 상태와 월간 기록','chart'],['team-calendar','팀 일정','휴무와 팀 일정을 한눈에','calendar'],['roster','직원별 근무표','직원 × 날짜로 비교','grid'],['meal-timer','내 하루','근무 상태와 내 업무','clock'],['meals','식대·영수증','사용 내역과 영수증 모아보기','meal'],['attendance','OT·지각','이월부터 사용·마감까지','chart'],['sources','예시·검증','37개 탭과 예시 기록 확인','file']];
 const paths={calendar:'M5 3v4M19 3v4M3 10h18M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2ZM7 14h2m3 0h2m3 0h1M7 18h2m3 0h2',grid:'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',clock:'M12 8v5l3 2M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z',meal:'M4 3v7m3-7v7M2 7h7M5.5 10v11M18 3c-4 4-4 9 0 9V3Zm0 9v9',chart:'M3 3v18h18M7 17v-6m5 6V7m5 10V4',file:'M14 3H5v18h14V8l-5-5Zm0 0v5h5M8 12h8m-8 4h8'};
 const icon=key=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[key]||paths.file}"/></svg>`;
 const badge=(label,cls='')=>`<span class="badge ${cls}">${esc(label)}</span>`;
@@ -32,9 +34,19 @@ const swatch=color=>/^[A-Fa-f0-9]{6}$/.test(color||'')?`<i class="swatch" style=
 let data,calendar,view='team-calendar',month,team='전체',search='',renderVersion=0,dialogVersion=0,sourceBook='schedule',sourceTab='',sourcePage=0,sourceQuery='';
 const rawCache=new Map(),pendingMeals=new Set(),receiptViewState={};
 const LOCAL_KEY='bb-staff:public-preview:v1';
-const MODE_KEY='bb-staff:public-preview:mode:v1';
+let authSession=null,employees=[],helpController,feedbackController,sessionRevision=0;
 let previewMode='employee',mealDemo=false,showAllMealHistory=false,activityKind='meal',signedInPerson,receiptController;
-try{previewMode=sessionStorage.getItem(MODE_KEY)==='admin'?'admin':'employee';}catch{}
+function changeSession(session){
+ sessionRevision++;clearTimeout(searchTimeout);composing=false;dialogVersion++;
+ clearTimeout(toastTimeout);document.querySelector('#toast').classList.remove('visible');document.querySelector('#toast').textContent='';
+ document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());
+ authSession=session;previewMode=session?.role||'employee';signedInPerson=employees.find(p=>p.personId===session?.personId);
+ team='전체';search='';mealDemo=false;showAllMealHistory=false;activityKind='meal';sourceQuery='';sourceTab='';sourcePage=0;
+ month=data.months.includes(monthOf(localDate()))?monthOf(localDate()):data.months.at(-1);
+ for(const key of Object.keys(receiptViewState))delete receiptViewState[key];
+ try{if(session)sessionStorage.setItem(SESSION_KEY,JSON.stringify(session));else sessionStorage.removeItem(SESSION_KEY);}catch{toast('이 탭에서만 로그인 상태를 유지합니다.');}
+ history.replaceState(null,'','#/'+allowedRoute(session,''));render();
+}
 const personalView=()=>previewMode==='employee'&&['roster','meals','attendance'].includes(view);
 
 let toastTimeout;
@@ -51,18 +63,20 @@ function empty(message='선택한 조건의 기록이 없습니다.'){return `<d
 function teamOptions(){return [...new Set([...data.roster,...data.mealRows,...data.otRows].filter(r=>r.month===month).flatMap(r=>r.teams))];}
 function shell(){
  const personal=previewMode==='employee',titles={roster:['내 근무표','나의 휴무와 근무 일정'],meals:['내 식대','영수증 등록과 사용 내역'],attendance:['내 OT·지각','나의 월별 기록']};
- const shownMenus=menus.map(m=>personal&&titles[m[0]]?[m[0],...titles[m[0]],m[3]]:m),current=shownMenus.find(m=>m[0]===view),teams=teamOptions(),visibleMenus=shownMenus.filter(m=>personal?!['admin-dashboard','sources'].includes(m[0]):m[0]!=='meal-timer');
+ const shownMenus=menus.map(m=>personal&&titles[m[0]]?[m[0],...titles[m[0]],m[3]]:m),current=shownMenus.find(m=>m[0]===view),teams=teamOptions(),visibleMenus=shownMenus.filter(m=>personal?!['admin-dashboard','sources','feedback'].includes(m[0]):m[0]!=='meal-timer');
  if(personal){const order=['meal-timer','roster','team-calendar','meals','attendance'];visibleMenus.sort((a,b)=>order.indexOf(a[0])-order.indexOf(b[0]));}
- app.innerHTML=`<aside class="sidebar"><a class="brand" href="#/${personal?'meal-timer':'admin-dashboard'}"><img class="brand-mark" src="./assets/clinic-logo.png" width="52" height="52" alt="뷰티블라썸 로고"><span>뷰티블라썸<small>함께하는 하루</small></span></a><div class="nav-caption">${personal?'나의 업무':'직원 업무 관리'}</div><nav aria-label="직원 업무 메뉴">${visibleMenus.map(([id,title,desc,key])=>`<a class="nav-card ${view===id?'selected':''}" href="#/${id}" ${view===id?'aria-current="page"':''}>${icon(key)}<span><strong>${title}</strong><small>${desc}</small></span><span class="nav-arrow">›</span></a>`).join('')}</nav><div class="sidebar-note"><span class="status-dot"></span>${personal?esc(signedInPerson.name)+' 님':'관리자 화면'}<small>${personal?esc(signedInPerson.rawTeam)+' · 직원 로그인 화면 예시':'직원 상태 · 기록 · 영수증'}</small></div></aside><div class="main"><header class="topbar"><div class="preview-mode-switch" role="group" aria-label="검수용 화면 전환"><span>화면 미리보기</span><button data-preview-mode="employee" class="${personal?'active':''}" aria-pressed="${personal}">직원 화면</button><button data-preview-mode="admin" class="${personal?'':'active'}" aria-pressed="${!personal}">관리자 화면</button></div><span class="signed-in-person">${personal?esc(signedInPerson.name)+' 님 · '+esc(signedInPerson.rawTeam):'뷰티블라썸 관리자'}</span>${themeControl()}<span class="date-label">${new Intl.DateTimeFormat('ko-KR',{month:'long',day:'numeric',weekday:'long'}).format(new Date())}</span></header><main>${personal?'<p class="employee-preview-note">유병호 직원으로 로그인한 화면의 초안입니다.</p>':''}<div class="page-heading"><div><h1>${current[1]}</h1><p>${current[2]}</p></div>${view==='admin-dashboard'?'<button class="primary" data-action="staff-leave">+ 직원 휴무 등록</button>':['sources','meal-timer'].includes(view)?'':`<button class="primary" data-action="${personal&&view==='meals'?'receipt-new':'new'}">+ ${view==='meals'?(personal?'영수증':'식대'):view==='attendance'?'OT·지각':'일정'} 등록</button>`}</div>${view==='meal-timer'?'':`<section class="filters" aria-label="조회 필터"><div class="filter-top"><label class="month-field">조회 월<select id="month-filter">${data.months.map(m=>`<option value="${m}" ${m===month?'selected':''}>${monthText(m)}</option>`).join('')}</select></label>${personalView()?`<p class="personal-filter-note">${esc(signedInPerson.name)} 님의 기록입니다.</p>`:`<label class="search-field">직원 찾기<input id="staff-search" type="search" value="${esc(search)}" placeholder="직원 이름 또는 팀" maxlength="100"></label><label class="team-field">팀 선택<select id="team-filter">${['전체',...teams].map(t=>`<option value="${esc(t)}" ${team===t?'selected':''}>${esc(t)}${t==='전체'?'':'팀'}</option>`).join('')}</select></label><span class="filter-note">화면을 바꿔도 월과 팀이 유지돼요.</span>`}</div></section>`}<div id="content" aria-live="polite"></div></main><footer>뷰티블라썸 직원 업무 · 예시 가져온 날짜 ${esc(data.importedAt?.slice(0,10))}<span>추가한 기록과 사진은 이 브라우저에 저장됩니다.</span></footer></div>`;
+ app.innerHTML=`<aside class="sidebar"><a class="brand" href="#/${personal?'meal-timer':'admin-dashboard'}"><img class="brand-mark" src="./assets/clinic-logo.png" width="52" height="52" alt="뷰티블라썸 로고"><span>뷰티블라썸<small>함께하는 하루</small></span></a><div class="nav-caption">${personal?'나의 업무':'직원 업무 관리'}</div><nav aria-label="직원 업무 메뉴">${visibleMenus.map(([id,title,desc,key])=>`<a class="nav-card ${view===id?'selected':''}" href="#/${id}" ${view===id?'aria-current="page"':''}>${icon(key)}<span><strong>${title}</strong><small>${desc}</small></span><span class="nav-arrow">›</span></a>`).join('')}</nav><div class="sidebar-note"><span class="status-dot"></span>${personal?esc(signedInPerson.name)+' 님':'관리자 화면'}<small>${personal?esc(signedInPerson.rawTeam)+' · 테스트 로그인':'직원 상태 · 기록 · 영수증'}</small></div></aside><div class="main"><header class="topbar"><span class="login-role-badge">${personal?'직원 화면':'관리자 화면'}</span><button type="button" data-action="logout">로그아웃</button><span class="signed-in-person">${personal?esc(signedInPerson.name)+' 님 · '+esc(signedInPerson.rawTeam):'뷰티블라썸 관리자'}</span>${themeControl()}<span class="date-label">${new Intl.DateTimeFormat('ko-KR',{month:'long',day:'numeric',weekday:'long'}).format(new Date())}</span></header><main><div id="workspace-help"></div><div class="page-heading"><div><h1>${current[1]}</h1><p>${current[2]}</p></div>${view==='admin-dashboard'?'<button class="primary" data-action="staff-leave">+ 직원 휴무 등록</button>':['sources','meal-timer','feedback'].includes(view)?'':`<button class="primary" data-action="${personal&&view==='meals'?'receipt-new':'new'}">+ ${view==='meals'?(personal?'영수증':'식대'):view==='attendance'?'OT·지각':'일정'} 등록</button>`}</div>${['meal-timer','feedback'].includes(view)?'':`<section class="filters" aria-label="조회 필터"><div class="filter-top"><label class="month-field">조회 월<select id="month-filter">${data.months.map(m=>`<option value="${m}" ${m===month?'selected':''}>${monthText(m)}</option>`).join('')}</select></label>${personalView()?`<p class="personal-filter-note">${esc(signedInPerson.name)} 님의 기록입니다.</p>`:`<label class="search-field">직원 찾기<input id="staff-search" type="search" value="${esc(search)}" placeholder="직원 이름 또는 팀" maxlength="100"></label><label class="team-field">팀 선택<select id="team-filter">${['전체',...teams].map(t=>`<option value="${esc(t)}" ${team===t?'selected':''}>${esc(t)}${t==='전체'?'':'팀'}</option>`).join('')}</select></label><span class="filter-note">화면을 바꿔도 월과 팀이 유지돼요.</span>`}</div></section>`}<div id="content" aria-live="polite"></div></main><footer>뷰티블라썸 직원 업무 · 예시 가져온 날짜 ${esc(data.importedAt?.slice(0,10))}<span>추가한 기록과 사진은 이 브라우저에 저장됩니다.</span></footer></div>`;
 }
 
 function render(){
  if(!data)return;
- renderVersion++;receiptController?.dispose();receiptController=null;calendar?.destroy();calendar=null;
- view=location.hash.slice(2).split('?')[0];if(!menus.some(m=>m[0]===view))view=previewMode==='employee'?'meal-timer':'admin-dashboard';
- if(['admin-dashboard','sources'].includes(view))previewMode='admin';if(view==='meal-timer')previewMode='employee';
- shell();document.querySelector('main').insertAdjacentHTML('afterbegin','<div class="notice" role="note"><strong>공개 초안 검수용</strong> · 직원 이름 외 일정·식대·OT·메모는 모두 예시입니다. 실제 업무 기록이 아닙니다.</div>');const content=document.querySelector('#content');
- try{({ 'admin-dashboard':renderMealManager,'team-calendar':renderCalendar,roster:renderRoster,'meal-timer':renderTimers,meals:renderMeals,attendance:renderAttendance,sources:renderSources }[view])(content);labelMobileTables(content);}catch(error){content.innerHTML=empty('화면을 불러오지 못했습니다. 새로고침 후 다시 확인해 주세요.');toast(error.message);console.error(error);}
+ renderVersion++;receiptController?.dispose();receiptController=null;helpController?.dispose();helpController=null;feedbackController?.dispose();feedbackController=null;calendar?.destroy();calendar=null;
+ if(!authSession){mountPreviewLogin(app,{people:employees,themeControl,onLogin:changeSession});return;}
+ const requested=location.hash.slice(2).split('?')[0];view=allowedRoute(authSession,requested);
+ if(view!==requested)history.replaceState(null,'','#/'+view);
+ shell();document.querySelector('main').insertAdjacentHTML('afterbegin','<div class="notice" role="note"><strong>공개 초안 검수용</strong> · 미리 채워진 일정·식대·OT는 예시입니다. 직접 입력한 기록과 검수 메모는 이 브라우저에 저장됩니다.</div>');const content=document.querySelector('#content');
+ helpController=mountWorkspaceHelp(document.querySelector('#workspace-help'),{session:authSession,view,people:employees,toast,onSaved:()=>feedbackController?.refresh()});
+ try{({ feedback:root=>{feedbackController=mountFeedbackCollection(root,{people:employees,toast});},'admin-dashboard':renderMealManager,'team-calendar':renderCalendar,roster:renderRoster,'meal-timer':renderTimers,meals:renderMeals,attendance:renderAttendance,sources:renderSources }[view])(content);labelMobileTables(content);}catch(error){content.innerHTML=empty('화면을 불러오지 못했습니다. 새로고침 후 다시 확인해 주세요.');toast(error.message);console.error(error);}
 }
 function calendarRows(){const visibleIds=new Set(rosterRows().map(r=>r.personId));const imported=data.scheduleEvents.filter(e=>monthOf(e.date)===month&&(!e.personId||visibleIds.has(e.personId)));return [...imported,...localRows('schedule')];}
 function renderCalendar(content){
@@ -125,7 +139,7 @@ function renderMealManager(content){
  receiptController=mountReceipts({root:content.querySelector('#dashboard-receipts'),month,months:data.months,person:signedInPerson,admin:true,people:mealPeople(data.roster,month),team,search,toast,viewState:receiptViewState,compact:true,onTeamChange:value=>{team=value;render();}});
 }
 function tickTimers(){
- if(view!=='admin-dashboard'||mealDemo)return;
+ if(!authSession||previewMode!=='admin'||view!=='admin-dashboard'||mealDemo)return;
  for(const el of document.querySelectorAll('[data-live-person]')){
   const active=readStaffState(localStorage,el.dataset.livePerson).active.find(r=>r.kind===el.dataset.liveKind);if(!active){render();return;}
   const state=timerState({active});el.querySelector('.meal-live-elapsed').textContent=clockText(state.elapsed);
@@ -178,14 +192,17 @@ function openEntry(kind=view==='meals'?'meals':view==='attendance'?'attendance':
  if(personId&&people.some(p=>p.personId===personId))document.querySelector('#entry-form [name=person]').value=personId;
 }
 document.addEventListener('submit',async event=>{
- if(event.target.id!=='entry-form')return;event.preventDefault();const form=event.target,button=form.querySelector('[type=submit]');if(button.disabled)return;button.disabled=true;
+ if(event.target.id!=='entry-form'||!authSession)return;const revision=sessionRevision;event.preventDefault();const form=event.target,button=form.querySelector('[type=submit]');if(button.disabled)return;button.disabled=true;
  try{const values=new FormData(form),kind=form.dataset.kind,date=String(values.get('date'));if(!/^2026-\d{2}-\d{2}$/.test(date)||localDate(new Date(date+'T12:00:00'))!==date)throw new Error('날짜를 확인해 주세요.');const person=previewMode==='employee'?(values.get('person')===signedInPerson.personId?signedInPerson:null):schedulePeople(monthOf(date)).find(p=>p.personId===values.get('person'));if(!person)throw new Error('해당 월의 직원을 다시 선택해 주세요.');const label=String(values.get('label')||(kind==='meals'?'식대':''));let amount=kind==='schedule'?undefined:Number(values.get('amount'));if(kind!=='schedule'&&(!Number.isSafeInteger(amount)||Math.abs(amount)>100000000||(kind==='meals'&&amount<0)))throw new Error('금액 또는 시간을 확인해 주세요.');if(kind==='attendance'&&['OT 사용','지각'].includes(label))amount=-Math.abs(amount);
- await saveDraft({id:crypto.randomUUID(),kind,personId:person.personId,name:person.name,teams:person.teams,rawTeam:person.rawTeam,date,month:monthOf(date),label,note:String(values.get('note')).trim(),amount,local:true,createdAt:new Date().toISOString()});month=monthOf(date);document.querySelector('dialog')?.close();render();toast('등록했습니다.');
+ await saveDraft({id:crypto.randomUUID(),kind,personId:person.personId,name:person.name,teams:person.teams,rawTeam:person.rawTeam,date,month:monthOf(date),label,note:String(values.get('note')).trim(),amount,local:true,createdAt:new Date().toISOString()});if(revision!==sessionRevision)return;month=monthOf(date);document.querySelector('dialog')?.close();render();toast('등록했습니다.');
  }catch(error){form.querySelector('.form-error').textContent=error.message;}finally{button.disabled=false;}
 });
 document.addEventListener('click',async event=>{
  const target=event.target.closest('button');if(!target)return;
- if(target.dataset.previewMode){previewMode=target.dataset.previewMode;try{sessionStorage.setItem(MODE_KEY,previewMode);}catch{}const next=previewMode==='admin'?'admin-dashboard':'meal-timer';if(view===next)render();else location.hash='/'+next;return;}
+ if(target.dataset.action==='retry'){location.reload();return;}
+ if(target.dataset.action==='logout'){changeSession(null);return;}
+ if(!authSession)return;
+ const revision=sessionRevision;
  if(target.dataset.scheduleAdd){openEntry('schedule',target.dataset.scheduleAdd,target.dataset.schedulePerson);return;}
  if(target.dataset.rosterRow){const row=data.roster.find(r=>r.id===target.dataset.rosterRow);if(row&&(!personalView()||row.personId===signedInPerson.personId))showRosterDay(row,Number(target.dataset.rosterDay));return;}
  if(target.dataset.source){await showSource(JSON.parse(target.dataset.source));return;}
@@ -194,13 +211,14 @@ document.addEventListener('click',async event=>{
   const admin=!!target.dataset.adminEndConfirm,id=admin?target.dataset.personId:signedInPerson.personId,kind=admin?target.dataset.adminEndConfirm:target.dataset.staffKind,action=admin?'end':target.dataset.staffAction;
   if(admin?(previewMode!=='admin'||view!=='admin-dashboard'||mealDemo||!data.roster.some(p=>p.personId===id)):(view!=='meal-timer'||previewMode!=='employee'))return;
   if(pendingMeals.has(id))return;pendingMeals.add(id);target.disabled=true;
-  try{await updateStaffActivity(localStorage,id,kind,action,navigator.locks,()=>Date.now(),action==='end'?target.dataset.expectedActive:undefined);mealDemo=false;if(admin)document.querySelector('dialog')?.close();if(['meal-timer','admin-dashboard'].includes(view))render();toast(ACTIVITY_TYPES[kind].label+(action==='start'?'을 시작했습니다.':'을 종료했습니다.'));}catch(e){toast(e.message);}finally{pendingMeals.delete(id);target.disabled=false;}return;
+  try{await updateStaffActivity(localStorage,id,kind,action,navigator.locks,()=>Date.now(),action==='end'?target.dataset.expectedActive:undefined);if(revision!==sessionRevision)return;mealDemo=false;if(admin)document.querySelector('dialog')?.close();if(['meal-timer','admin-dashboard'].includes(view))render();toast(ACTIVITY_TYPES[kind].label+(action==='start'?'을 시작했습니다.':'을 종료했습니다.'));}catch(e){toast(e.message);}finally{pendingMeals.delete(id);target.disabled=false;}return;
  }
  if(target.dataset.adminEnd){if(previewMode!=='admin'||mealDemo)return;const p=mealPeople(data.roster,month).find(r=>r.personId===target.dataset.personId),kind=target.dataset.adminEnd;if(!p||!ACTIVITY_TYPES[kind])return;openDialog('상태 종료 처리',`<p>${esc(p.name)} 님의 ${ACTIVITY_TYPES[kind].label}을 지금 시각으로 종료할까요?</p><div class="form-actions"><button data-action="close">취소</button><button class="primary" data-admin-end-confirm="${kind}" data-expected-active="${esc(target.dataset.activeId)}" data-person-id="${esc(p.personId)}">종료 기록하기</button></div>`);return;}
  if(target.dataset.activityTab){if(ACTIVITY_TYPES[target.dataset.activityTab]){activityKind=target.dataset.activityTab;showAllMealHistory=false;render();}return;}
  switch(target.dataset.action){case'receipt-new':{const form=document.querySelector('#receipt-upload');if(form){form.open=true;form.scrollIntoView({block:'start',behavior:'smooth'});}break;}case'meal-demo':mealDemo=!mealDemo;showAllMealHistory=false;render();break;case'meal-history-all':showAllMealHistory=!showAllMealHistory;render();break;case'retry':location.reload();break;case'close':document.querySelector('dialog')?.close();dialogVersion++;break;case'staff-leave':openSchedulePicker(true);break;case'new':if(['team-calendar','roster'].includes(view))openSchedulePicker();else openEntry();break;case'source-search':sourceQuery=document.querySelector('#source-query').value.trim();sourcePage=0;loadRawTable();break;case'raw-prev':sourcePage=Math.max(0,sourcePage-1);loadRawTable();break;case'raw-next':sourcePage++;loadRawTable();break;}
 });
 document.addEventListener('change',event=>{
+ if(!authSession)return;
  if(previewMode==='admin'&&event.target.matches('#entry-form [name=date]')){const select=document.querySelector('#entry-form [name=person]'),selected=select.value,people=schedulePeople(monthOf(event.target.value));select.innerHTML='<option value="">직원을 선택해 주세요</option>'+people.map(p=>'<option value="'+esc(p.personId)+'">'+esc(p.name)+' · '+esc(p.rawTeam)+'</option>').join('');select.value=people.some(p=>p.personId===selected)?selected:'';return;}
  const {id,value}=event.target;if(id==='month-filter'){month=value;sourceTab='';sourcePage=0;if(team!=='전체'&&!teamOptions().includes(team))team='전체';render();}if(id==='team-filter'){team=value;render();}if(id==='source-book'){sourceBook=value;sourceTab='';sourcePage=0;render();}if(id==='source-tab'){sourceTab=value;sourcePage=0;loadRawTable();}});
 let searchTimeout,composing=false;
@@ -210,11 +228,11 @@ document.addEventListener('compositionend',event=>{if(event.target.id==='staff-s
 document.addEventListener('input',scheduleSearch);
 document.addEventListener('keydown',event=>{if(event.key==='Enter'&&event.target.id==='source-query'){event.preventDefault();sourceQuery=event.target.value.trim();sourcePage=0;loadRawTable();}});
 addEventListener('hashchange',render);addEventListener('storage',event=>{
- if(!data)return;
+ if(!data||!authSession)return;
  if(event.key===RECEIPT_SIGNAL){receiptController?.refresh();return;}
  if(event.key===LOCAL_KEY){if(view==='meals'){const area=document.querySelector('.local-records');if(area){area.outerHTML=localRecords('meals');labelMobileTables(document.querySelector('.local-records'));}return;}render();return;}
  if((event.key?.startsWith(MEAL_PREFIX)||event.key?.startsWith(ACTIVITY_PREFIX))&&['meal-timer','admin-dashboard'].includes(view))render();
 });
 setInterval(tickTimers,1000);
-async function start(){try{const response=await fetch('./clinic-data.json');if(!response.ok)throw new Error(`자료 응답 ${response.status}`);data=await response.json();signedInPerson=previewPerson(data.roster);month=data.months.includes(monthOf(localDate()))?monthOf(localDate()):data.months.at(-1);document.title='뷰티블라썸 · 직원 업무';render();}catch(error){app.innerHTML=`<main class="load-error"><h1>직원 자료를 불러오지 못했습니다.</h1><p>${esc(error.message)}</p><button data-action="retry">다시 불러오기</button></main>`;}}
+async function start(){try{const response=await fetch('./clinic-data.json');if(!response.ok)throw new Error(`자료 응답 ${response.status}`);data=await response.json();employees=employeeDirectory(data.roster);try{authSession=restorePreviewSession(sessionStorage,employees);}catch{}previewMode=authSession?.role||'employee';signedInPerson=employees.find(p=>p.personId===authSession?.personId);month=data.months.includes(monthOf(localDate()))?monthOf(localDate()):data.months.at(-1);document.title='뷰티블라썸 · 직원 업무';render();}catch(error){app.innerHTML=`<main class="load-error"><h1>직원 자료를 불러오지 못했습니다.</h1><p>${esc(error.message)}</p><button data-action="retry">다시 불러오기</button></main>`;}}
 start();
