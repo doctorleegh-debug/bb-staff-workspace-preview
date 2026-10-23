@@ -10535,3 +10535,557 @@ html:has(.daily-drawer[open]) {
 .signed-in-person {
   color: #172b4d;
 }
+.employee-status-home {
+  container-type: inline-size;
+}
+.employee-status-actions {
+  grid-template-columns: repeat(4, minmax(0, 220px));
+  justify-content: center;
+  gap: 16px;
+}
+.status-action {
+  aspect-ratio: 1;
+  min-width: 0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+.status-action h3 {
+  font-size: 21px;
+  line-height: 1.25;
+  margin: 0 0 8px;
+}
+.status-action p {
+  min-height: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0 0 12px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.status-action button {
+  margin-top: auto;
+  min-height: 52px;
+  padding: 10px 8px;
+  font-size: 19px;
+  flex-shrink: 0;
+}
+.employee-status-home .meal-record-notice {
+  max-width: none;
+  word-break: keep-all;
+}
+@container (max-width:760px) {
+  .employee-status-actions {
+    grid-template-columns: repeat(2, minmax(0, 220px));
+  }
+}
+@container (max-width:380px) {
+  .employee-status-actions {
+    gap: 12px;
+  }
+  .status-action {
+    padding: 12px;
+  }
+  .status-action h3 {
+    font-size: 20px;
+  }
+  .status-action p {
+    display: none;
+  }
+  .status-action button {
+    min-height: 48px;
+    font-size: 18px;
+    padding: 8px 4px;
+  }
+}
+.receipt-calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin: 18px 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+.receipt-calendar-legend b {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+.receipt-days > button {
+  min-height: 158px;
+  gap: 8px;
+  padding: 10px 6px;
+}
+.receipt-days > button.has-receipts {
+  background: #f1f6ff;
+}
+.receipt-days > button.selected {
+  background: #dbeafe;
+}
+.receipt-days > button > .receipt-day-status {
+  background: #2563eb;
+  color: white;
+  padding: 4px 7px;
+  border-radius: 6px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+.receipt-days > button > .receipt-calendar-entry {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  background: none;
+  max-width: 100%;
+}
+.receipt-calendar-entry img {
+  width: 46px;
+  height: 58px;
+  object-fit: cover;
+  object-position: top;
+  background: white;
+  border: 1px solid #cbd7e7;
+  border-radius: 5px;
+}
+.receipt-calendar-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.receipt-calendar-meta strong {
+  font-size: 16px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.receipt-calendar-meta small {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.4;
+}
+.receipt-days > button > .receipt-missing {
+  padding: 4px 0;
+  background: none;
+  color: #6c7c93;
+  font-size: 16px;
+  font-weight: 400;
+}
+.receipt-missing-short {
+  display: none;
+}
+@media (max-width: 800px) {
+  .receipt-days > button {
+    min-height: 82px;
+    padding: 7px 1px;
+    gap: 8px;
+  }
+  .receipt-status-label,
+  .receipt-calendar-entry,
+  .receipt-missing-full {
+    display: none !important;
+  }
+  .receipt-missing-short {
+    display: inline;
+  }
+  .receipt-days > button > .receipt-day-status {
+    padding: 3px 1px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+  .receipt-calendar-legend {
+    gap: 8px 15px;
+  }
+}
+.theme-toggle {
+  white-space: nowrap;
+  gap: 8px;
+  min-height: 48px;
+  font-size: 16px;
+}
+.theme-toggle svg {
+  width: 21px;
+  height: 21px;
+}
+:root[data-theme=light] {
+  color-scheme: light;
+}
+:root[data-theme=dark] {
+  color-scheme: dark;
+  background: #0c1423;
+  color: #e8eef8;
+  --panel:#152035;
+  --line:#34445e;
+  --muted:#a9bad2;
+  --ink:#e8eef8;
+  --accent:#2563eb;
+  --fc-border-color:#34445e;
+  --fc-neutral-bg-color:#1d2b43;
+  --fc-page-bg-color:#152035;
+  --fc-today-bg-color:#223b60;
+  --fc-button-active-bg-color:#1d4ed8;
+  --fc-button-active-border-color:#689bff;
+}
+:root[data-theme=dark] * {
+  border-color: var(--line);
+}
+:root[data-theme=dark] :is(button, .button, input, select, textarea) {
+  background: #1d2b43;
+  color: var(--ink);
+}
+:root[data-theme=dark] :is(input, textarea)::placeholder {
+  color: #98aac5;
+}
+:root[data-theme=dark] :is(.sidebar, .topbar, .filters, .panel, .metric, .meal-stat, dialog, .employee-shortcuts a, .mobile-roster-person, .mobile-card-table tbody tr, .meal-live-card, .roster-table .sticky-cell, .fc .fc-popover) {
+  background: var(--panel);
+  color: var(--ink);
+}
+:root[data-theme=dark] :is(.status-action, .receipt-upload, .receipt-policy, .receipt-entry, .receipt-photo, .receipt-thumbnails img, .receipt-weekdays, .receipt-blank, .daily-blank, .daily-weekdays, .daily-heading, .dialog-heading, .daily-summary > div, .detail-totals > div, .avatar, .timer-card.eating, .meal-bar-track, .notice, .daily-record, .daily-entry, thead th) {
+  background: #1d2b43;
+  color: var(--ink);
+}
+:root[data-theme=dark] :is(.receipt-days > button, .daily-day, .mobile-roster-days > button, .mobile-roster-days > span, .personal-roster .mobile-roster-days > button, .personal-roster .mobile-roster-days > span) {
+  background: var(--panel);
+  color: var(--ink);
+}
+:root[data-theme=dark] :is(button:hover, .button:hover, .nav-card:hover, tbody tr:hover, .daily-day:hover, .fc .fc-list-event:hover td) {
+  background: #263a58;
+}
+:root[data-theme=dark] :is(.primary, .nav-card.selected, .preview-mode-switch button.active, .activity-stat-tabs button.active, .team-tab.active, .receipt-days > button > .receipt-day-status) {
+  background: #2563eb;
+  color: #fff;
+  border-color: #5389f7;
+}
+:root[data-theme=dark] .primary:hover {
+  background: #1d4ed8;
+}
+:root[data-theme=dark] :is(.status-action.is-active, .receipt-days > button.has-receipts, .end-meal, .badge, .employee-avatar, .employee-welcome > .badge, .daily-mobile-count, .meal-state-symbol) {
+  background: #233e65;
+  color: #dbeaff;
+}
+:root[data-theme=dark] :is(.receipt-days > button.selected, .daily-day.selected) {
+  background: #2a4875;
+  box-shadow: inset 0 0 0 2px #7eacff;
+}
+:root[data-theme=dark] :is(.receipt-calendar-legend b, .meal-live-count, .daily-day.today .daily-day-number) {
+  color: #a6c7ff;
+}
+:root[data-theme=dark] :is(.signed-in-person, .receipt-calendar-meta strong) {
+  color: var(--ink);
+}
+:root[data-theme=dark] :is(.text-button, .daily-more, .daily-note-dot, .blank-cell, .receipt-days > button > .receipt-missing, .legend-dot, .legend-dot span) {
+  color: var(--muted);
+}
+:root[data-theme=dark] .nav-card.selected small {
+  color: #e4edff;
+}
+:root[data-theme=dark] .fc :is(.staff-event, .source-event) {
+  background: #263f66;
+  color: #e0ecff;
+}
+:root[data-theme=dark] .fc .fc-list-day-cushion {
+  background: #1d2b43;
+  color: var(--ink);
+}
+:root[data-theme=dark] .daily-weekdays span:first-child {
+  color: #ffb3aa;
+}
+:root[data-theme=dark] .daily-weekdays span:last-child {
+  color: #a6c7ff;
+}
+:root[data-theme=dark] :is(.fc .common-event, .badge.subtle, .review-list > span, .daily-entry.added) {
+  background: #473c24;
+  color: #f4d995;
+}
+:root[data-theme=dark] :is(.meal-live-card.is-over, .daily-entry.deducted) {
+  background: #3b2e25;
+  color: #ffd4ad;
+}
+:root[data-theme=dark] :is(.is-over .meal-live-over, .meal-over, .daily-record .deducted, .daily-record .added) {
+  color: #ffce91;
+}
+:root[data-theme=dark] :is(.form-error, .receipt-error, .daily-day:nth-child(7n+1) .daily-day-number) {
+  color: #ffb3aa;
+}
+:root[data-theme=dark] .meal-bar-track i {
+  background: #79aaff;
+}
+:root[data-theme=dark] .daily-mobile-count:has(.added) {
+  background: #473c24;
+}
+:root[data-theme=dark] .receipt-days > button > .receipt-calendar-entry {
+  background: none;
+}
+:root[data-theme=dark] .receipt-calendar-entry img {
+  background: #fff;
+}
+:root[data-theme=dark] :is(button, a, input, select, textarea):focus-visible {
+  outline-color: #8bb8ff;
+}
+:root[data-theme=dark] dialog::backdrop {
+  background: #020713b8;
+}
+.receipt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.receipt-panel.is-compact:not(.is-expanded) :is(.receipt-calendar-legend, .receipt-calendar, .receipt-selected) {
+  display: none;
+}
+.receipt-panel.is-compact .receipt-policy {
+  display: none;
+}
+.receipt-submissions {
+  margin: 20px 0;
+}
+.receipt-submissions > p {
+  color: var(--muted);
+  font-size: 16px;
+}
+.receipt-submission {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-top: 1px solid var(--line);
+  padding: 18px 0;
+}
+.receipt-submission > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.receipt-submission strong,
+.receipt-submission span,
+.receipt-submission small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.receipt-submission strong {
+  font-size: 18px;
+}
+.receipt-submission span,
+.receipt-submission small {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  margin-top: 5px;
+}
+.receipt-submission-total {
+  min-width: 110px;
+  text-align: right;
+}
+@media (max-width: 800px) {
+  .receipt-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .receipt-actions button {
+    flex: 1 1 180px;
+    white-space: normal;
+  }
+  .receipt-controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .receipt-controls p {
+    margin: 0;
+  }
+  .receipt-submission {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .receipt-submission > div:first-child {
+    flex-basis: 100%;
+  }
+  .receipt-submission-total {
+    text-align: left;
+    flex: 1;
+  }
+}
+.calendar-add {
+  min-height: 30px;
+  width: 30px;
+  min-width: 30px;
+  padding: 0;
+  border: 1px solid #b9cff7;
+  border-radius: 7px;
+  background: #edf4ff;
+  color: #1d4ed8;
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.fc .fc-daygrid-day-top {
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px;
+  gap: 4px;
+}
+.roster-calendar-day {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  min-height: 120px;
+  padding: 8px 5px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.roster-day-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.roster-day-top strong {
+  font-size: 17px;
+}
+.roster-day-record {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  width: 100%;
+  min-height: 42px;
+  padding: 5px 0;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.roster-original {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+.roster-original > span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.roster-added {
+  display: block;
+  background: #e4eeff;
+  color: #1d4ed8;
+  border-radius: 5px;
+  padding: 3px 4px;
+  max-width: 100%;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.roster-day-empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 7px 0;
+}
+.roster-desktop-day {
+  width: 112px;
+  border: 0;
+  min-height: 112px;
+}
+.roster-desktop-day .roster-day-top {
+  justify-content: flex-end;
+}
+.schedule-picker {
+  padding: 0 26px 26px;
+}
+.schedule-picker-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 18px;
+}
+.schedule-picker-fields > label,
+.schedule-picker-fields select {
+  min-width: 0;
+  width: 100%;
+}
+.schedule-picker-fields > p {
+  color: var(--muted);
+}
+.schedule-picker-calendar {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.schedule-picker-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.schedule-picker-days > button,
+.schedule-picker-days > span {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 86px;
+  padding: 9px 2px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--panel);
+}
+.schedule-picker-days > button > span {
+  font-size: 25px;
+  color: #2563eb;
+}
+.schedule-picker-days > button:hover {
+  background: #eaf2ff;
+}
+:root[data-theme=dark] .calendar-add,
+:root[data-theme=dark] .roster-added {
+  background: #233e65;
+  color: #c5dcff;
+}
+:root[data-theme=dark] .roster-day-record {
+  background: transparent;
+}
+:root[data-theme=dark] .schedule-picker-days > button:hover {
+  background: #233e65;
+}
+:root[data-theme=dark] .schedule-picker-days > button > span {
+  color: #a6c7ff;
+}
+@media (max-width: 800px) {
+  .roster-calendar-day {
+    min-height: 118px;
+    padding: 5px 1px;
+    gap: 5px;
+  }
+  .roster-day-top {
+    justify-content: center;
+  }
+  .roster-day-top strong {
+    width: 100%;
+    text-align: center;
+  }
+  .roster-day-record {
+    padding: 3px 0;
+  }
+  .roster-added {
+    padding: 2px 1px;
+  }
+  .schedule-picker {
+    padding: 0 12px 18px;
+  }
+  .schedule-picker-fields {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .schedule-picker-days > button,
+  .schedule-picker-days > span {
+    min-height: 76px;
+  }
+}
