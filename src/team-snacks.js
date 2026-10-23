@@ -1,0 +1,31 @@
+import {validReceiptDate} from './receipt-store.js';
+export const SNACK_KEY='bb-staff:public-preview:team-snacks:v1';
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const won=value=>value.toLocaleString('ko-KR')+'원';
+export function readSnacks(storage){
+ const raw=storage.getItem(SNACK_KEY);if(raw===null)return[];
+ const rows=JSON.parse(raw);if(!Array.isArray(rows)||rows.some(r=>!r||typeof r.id!=='string'||typeof r.personId!=='string'||typeof r.name!=='string'||typeof r.team!=='string'||!validReceiptDate(r.date)||!Number.isSafeInteger(r.amount)||r.amount<0||r.amount>100000000||typeof r.note!=='string'||r.note.length>2000||typeof r.createdAt!=='string'||!Number.isFinite(Date.parse(r.createdAt))))throw new Error('간식비 기록을 읽지 못했습니다. 기존 기록은 보존했습니다.');return rows;
+}
+export async function saveSnack(storage,{session,person,teams,months,date,team,amount,note=''},locks=globalThis.navigator?.locks){
+ if(!session||!['employee','admin'].includes(session.role)||session.role==='employee'&&(!person||session.personId!==person.personId))throw new Error('로그인 정보를 확인해 주세요.');
+ const allowed=session.role==='admin'?teams:person.teams||[];
+ if(!allowed.includes(team))throw new Error('등록할 수 있는 팀을 선택해 주세요.');
+ if(!validReceiptDate(date)||!months.includes(date.slice(2,4)+date.slice(5,7)))throw new Error('조회 가능한 사용일을 선택해 주세요.');
+ if(typeof amount!=='number'||!Number.isSafeInteger(amount)||amount<0||amount>100000000)throw new Error('금액은 0원부터 1억원까지 정수로 입력해 주세요.');
+ if(typeof note!=='string'||note.length>2000)throw new Error('내용은 2,000자까지 입력할 수 있습니다.');
+ const row={id:crypto.randomUUID(),personId:session.role==='admin'?'admin':person.personId,name:session.role==='admin'?'관리자':person.name,team,date,amount,note:note.trim(),createdAt:new Date().toISOString()};
+ const work=()=>{const rows=readSnacks(storage);storage.setItem(SNACK_KEY,JSON.stringify([...rows,row]));return row;};
+ return locks?locks.request(SNACK_KEY,work):work();
+}
+export function snackRows(rows,month,team,search=''){return rows.filter(r=>r.date.slice(2,4)+r.date.slice(5,7)===month&&(team==='전체'||r.team===team)&&(!search||[r.name,r.team,r.note].some(v=>v.includes(search)))).toSorted((a,b)=>b.date.localeCompare(a.date)||b.createdAt.localeCompare(a.createdAt));}
+const csvCell=value=>'"'+String(value??'').replace(/^[\s]*[=+@-]/,m=>"'"+m).replaceAll('"','""')+'"';
+export function snackCSV(rows){return '\uFEFF'+[['사용일','팀','작성자','금액','내용'],...rows.map(r=>[r.date,r.team,r.name,r.amount,r.note])].map(r=>r.map(csvCell).join(',')).join('\r\n');}
+export function mountSnacks({root,session,person,teams,months,month,team,search='',toast}){
+ let disposed=false,saving=false;const allowed=session.role==='admin'?teams:person.teams||[],defaultTeam=allowed.includes(team)?team:allowed[0],prefix=`20${month.slice(0,2)}-${month.slice(2)}`,today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date()),defaultDate=today.startsWith(prefix)?today:prefix+'-01';
+ root.innerHTML=`<section class="panel snack-panel"><div class="panel-heading"><div><h2>팀 간식비</h2><p>영수증 없이 사용일과 금액을 기록해요. 개인 식대와 별도로 집계합니다.</p></div><button data-snack-export>조회 내역 다운로드</button></div><div class="snack-totals"></div><details class="snack-register"><summary>+ 간식비 기록</summary><form class="snack-form"><div class="form-grid"><label>사용일<input name="date" type="date" value="${defaultDate}" required></label><label>사용 팀<select name="team" required>${allowed.map(t=>`<option ${t===defaultTeam?'selected':''}>${esc(t)}</option>`).join('')}</select></label><label>금액 (원)<input name="amount" type="number" min="0" max="100000000" step="1" inputmode="numeric" required placeholder="예: 30000"></label><label>내용 (선택)<input name="note" maxlength="2000" placeholder="예: 쿠팡 간식 주문"></label></div><div class="form-actions"><button type="submit" class="primary">내용 저장</button></div><p class="form-error" role="alert"></p></form></details><p class="receipt-local-note">현재는 이 브라우저의 기록입니다. 다른 기기와의 공유는 운영 연결 후 적용됩니다.</p><p class="snack-error" role="alert"></p><div class="snack-records"></div></section>`;
+ function rows(){return snackRows(readSnacks(localStorage),month,team,search);}
+ function refresh(){if(disposed)return;try{const records=rows(),total=records.reduce((s,r)=>s+r.amount,0);root.querySelector('.snack-totals').innerHTML=`<div class="metric"><span>${esc(team==='전체'?'모든 팀':team+'팀')} 이번 달 사용</span><strong>${won(total)}</strong><small>${records.length}건</small></div>`;root.querySelector('.snack-records').innerHTML=records.length?`<div class="snack-list">${records.map(r=>`<article><div><strong>${esc(r.date)} · ${esc(r.team)}팀</strong><small>작성자 ${esc(r.name)}</small><p>${esc(r.note||'내용 없음')}</p></div><strong>${won(r.amount)}</strong></article>`).join('')}</div>`:'<p class="empty">이달에 등록된 간식비가 없습니다.</p>';root.querySelector('[data-snack-export]').disabled=!records.length;root.querySelector('.snack-error').textContent='';}catch(e){root.querySelector('.snack-error').textContent=e.message;root.querySelector('[data-snack-export]').disabled=true;}}
+ root.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();if(saving)return;const form=event.target,button=form.querySelector('[type=submit]'),values=new FormData(form);saving=true;button.disabled=true;form.querySelector('.form-error').textContent='';try{await saveSnack(localStorage,{session,person,teams,months,date:String(values.get('date')),team:String(values.get('team')),amount:Number(values.get('amount')),note:String(values.get('note'))});if(disposed)return;form.reset();form.elements.date.value=defaultDate;refresh();toast('간식비를 저장했습니다. 해당 사용 월에서 확인해 주세요.');}catch(e){if(!disposed)form.querySelector('.form-error').textContent=e.message;}finally{saving=false;button.disabled=false;}});
+ root.querySelector('[data-snack-export]').addEventListener('click',()=>{try{const url=URL.createObjectURL(new Blob([snackCSV(rows())],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=`팀간식비_${month}_${team}.csv`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){root.querySelector('.snack-error').textContent=e.message;}});
+ refresh();return{refresh,dispose(){disposed=true;}};
+}

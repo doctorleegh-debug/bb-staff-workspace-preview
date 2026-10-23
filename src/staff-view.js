@@ -5,15 +5,17 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;
 const time=value=>new Date(value).toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
 const duration=value=>value===null?'—':clockText(value);
 const metric=(label,value,note)=>`<div class="meal-stat"><span>${label}</span><strong>${esc(value)}</strong><small>${note}</small></div>`;
-export function employeeStatusView({person,state}){
+export function employeeStatusView({person,state,mealPeople=[]}){
  const active=state.active[0],descriptions={meal:'식사하러 갈 때 눌러 주세요.',rest:'휴식을 시작할 때 눌러 주세요.',outing:'잠시 외출할 때 눌러 주세요.',offsite:'외부 업무를 시작할 때 눌러 주세요.'};
  return `<section class="panel employee-status-home"><div class="employee-welcome"><span class="employee-avatar" aria-hidden="true">${esc(Array.from(person.name||'')[0]||'')}</span><div><p>${esc(person.rawTeam)}</p><h2>${esc(person.name)} 님, 안녕하세요.</h2><p>지금 상태를 알려 주세요.</p></div><span class="badge" role="status">${active?ACTIVITY_TYPES[active.kind].status:'근무중'}</span></div>
- <div class="employee-status-actions">${Object.entries(ACTIVITY_TYPES).map(([kind,type])=>{
+ <div class="employee-status-actions meal-only-actions">${Object.entries(ACTIVITY_TYPES).filter(([kind])=>kind==='meal'||state.active.some(r=>r.kind===kind)).map(([kind,type])=>{
   const current=state.active.some(r=>r.kind===kind),disabled=(!current&&state.active.length>0)||(!current&&state.errors.length>0);
-  return `<article class="status-action ${current?'is-active':''}"><h3>${type.label}</h3><p>${current?'돌아오면 아래 버튼을 눌러 주세요.':descriptions[kind]}</p><button class="${current?'end-meal':'primary'}" data-staff-kind="${kind}" data-staff-action="${current?'end':'start'}" data-expected-active="${esc(state.active.find(r=>r.kind===kind)?.id||'')}" ${disabled?'disabled':''}>${current?type.label+'종료':type.status}</button></article>`;
- }).join('')}</div>${state.active.length?'<p class="status-guidance">다른 상태를 시작하려면 진행 중인 상태를 먼저 종료해 주세요.</p>':''}
- ${state.errors.length?`<p class="form-error" role="alert">${esc(state.errors.join(' '))}</p>`:''}<p class="meal-record-notice">식사·휴식·외출·외근의 시작·종료 이력은 관리자에게 기록됩니다.</p></section>
- <section class="employee-shortcuts" aria-label="내 업무 바로가기"><a href="#/roster"><strong>내 근무표</strong><span>나의 휴무와 근무 일정</span></a><a href="#/meals"><strong>내 식대</strong><span>영수증 등록과 사용 내역</span></a><a href="#/attendance"><strong>내 OT·지각</strong><span>나의 월별 기록</span></a></section>`;
+  const started=state.active.find(r=>r.kind===kind)?.startedAt;
+  return `<article class="status-action ${current?'is-active':''}"><h3>${type.label}</h3><p>${current?'돌아오면 아래 버튼을 눌러 주세요.':descriptions[kind]}</p>${current&&kind==='meal'?`<p class="meal-start-time">식사 시작 <strong>${time(started)}</strong></p>`:''}<button class="${current?'end-meal':'primary'}" data-staff-kind="${kind}" data-staff-action="${current?'end':'start'}" data-expected-active="${esc(state.active.find(r=>r.kind===kind)?.id||'')}" ${disabled?'disabled':''}>${current?type.label+'종료':type.status}</button></article>`;
+ }).join('')}</div>${state.active.some(r=>r.kind!=='meal')?'<p class="status-guidance">진행 중인 이전 상태를 먼저 종료해 주세요.</p>':''}
+ ${state.errors.length?`<p class="form-error" role="alert">${esc(state.errors.join(' '))}</p>`:''}<p class="meal-record-notice">식사의 시작·종료 이력은 관리자에게 기록됩니다.</p></section>
+ <section class="panel team-meal-presence"><div class="panel-heading"><div><h2>지금 식사중인 직원 <span class="badge">${mealPeople.length}명</span></h2><p>다른 팀의 식사 현황도 함께 확인해요. 현재는 이 브라우저에서 기록한 상태입니다.</p></div></div>${mealPeople.length?`<div class="team-meal-list">${mealPeople.map(p=>`<article><strong>${esc(p.name)}</strong><span>${esc(p.rawTeam)}</span><span>시작 ${mealDate(p.startedAt)} ${time(p.startedAt)}</span><span class="badge">식사중</span></article>`).join('')}</div>`:'<p class="empty">현재 식사중으로 기록된 직원이 없습니다.</p>'}</section>
+ <section class="employee-shortcuts" aria-label="내 업무 바로가기"><a href="#/roster"><strong>내 근무표</strong><span>나의 휴무와 근무 일정</span></a><a href="#/meals"><strong>내 식대</strong><span>사용 한도와 잔액</span></a><a href="#/team-snacks"><strong>팀 간식비</strong><span>간식 주문 금액 기록</span></a><a href="#/attendance"><strong>내 OT·지각</strong><span>나의 월별 기록</span></a></section>`;
 }
 export function activityDashboardView({stats,month,kind,live,demo,showAll,errors=[]}){
  const type=ACTIVITY_TYPES[kind],label=type.label,meal=kind==='meal',{totals,staff,completed,days}=stats,max=Math.max(1,...days.map(d=>d.average));
