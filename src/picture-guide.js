@@ -24,11 +24,40 @@ const topics={
 };
 const routeTopic={'meal-timer':'status',roster:'schedule','team-calendar':'team',meals:'receipt',attendance:'daily','admin-dashboard':'dashboard',feedback:'notes'};
 export const guideAssets=[...new Set(Object.values(topics).flatMap(role=>Object.values(role).flatMap(topic=>topic.steps.map(s=>s.image+'.png'))))];
-export function mountPictureGuide(root,{role,view}){
- const available=topics[role],initial=routeTopic[view];let selected=available[initial]?initial:Object.keys(available)[0],viewer=null,disposed=false;
- root.innerHTML=`<div class="picture-guide"><label class="guide-topic-label">보고 싶은 사용 방법<select data-guide-topic>${Object.entries(available).map(([id,t])=>`<option value="${id}" ${id===selected?'selected':''}>${t.title}</option>`).join('')}</select></label><p class="guide-caption">사진 순서대로 따라 해 보세요. 사진을 누르면 크게 볼 수 있어요. 화면의 기록은 설명용 예시입니다.</p><ol class="picture-guide-steps"></ol></div>`;
- function paint(){root.querySelector('ol').innerHTML=available[selected].steps.map((s,i)=>`<li><button type="button" class="guide-image-button" data-guide-image="${i}" aria-label="${esc(s.title)} 화면 크게 보기"><img src="./assets/guide/${s.image}.png" alt="${esc(s.title)} 실제 화면" loading="lazy" decoding="async"><span>사진 크게 보기 ↗</span></button><h3><span>${i+1}</span> ${esc(s.title)}</h3><p>${esc(s.text)}</p></li>`).join('');}
- root.querySelector('select').addEventListener('change',event=>{selected=event.target.value;paint();});
- root.addEventListener('click',event=>{const button=event.target.closest('[data-guide-image]');if(!button||disposed)return;const s=available[selected].steps[Number(button.dataset.guideImage)];if(!s)return;viewer?.close();const dialog=document.createElement('dialog');dialog.className='guide-viewer';dialog.setAttribute('aria-label',s.title);dialog.innerHTML=`<div class="dialog-heading"><h2>${esc(s.title)}</h2><button type="button" data-guide-close>닫기 ✕</button></div><img src="./assets/guide/${s.image}.png" alt="${esc(s.title)} 실제 화면"><p>${esc(s.text)}</p>`;dialog.querySelector('button').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{dialog.remove();if(viewer===dialog)viewer=null;});document.body.append(dialog);viewer=dialog;dialog.showModal();});
- paint();return{dispose(){disposed=true;viewer?.close();}};
+export function mountPictureGuide({role,view,state={}}){
+ const available=topics[role],initial=routeTopic[view],sameView=state.role===role&&state.view===view;
+ let selected=sameView&&available[state.selected]?state.selected:available[initial]?initial:Object.keys(available)[0];
+ let stepIndex=sameView?Math.min(state.stepIndex||0,available[selected].steps.length-1):0,viewer=null,disposed=false;
+ Object.assign(state,{role,view,selected,stepIndex});if(!sameView)state.scrollTop=0;
+ const dock=document.createElement('section');dock.className='guide-dock';dock.setAttribute('aria-label','사용설명서 바로가기');
+ dock.innerHTML=`<button type="button" class="guide-launcher" data-guide-toggle aria-expanded="false" aria-controls="floating-guide-panel" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 5c-3-2-6-2-10-1v15c4-1 7-1 10 1 3-2 6-2 10-1V4c-4-1-7-1-10 1Z"/><path d="M12 5v15"/></svg><span>사용설명서</span><span class="guide-chevron" aria-hidden="true">⌄</span></button><div id="floating-guide-panel" class="guide-popup" role="dialog" aria-modal="false" aria-label="${role==='admin'?'관리자':'직원'} 사용설명서"><header class="guide-popup-heading"><div><strong>${role==='admin'?'관리자':'직원'} 사용설명서</strong><span>설명을 보면서 화면을 사용해 보세요.</span></div><button type="button" data-guide-dismiss aria-label="사용설명서 접기">접기 ✕</button></header><div class="guide-popup-body"><div class="picture-guide"><label class="guide-topic-label">사용 방법 선택<select data-guide-topic>${Object.entries(available).map(([id,t])=>`<option value="${id}" ${id===selected?'selected':''}>${t.title}</option>`).join('')}</select></label><p class="guide-caption">사진을 누르면 크게 볼 수 있어요. 설명용 예시 화면입니다.</p><ol class="picture-guide-steps"></ol><nav class="guide-step-navigation" aria-label="사용설명서 단계"><button type="button" data-guide-prev>← 이전</button><span data-guide-progress aria-live="polite"></span><button type="button" data-guide-next>다음 →</button></nav></div></div></div>`;
+ const button=dock.querySelector('[data-guide-toggle]'),panel=dock.querySelector('.guide-popup'),body=dock.querySelector('.guide-popup-body'),select=dock.querySelector('select');
+ const nativePopover=typeof panel.showPopover==='function';if(nativePopover)panel.setAttribute('popover','manual');else panel.hidden=true;
+ function paint(){
+  const steps=available[selected].steps,s=steps[stepIndex];Object.assign(state,{selected,stepIndex});
+  dock.querySelector('ol').innerHTML=`<li><button type="button" class="guide-image-button" data-guide-image aria-label="${esc(s.title)} 화면 크게 보기"><img src="./assets/guide/${s.image}.png" alt="${esc(s.title)} 실제 화면" decoding="async"><span>사진 크게 보기 ↗</span></button><h3><span>${stepIndex+1}</span> ${esc(s.title)}</h3><p>${esc(s.text)}</p></li>`;
+  dock.querySelector('[data-guide-prev]').disabled=stepIndex===0;dock.querySelector('[data-guide-next]').disabled=stepIndex===steps.length-1;dock.querySelector('[data-guide-progress]').textContent=`${stepIndex+1} / ${steps.length}`;
+ }
+ function setOpen(open,focus=false){
+  if(disposed)return;state.open=open;button.setAttribute('aria-expanded',String(open));dock.classList.toggle('is-open',open);
+  if(nativePopover){if(open&&!panel.matches(':popover-open'))panel.showPopover();if(!open&&panel.matches(':popover-open'))panel.hidePopover();}else panel.hidden=!open;
+  if(focus)(open?select:button).focus({preventScroll:true});
+ }
+ function syncHost(){
+  if(disposed)return;const modal=[...document.querySelectorAll('dialog[open]')].filter(d=>d!==viewer&&!d.classList.contains('guide-viewer')).at(-1),host=modal||document.body;
+  if(dock.parentElement===host)return;const wasOpen=!!state.open;if(nativePopover&&panel.matches(':popover-open'))panel.hidePopover();host.append(dock);if(wasOpen)setOpen(true);
+ }
+ function showPhoto(){
+  const s=available[selected].steps[stepIndex];viewer?.close();const dialog=document.createElement('dialog');dialog.className='guide-viewer';dialog.setAttribute('aria-label',s.title);
+  dialog.innerHTML=`<div class="dialog-heading"><h2>${esc(s.title)}</h2><button type="button" data-guide-close>닫기 ✕</button></div><img src="./assets/guide/${s.image}.png" alt="${esc(s.title)} 실제 화면"><p>${esc(s.text)}</p>`;
+  dialog.querySelector('button').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{dialog.remove();if(viewer===dialog)viewer=null;});document.body.append(dialog);viewer=dialog;dialog.showModal();
+ }
+ button.addEventListener('click',()=>setOpen(!state.open,true));dock.querySelector('[data-guide-dismiss]').addEventListener('click',()=>setOpen(false,true));
+ select.addEventListener('change',()=>{selected=select.value;stepIndex=0;state.scrollTop=0;paint();body.scrollTop=0;});
+ dock.addEventListener('click',event=>{if(event.target.closest('[data-guide-image]'))showPhoto();const prev=event.target.closest('[data-guide-prev]'),next=event.target.closest('[data-guide-next]');if((prev&&stepIndex>0)||(next&&stepIndex<available[selected].steps.length-1)){stepIndex+=next?1:-1;paint();state.scrollTop=0;body.scrollTop=0;}});
+ const keydown=event=>{if(event.key==='Escape'&&state.open&&!viewer){event.preventDefault();event.stopPropagation();setOpen(false,dock.contains(document.activeElement));}};
+ document.addEventListener('keydown',keydown,true);body.addEventListener('scroll',()=>{if(!disposed)state.scrollTop=body.scrollTop;},{passive:true});
+ document.body.append(dock);paint();syncHost();setOpen(!!state.open);body.scrollTop=state.scrollTop||0;
+ const observer=new MutationObserver(syncHost);observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['open']});
+ return{dispose(){disposed=true;observer.disconnect();document.removeEventListener('keydown',keydown,true);viewer?.close();if(nativePopover&&panel.matches(':popover-open'))panel.hidePopover();dock.remove();}};
 }

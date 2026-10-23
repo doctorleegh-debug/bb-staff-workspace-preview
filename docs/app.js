@@ -13106,22 +13106,50 @@ var topics = {
 };
 var routeTopic = { "meal-timer": "status", roster: "schedule", "team-calendar": "team", meals: "receipt", attendance: "daily", "admin-dashboard": "dashboard", feedback: "notes" };
 var guideAssets = [...new Set(Object.values(topics).flatMap((role) => Object.values(role).flatMap((topic) => topic.steps.map((s3) => s3.image + ".png"))))];
-function mountPictureGuide(root, { role, view: view2 }) {
-  const available = topics[role], initial = routeTopic[view2];
-  let selected = available[initial] ? initial : Object.keys(available)[0], viewer = null, disposed = false;
-  root.innerHTML = `<div class="picture-guide"><label class="guide-topic-label">\uBCF4\uACE0 \uC2F6\uC740 \uC0AC\uC6A9 \uBC29\uBC95<select data-guide-topic>${Object.entries(available).map(([id, t3]) => `<option value="${id}" ${id === selected ? "selected" : ""}>${t3.title}</option>`).join("")}</select></label><p class="guide-caption">\uC0AC\uC9C4 \uC21C\uC11C\uB300\uB85C \uB530\uB77C \uD574 \uBCF4\uC138\uC694. \uC0AC\uC9C4\uC744 \uB204\uB974\uBA74 \uD06C\uAC8C \uBCFC \uC218 \uC788\uC5B4\uC694. \uD654\uBA74\uC758 \uAE30\uB85D\uC740 \uC124\uBA85\uC6A9 \uC608\uC2DC\uC785\uB2C8\uB2E4.</p><ol class="picture-guide-steps"></ol></div>`;
+function mountPictureGuide({ role, view: view2, state = {} }) {
+  const available = topics[role], initial = routeTopic[view2], sameView = state.role === role && state.view === view2;
+  let selected = sameView && available[state.selected] ? state.selected : available[initial] ? initial : Object.keys(available)[0];
+  let stepIndex = sameView ? Math.min(state.stepIndex || 0, available[selected].steps.length - 1) : 0, viewer = null, disposed = false;
+  Object.assign(state, { role, view: view2, selected, stepIndex });
+  if (!sameView) state.scrollTop = 0;
+  const dock = document.createElement("section");
+  dock.className = "guide-dock";
+  dock.setAttribute("aria-label", "\uC0AC\uC6A9\uC124\uBA85\uC11C \uBC14\uB85C\uAC00\uAE30");
+  dock.innerHTML = `<button type="button" class="guide-launcher" data-guide-toggle aria-expanded="false" aria-controls="floating-guide-panel" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 5c-3-2-6-2-10-1v15c4-1 7-1 10 1 3-2 6-2 10-1V4c-4-1-7-1-10 1Z"/><path d="M12 5v15"/></svg><span>\uC0AC\uC6A9\uC124\uBA85\uC11C</span><span class="guide-chevron" aria-hidden="true">\u2304</span></button><div id="floating-guide-panel" class="guide-popup" role="dialog" aria-modal="false" aria-label="${role === "admin" ? "\uAD00\uB9AC\uC790" : "\uC9C1\uC6D0"} \uC0AC\uC6A9\uC124\uBA85\uC11C"><header class="guide-popup-heading"><div><strong>${role === "admin" ? "\uAD00\uB9AC\uC790" : "\uC9C1\uC6D0"} \uC0AC\uC6A9\uC124\uBA85\uC11C</strong><span>\uC124\uBA85\uC744 \uBCF4\uBA74\uC11C \uD654\uBA74\uC744 \uC0AC\uC6A9\uD574 \uBCF4\uC138\uC694.</span></div><button type="button" data-guide-dismiss aria-label="\uC0AC\uC6A9\uC124\uBA85\uC11C \uC811\uAE30">\uC811\uAE30 \u2715</button></header><div class="guide-popup-body"><div class="picture-guide"><label class="guide-topic-label">\uC0AC\uC6A9 \uBC29\uBC95 \uC120\uD0DD<select data-guide-topic>${Object.entries(available).map(([id, t3]) => `<option value="${id}" ${id === selected ? "selected" : ""}>${t3.title}</option>`).join("")}</select></label><p class="guide-caption">\uC0AC\uC9C4\uC744 \uB204\uB974\uBA74 \uD06C\uAC8C \uBCFC \uC218 \uC788\uC5B4\uC694. \uC124\uBA85\uC6A9 \uC608\uC2DC \uD654\uBA74\uC785\uB2C8\uB2E4.</p><ol class="picture-guide-steps"></ol><nav class="guide-step-navigation" aria-label="\uC0AC\uC6A9\uC124\uBA85\uC11C \uB2E8\uACC4"><button type="button" data-guide-prev>\u2190 \uC774\uC804</button><span data-guide-progress aria-live="polite"></span><button type="button" data-guide-next>\uB2E4\uC74C \u2192</button></nav></div></div></div>`;
+  const button = dock.querySelector("[data-guide-toggle]"), panel = dock.querySelector(".guide-popup"), body = dock.querySelector(".guide-popup-body"), select = dock.querySelector("select");
+  const nativePopover = typeof panel.showPopover === "function";
+  if (nativePopover) panel.setAttribute("popover", "manual");
+  else panel.hidden = true;
   function paint() {
-    root.querySelector("ol").innerHTML = available[selected].steps.map((s3, i3) => `<li><button type="button" class="guide-image-button" data-guide-image="${i3}" aria-label="${esc6(s3.title)} \uD654\uBA74 \uD06C\uAC8C \uBCF4\uAE30"><img src="./assets/guide/${s3.image}.png" alt="${esc6(s3.title)} \uC2E4\uC81C \uD654\uBA74" loading="lazy" decoding="async"><span>\uC0AC\uC9C4 \uD06C\uAC8C \uBCF4\uAE30 \u2197</span></button><h3><span>${i3 + 1}</span> ${esc6(s3.title)}</h3><p>${esc6(s3.text)}</p></li>`).join("");
+    const steps = available[selected].steps, s3 = steps[stepIndex];
+    Object.assign(state, { selected, stepIndex });
+    dock.querySelector("ol").innerHTML = `<li><button type="button" class="guide-image-button" data-guide-image aria-label="${esc6(s3.title)} \uD654\uBA74 \uD06C\uAC8C \uBCF4\uAE30"><img src="./assets/guide/${s3.image}.png" alt="${esc6(s3.title)} \uC2E4\uC81C \uD654\uBA74" decoding="async"><span>\uC0AC\uC9C4 \uD06C\uAC8C \uBCF4\uAE30 \u2197</span></button><h3><span>${stepIndex + 1}</span> ${esc6(s3.title)}</h3><p>${esc6(s3.text)}</p></li>`;
+    dock.querySelector("[data-guide-prev]").disabled = stepIndex === 0;
+    dock.querySelector("[data-guide-next]").disabled = stepIndex === steps.length - 1;
+    dock.querySelector("[data-guide-progress]").textContent = `${stepIndex + 1} / ${steps.length}`;
   }
-  root.querySelector("select").addEventListener("change", (event) => {
-    selected = event.target.value;
-    paint();
-  });
-  root.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-guide-image]");
-    if (!button || disposed) return;
-    const s3 = available[selected].steps[Number(button.dataset.guideImage)];
-    if (!s3) return;
+  function setOpen(open, focus = false) {
+    if (disposed) return;
+    state.open = open;
+    button.setAttribute("aria-expanded", String(open));
+    dock.classList.toggle("is-open", open);
+    if (nativePopover) {
+      if (open && !panel.matches(":popover-open")) panel.showPopover();
+      if (!open && panel.matches(":popover-open")) panel.hidePopover();
+    } else panel.hidden = !open;
+    if (focus) (open ? select : button).focus({ preventScroll: true });
+  }
+  function syncHost() {
+    if (disposed) return;
+    const modal = [...document.querySelectorAll("dialog[open]")].filter((d2) => d2 !== viewer && !d2.classList.contains("guide-viewer")).at(-1), host = modal || document.body;
+    if (dock.parentElement === host) return;
+    const wasOpen = !!state.open;
+    if (nativePopover && panel.matches(":popover-open")) panel.hidePopover();
+    host.append(dock);
+    if (wasOpen) setOpen(true);
+  }
+  function showPhoto() {
+    const s3 = available[selected].steps[stepIndex];
     viewer?.close();
     const dialog = document.createElement("dialog");
     dialog.className = "guide-viewer";
@@ -13135,11 +13163,51 @@ function mountPictureGuide(root, { role, view: view2 }) {
     document.body.append(dialog);
     viewer = dialog;
     dialog.showModal();
+  }
+  button.addEventListener("click", () => setOpen(!state.open, true));
+  dock.querySelector("[data-guide-dismiss]").addEventListener("click", () => setOpen(false, true));
+  select.addEventListener("change", () => {
+    selected = select.value;
+    stepIndex = 0;
+    state.scrollTop = 0;
+    paint();
+    body.scrollTop = 0;
   });
+  dock.addEventListener("click", (event) => {
+    if (event.target.closest("[data-guide-image]")) showPhoto();
+    const prev = event.target.closest("[data-guide-prev]"), next = event.target.closest("[data-guide-next]");
+    if (prev && stepIndex > 0 || next && stepIndex < available[selected].steps.length - 1) {
+      stepIndex += next ? 1 : -1;
+      paint();
+      state.scrollTop = 0;
+      body.scrollTop = 0;
+    }
+  });
+  const keydown = (event) => {
+    if (event.key === "Escape" && state.open && !viewer) {
+      event.preventDefault();
+      event.stopPropagation();
+      setOpen(false, dock.contains(document.activeElement));
+    }
+  };
+  document.addEventListener("keydown", keydown, true);
+  body.addEventListener("scroll", () => {
+    if (!disposed) state.scrollTop = body.scrollTop;
+  }, { passive: true });
+  document.body.append(dock);
   paint();
+  syncHost();
+  setOpen(!!state.open);
+  body.scrollTop = state.scrollTop || 0;
+  const observer = new MutationObserver(syncHost);
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["open"] });
   return { dispose() {
     disposed = true;
+    observer.disconnect();
+    document.removeEventListener("keydown", keydown, true);
     viewer?.close();
+    if (nativePopover && panel.matches(":popover-open")) panel.hidePopover();
+    dock.remove();
   } };
 }
 
@@ -13204,16 +13272,6 @@ var esc7 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&
 var titles = { "meal-timer": "\uB0B4 \uD558\uB8E8", roster: "\uADFC\uBB34\uD45C", "team-calendar": "\uD300 \uC77C\uC815", meals: "\uC2DD\uB300\xB7\uC601\uC218\uC99D", attendance: "OT\xB7\uC9C0\uAC01", "admin-dashboard": "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", sources: "\uAC80\uC218 \uC790\uB8CC", feedback: "\uBA54\uBAA8\uCDE8\uD569" };
 var drafts = /* @__PURE__ */ new Map();
 var mine = (note, session) => note.role === session.role && (session.role === "admin" || note.personId === session.personId);
-var guidance = {
-  "meal-timer": "\uC5C5\uBB34 \uC0C1\uD0DC\uB97C \uC2DC\uC791\uD558\uACE0 \uBCF5\uADC0\uD560 \uB54C \uC885\uB8CC\uD574 \uC8FC\uC138\uC694.",
-  roster: "\uC6D4\uC744 \uACE0\uB974\uACE0 \uB0A0\uC9DC\uB97C \uB20C\uB7EC \uC77C\uC815\xB7\uD734\uBB34\uB97C \uD655\uC778\uD558\uC138\uC694. + \uBC84\uD2BC\uC73C\uB85C \uB4F1\uB85D\uD560 \uC218 \uC788\uC5B4\uC694.",
-  "team-calendar": "\uD300 \uC120\uD0DD\uC73C\uB85C \uC77C\uC815\uC744 \uD544\uD130\uD558\uACE0, \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC73C\uB85C \uB4F1\uB85D\uD558\uC138\uC694.",
-  meals: "\uB0A0\uC9DC\uBCC4 \uC601\uC218\uC99D \uB4F1\uB85D \uC5EC\uBD80\uB97C \uD655\uC778\uD558\uACE0 \uC0AC\uC9C4\uC744 \uB4F1\uB85D\uD558\uC138\uC694.",
-  attendance: "\uC870\uD68C \uC6D4\uC744 \uACE0\uB974\uACE0 \uC77C\uBCC4 \uBCF4\uAE30\uB85C \uB0A0\uC9DC\uBCC4 \uB0B4\uC5ED\uC744 \uD655\uC778\uD558\uC138\uC694.",
-  "admin-dashboard": "\uC0C1\uD0DC\xB7\uC18C\uC694 \uC2DC\uAC04\xB7\uC6D4\uBCC4 \uD1B5\uACC4\uC640 \uC601\uC218\uC99D \uC81C\uCD9C\uC744 \uD655\uC778\uD558\uC138\uC694.",
-  sources: "\uAC00\uC838\uC628 \uC790\uB8CC\uC640 \uC140\uBCC4 \uB0B4\uC6A9\uC744 \uD655\uC778\uD558\uB294 \uAC80\uC218 \uD654\uBA74\uC785\uB2C8\uB2E4.",
-  feedback: "\uD654\uBA74\uBCC4 \uC758\uACAC\uC744 \uCC3E\uACE0 \uB2E4\uB978 \uAE30\uAE30\uC5D0\uC11C \uBC1B\uC740 \uBA54\uBAA8 \uD30C\uC77C\uC744 \uAC00\uC838\uC624\uC138\uC694."
-};
 function download(notes) {
   const blob = new Blob([feedbackFile(notes)], { type: "application/json;charset=utf-8" });
   if (blob.size > FEEDBACK_MAX_BYTES) throw new Error("\uBA54\uBAA8\uAC00 20MB\uB97C \uB118\uC2B5\uB2C8\uB2E4. \uC791\uC131\uC790\xB7\uD654\uBA74\uBCC4\uB85C \uB098\uB204\uC5B4 \uB0B4\uB824\uBC1B\uC544 \uC8FC\uC138\uC694.");
@@ -13226,11 +13284,11 @@ function download(notes) {
 function noteCards(notes) {
   return notes.map((note) => `<article class="feedback-card"><div><strong>${esc7(note.name)} \xB7 ${esc7(note.team)}</strong><span>${note.role === "admin" ? "\uAD00\uB9AC\uC790" : "\uC9C1\uC6D0"} \xB7 ${esc7(titles[note.view])}</span><time>${esc7(new Date(note.createdAt).toLocaleString("ko-KR"))}</time></div><p class="prewrap">${esc7(note.text)}</p></article>`).join("");
 }
-function mountWorkspaceHelp(root, { session, view: view2, people, toast: toast2, onSaved }) {
+function mountWorkspaceHelp(root, { session, view: view2, people, toast: toast2, onSaved, guideState = {} }) {
   const key = session.role + ":" + (session.personId || "admin") + ":" + view2;
   let disposed = false;
-  root.innerHTML = `<section class="workspace-support" aria-label="\uC0AC\uC6A9 \uC548\uB0B4\uC640 \uAC80\uC218 \uBA54\uBAA8"><details class="workspace-guide"><summary><strong>${session.role === "admin" ? "\uAD00\uB9AC\uC790" : "\uC9C1\uC6D0"} \uC0AC\uC6A9\uC124\uBA85\uC11C</strong><span>${esc7(guidance[view2])}</span></summary><div data-picture-guide></div></details><details class="workspace-feedback"><summary><strong>\uD53C\uB4DC\uBC31\xB7\uC694\uCCAD\uC0AC\uD56D</strong><span>\uC774 \uD654\uBA74\uC5D0 \uB300\uD55C \uC758\uACAC \uB0A8\uAE30\uAE30 \xB7 \uAC80\uC218\uC6A9</span></summary><form class="feedback-form"><label>\uBA54\uBAA8<textarea name="feedback" rows="4" maxlength="4000" required placeholder="\uBD88\uD3B8\uD55C \uC810\uC774\uB098 \uBC14\uAFB8\uACE0 \uC2F6\uC740 \uB0B4\uC6A9\uC744 \uC801\uC5B4 \uC8FC\uC138\uC694.">${esc7(drafts.get(key) || "")}</textarea></label><p>\uC800\uC7A5\uD558\uBA74 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC758 \uAD00\uB9AC\uC790 \u2018\uBA54\uBAA8\uCDE8\uD569\u2019\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4. \uB2E4\uB978 \uAE30\uAE30\uC5D0\uB294 \uC790\uB3D9 \uC804\uC1A1\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.</p><div class="feedback-actions"><button type="submit" class="primary">\uBA54\uBAA8 \uC800\uC7A5</button><button type="button" data-note-export>\uB0B4 \uBA54\uBAA8 \uD30C\uC77C \uB0B4\uB824\uBC1B\uAE30</button></div><p class="feedback-status" role="status"></p></form><div class="my-feedback"></div><p class="review-only-note">\uAC80\uC218\uC6A9 \uBA54\uBAA8\uC7A5\uC740 \uCD5C\uC885 \uBC30\uD3EC \uB54C \uC81C\uAC70\uB429\uB2C8\uB2E4.</p></details></section>`;
-  const pictures = mountPictureGuide(root.querySelector("[data-picture-guide]"), { role: session.role, view: view2 });
+  root.innerHTML = `<section class="workspace-support" aria-label="\uC0AC\uC6A9 \uC548\uB0B4\uC640 \uAC80\uC218 \uBA54\uBAA8"><details class="workspace-feedback"><summary><strong>\uD53C\uB4DC\uBC31\xB7\uC694\uCCAD\uC0AC\uD56D</strong><span>\uC774 \uD654\uBA74\uC5D0 \uB300\uD55C \uC758\uACAC \uB0A8\uAE30\uAE30 \xB7 \uAC80\uC218\uC6A9</span></summary><form class="feedback-form"><label>\uBA54\uBAA8<textarea name="feedback" rows="4" maxlength="4000" required placeholder="\uBD88\uD3B8\uD55C \uC810\uC774\uB098 \uBC14\uAFB8\uACE0 \uC2F6\uC740 \uB0B4\uC6A9\uC744 \uC801\uC5B4 \uC8FC\uC138\uC694.">${esc7(drafts.get(key) || "")}</textarea></label><p>\uC800\uC7A5\uD558\uBA74 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC758 \uAD00\uB9AC\uC790 \u2018\uBA54\uBAA8\uCDE8\uD569\u2019\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4. \uB2E4\uB978 \uAE30\uAE30\uC5D0\uB294 \uC790\uB3D9 \uC804\uC1A1\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.</p><div class="feedback-actions"><button type="submit" class="primary">\uBA54\uBAA8 \uC800\uC7A5</button><button type="button" data-note-export>\uB0B4 \uBA54\uBAA8 \uD30C\uC77C \uB0B4\uB824\uBC1B\uAE30</button></div><p class="feedback-status" role="status"></p></form><div class="my-feedback"></div><p class="review-only-note">\uAC80\uC218\uC6A9 \uBA54\uBAA8\uC7A5\uC740 \uCD5C\uC885 \uBC30\uD3EC \uB54C \uC81C\uAC70\uB429\uB2C8\uB2E4.</p></details></section>`;
+  const pictures = mountPictureGuide({ role: session.role, view: view2, state: guideState });
   const form = root.querySelector("form"), status = root.querySelector(".feedback-status"), input = form.querySelector("textarea");
   function update() {
     try {
@@ -13388,6 +13446,7 @@ var rawCache = /* @__PURE__ */ new Map();
 var pendingMeals = /* @__PURE__ */ new Set();
 var receiptViewState = {};
 var feedbackViewState = {};
+var guideViewState = {};
 var LOCAL_KEY = "bb-staff:public-preview:v1";
 var authSession = null;
 var employees = [];
@@ -13421,7 +13480,7 @@ function changeSession(session) {
   sourceTab = "";
   sourcePage = 0;
   month = data.months.includes(monthOf(localDate())) ? monthOf(localDate()) : data.months.at(-1);
-  for (const state of [receiptViewState, feedbackViewState]) for (const key of Object.keys(state)) delete state[key];
+  for (const state of [receiptViewState, feedbackViewState, guideViewState]) for (const key of Object.keys(state)) delete state[key];
   try {
     if (session) sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
     else sessionStorage.removeItem(SESSION_KEY);
@@ -13510,7 +13569,7 @@ function render() {
   shell();
   document.querySelector("main").insertAdjacentHTML("afterbegin", '<div class="notice" role="note"><strong>\uACF5\uAC1C \uCD08\uC548 \uAC80\uC218\uC6A9</strong> \xB7 \uBBF8\uB9AC \uCC44\uC6CC\uC9C4 \uC77C\uC815\xB7\uC2DD\uB300\xB7OT\uB294 \uC608\uC2DC\uC785\uB2C8\uB2E4. \uC9C1\uC811 \uC785\uB825\uD55C \uAE30\uB85D\uACFC \uAC80\uC218 \uBA54\uBAA8\uB294 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</div>');
   const content = document.querySelector("#content");
-  helpController = mountWorkspaceHelp(document.querySelector("#workspace-help"), { session: authSession, view, people: employees, toast, onSaved: () => feedbackController?.refresh() });
+  helpController = mountWorkspaceHelp(document.querySelector("#workspace-help"), { session: authSession, view, people: employees, toast, guideState: guideViewState, onSaved: () => feedbackController?.refresh() });
   try {
     ({ feedback: (root) => {
       feedbackController = mountFeedbackCollection(root, { people: employees, toast, viewState: feedbackViewState });

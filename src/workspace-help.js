@@ -4,21 +4,16 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;
 const titles={'meal-timer':'내 하루',roster:'근무표','team-calendar':'팀 일정',meals:'식대·영수증',attendance:'OT·지각','admin-dashboard':'관리자 대시보드',sources:'검수 자료',feedback:'메모취합'};
 const drafts=new Map();
 const mine=(note,session)=>note.role===session.role&&(session.role==='admin'||note.personId===session.personId);
-const guidance={
- 'meal-timer':'업무 상태를 시작하고 복귀할 때 종료해 주세요.',roster:'월을 고르고 날짜를 눌러 일정·휴무를 확인하세요. + 버튼으로 등록할 수 있어요.',
- 'team-calendar':'팀 선택으로 일정을 필터하고, 날짜의 + 버튼으로 등록하세요.',meals:'날짜별 영수증 등록 여부를 확인하고 사진을 등록하세요.',attendance:'조회 월을 고르고 일별 보기로 날짜별 내역을 확인하세요.',
- 'admin-dashboard':'상태·소요 시간·월별 통계와 영수증 제출을 확인하세요.',sources:'가져온 자료와 셀별 내용을 확인하는 검수 화면입니다.',feedback:'화면별 의견을 찾고 다른 기기에서 받은 메모 파일을 가져오세요.'
-};
 function download(notes){
  const blob=new Blob([feedbackFile(notes)],{type:'application/json;charset=utf-8'});if(blob.size>FEEDBACK_MAX_BYTES)throw new Error('메모가 20MB를 넘습니다. 작성자·화면별로 나누어 내려받아 주세요.');const url=URL.createObjectURL(blob),a=document.createElement('a');
  a.href=url;a.download=`뷰티블라썸-검수메모-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 function noteCards(notes){return notes.map(note=>`<article class="feedback-card"><div><strong>${esc(note.name)} · ${esc(note.team)}</strong><span>${note.role==='admin'?'관리자':'직원'} · ${esc(titles[note.view])}</span><time>${esc(new Date(note.createdAt).toLocaleString('ko-KR'))}</time></div><p class="prewrap">${esc(note.text)}</p></article>`).join('');}
 
-export function mountWorkspaceHelp(root,{session,view,people,toast,onSaved}){
+export function mountWorkspaceHelp(root,{session,view,people,toast,onSaved,guideState={}}){
  const key=session.role+':'+(session.personId||'admin')+':'+view;let disposed=false;
- root.innerHTML=`<section class="workspace-support" aria-label="사용 안내와 검수 메모"><details class="workspace-guide"><summary><strong>${session.role==='admin'?'관리자':'직원'} 사용설명서</strong><span>${esc(guidance[view])}</span></summary><div data-picture-guide></div></details><details class="workspace-feedback"><summary><strong>피드백·요청사항</strong><span>이 화면에 대한 의견 남기기 · 검수용</span></summary><form class="feedback-form"><label>메모<textarea name="feedback" rows="4" maxlength="4000" required placeholder="불편한 점이나 바꾸고 싶은 내용을 적어 주세요.">${esc(drafts.get(key)||'')}</textarea></label><p>저장하면 이 브라우저의 관리자 ‘메모취합’에 표시됩니다. 다른 기기에는 자동 전송되지 않습니다.</p><div class="feedback-actions"><button type="submit" class="primary">메모 저장</button><button type="button" data-note-export>내 메모 파일 내려받기</button></div><p class="feedback-status" role="status"></p></form><div class="my-feedback"></div><p class="review-only-note">검수용 메모장은 최종 배포 때 제거됩니다.</p></details></section>`;
- const pictures=mountPictureGuide(root.querySelector('[data-picture-guide]'),{role:session.role,view});
+ root.innerHTML=`<section class="workspace-support" aria-label="사용 안내와 검수 메모"><details class="workspace-feedback"><summary><strong>피드백·요청사항</strong><span>이 화면에 대한 의견 남기기 · 검수용</span></summary><form class="feedback-form"><label>메모<textarea name="feedback" rows="4" maxlength="4000" required placeholder="불편한 점이나 바꾸고 싶은 내용을 적어 주세요.">${esc(drafts.get(key)||'')}</textarea></label><p>저장하면 이 브라우저의 관리자 ‘메모취합’에 표시됩니다. 다른 기기에는 자동 전송되지 않습니다.</p><div class="feedback-actions"><button type="submit" class="primary">메모 저장</button><button type="button" data-note-export>내 메모 파일 내려받기</button></div><p class="feedback-status" role="status"></p></form><div class="my-feedback"></div><p class="review-only-note">검수용 메모장은 최종 배포 때 제거됩니다.</p></details></section>`;
+ const pictures=mountPictureGuide({role:session.role,view,state:guideState});
  const form=root.querySelector('form'),status=root.querySelector('.feedback-status'),input=form.querySelector('textarea');
  function update(){try{const {notes,errors}=readFeedback(localStorage,people),own=notes.filter(n=>mine(n,session)&&n.view===view);root.querySelector('.my-feedback').innerHTML=`<h3>이 화면에 남긴 내 메모 · ${own.length}건</h3>${noteCards(own.slice(0,3))}${own.length>3?'<p>전체 내역은 메모 파일에 포함됩니다.</p>':''}`;if(errors.length)status.textContent='읽지 못한 기존 메모가 있습니다. 기존 내용은 보존했습니다.';}catch{status.textContent='이 브라우저에서 메모 저장소를 사용할 수 없습니다.';}}
  input.addEventListener('input',()=>{drafts.set(key,input.value);status.textContent='';});

@@ -32,7 +32,7 @@ const icon=key=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stro
 const badge=(label,cls='')=>`<span class="badge ${cls}">${esc(label)}</span>`;
 const swatch=color=>/^[A-Fa-f0-9]{6}$/.test(color||'')?`<i class="swatch" style="--source-color:#${color}" title="예시 색상 #${color}" aria-label="예시 색상 #${color}"></i>`:'';
 let data,calendar,view='team-calendar',month,team='전체',search='',renderVersion=0,dialogVersion=0,sourceBook='schedule',sourceTab='',sourcePage=0,sourceQuery='';
-const rawCache=new Map(),pendingMeals=new Set(),receiptViewState={},feedbackViewState={};
+const rawCache=new Map(),pendingMeals=new Set(),receiptViewState={},feedbackViewState={},guideViewState={};
 const LOCAL_KEY='bb-staff:public-preview:v1';
 let authSession=null,employees=[],helpController,feedbackController,sessionRevision=0;
 let previewMode='employee',mealDemo=false,showAllMealHistory=false,activityKind='meal',signedInPerson,receiptController;
@@ -43,7 +43,7 @@ function changeSession(session){
  authSession=session;previewMode=session?.role||'employee';signedInPerson=employees.find(p=>p.personId===session?.personId);
  team='전체';search='';mealDemo=false;showAllMealHistory=false;activityKind='meal';sourceQuery='';sourceTab='';sourcePage=0;
  month=data.months.includes(monthOf(localDate()))?monthOf(localDate()):data.months.at(-1);
- for(const state of [receiptViewState,feedbackViewState])for(const key of Object.keys(state))delete state[key];
+ for(const state of [receiptViewState,feedbackViewState,guideViewState])for(const key of Object.keys(state))delete state[key];
  try{if(session)sessionStorage.setItem(SESSION_KEY,JSON.stringify(session));else sessionStorage.removeItem(SESSION_KEY);}catch{toast('이 탭에서만 로그인 상태를 유지합니다.');}
  history.replaceState(null,'','#/'+allowedRoute(session,''));render();
 }
@@ -76,7 +76,7 @@ function render(){
  const requested=location.hash.slice(2).split('?')[0];view=allowedRoute(authSession,requested);
  if(view!==requested)history.replaceState(null,'','#/'+view);
  shell();document.querySelector('main').insertAdjacentHTML('afterbegin','<div class="notice" role="note"><strong>공개 초안 검수용</strong> · 미리 채워진 일정·식대·OT는 예시입니다. 직접 입력한 기록과 검수 메모는 이 브라우저에 저장됩니다.</div>');const content=document.querySelector('#content');
- helpController=mountWorkspaceHelp(document.querySelector('#workspace-help'),{session:authSession,view,people:employees,toast,onSaved:()=>feedbackController?.refresh()});
+ helpController=mountWorkspaceHelp(document.querySelector('#workspace-help'),{session:authSession,view,people:employees,toast,guideState:guideViewState,onSaved:()=>feedbackController?.refresh()});
  try{({ feedback:root=>{feedbackController=mountFeedbackCollection(root,{people:employees,toast,viewState:feedbackViewState});},'admin-dashboard':root=>renderMealManager(root,retainedFeedback),'team-calendar':renderCalendar,roster:renderRoster,'meal-timer':renderTimers,meals:renderMeals,attendance:renderAttendance,sources:renderSources }[view])(content);labelMobileTables(content);}catch(error){retainedFeedback?.controller?.dispose();content.innerHTML=empty('화면을 불러오지 못했습니다. 새로고침 후 다시 확인해 주세요.');toast(error.message);console.error(error);}
 }
 function calendarRows(){const visibleIds=new Set(rosterRows().map(r=>r.personId));const imported=data.scheduleEvents.filter(e=>monthOf(e.date)===month&&(!e.personId||visibleIds.has(e.personId)));return [...imported,...localRows('schedule')];}
