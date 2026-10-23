@@ -7,6 +7,7 @@ fs.mkdirSync(path.join(out,'assets'),{recursive:true});
 fs.cpSync(path.join(root,'data'),out,{recursive:true});
 fs.copyFileSync(path.join(root,'src/index.html'),path.join(out,'index.html'));
 fs.copyFileSync(path.join(root,'src/assets/clinic-logo.png'),path.join(out,'assets/clinic-logo.png'));
+if(fs.existsSync(path.join(root,'src/assets/guide')))fs.cpSync(path.join(root,'src/assets/guide'),path.join(out,'assets/guide'),{recursive:true});
 fs.writeFileSync(path.join(out,'.nojekyll'),'');
 await build({entryPoints:[path.join(root,'src/clinic-app.js')],bundle:true,outfile:path.join(out,'app.js'),format:'esm',target:'es2022',loader:{'.woff2':'file','.woff':'file'},assetNames:'assets/fonts/[name]-[hash]',legalComments:'eof'});
 console.log('Review preview built in docs/');

@@ -1,4 +1,4 @@
-// node_modules/preact/dist/preact.module.js
+// ../node_modules/preact/dist/preact.module.js
 var n;
 var l;
 var u;
@@ -284,7 +284,7 @@ n = s.slice, l = { __e: function(n2, l3, u3, i3) {
   this.__v && (this.__e = true, n2 && this.__h.push(n2), T(this));
 }, x.prototype.render = _, r = [], f = "function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, $.__r = 0, e = 0;
 
-// node_modules/preact/hooks/dist/hooks.module.js
+// ../node_modules/preact/hooks/dist/hooks.module.js
 var t2;
 var r2;
 var u2;
@@ -356,7 +356,7 @@ function w2(n2) {
   n2.__c = n2.__(), r2 = t3;
 }
 
-// node_modules/preact/compat/dist/compat.module.js
+// ../node_modules/preact/compat/dist/compat.module.js
 function g3(n2, t3) {
   for (var e3 in t3) n2[e3] = t3[e3];
   return n2;
@@ -540,7 +540,7 @@ l.__r = function(n2) {
   en && en(n2), X = n2.__c;
 };
 
-// node_modules/@fullcalendar/core/internal-common.js
+// ../node_modules/@fullcalendar/core/internal-common.js
 var warnedMessages = /* @__PURE__ */ new Set();
 function warnOnce(message) {
   if (!warnedMessages.has(message)) {
@@ -2064,12 +2064,12 @@ function isObjValsEqual(val0, val1, comparator) {
   }
   return false;
 }
-function collectFromHash(hash, startIndex = 0, endIndex, step = 1) {
+function collectFromHash(hash, startIndex = 0, endIndex, step2 = 1) {
   let res = [];
   if (endIndex == null) {
     endIndex = Object.keys(hash).length;
   }
-  for (let i3 = startIndex; i3 < endIndex; i3 += step) {
+  for (let i3 = startIndex; i3 < endIndex; i3 += step2) {
     let val = hash[i3];
     if (val !== void 0) {
       res.push(val);
@@ -6498,8 +6498,8 @@ var RefMap = class {
   // TODO: check callers that don't care about order. should use getAll instead
   // NOTE: this method has become less valuable now that we are encouraged to map order by some other index
   // TODO: provide ONE array-export function, buildArray, which fails on non-numeric indexes. caller can manipulate and "collect"
-  collect(startIndex, endIndex, step) {
-    return collectFromHash(this.currentMap, startIndex, endIndex, step);
+  collect(startIndex, endIndex, step2) {
+    return collectFromHash(this.currentMap, startIndex, endIndex, step2);
   }
   getAll() {
     return hashValuesToArray(this.currentMap);
@@ -7154,7 +7154,7 @@ function pickLatestEnd(seg0, seg1) {
   return seg0.eventRange.range.end > seg1.eventRange.range.end ? seg0 : seg1;
 }
 
-// node_modules/@fullcalendar/core/index.js
+// ../node_modules/@fullcalendar/core/index.js
 var globalLocales = [];
 var MINIMAL_RAW_EN_LOCALE = {
   code: "en",
@@ -9186,7 +9186,7 @@ var Calendar = class extends CalendarImpl {
   }
 };
 
-// node_modules/@fullcalendar/daygrid/internal.js
+// ../node_modules/@fullcalendar/daygrid/internal.js
 var TableView = class extends DateComponent {
   constructor() {
     super(...arguments);
@@ -10173,7 +10173,7 @@ function buildDayTableRenderRange(props) {
 var css_248z2 = ':root{--fc-daygrid-event-dot-width:8px}.fc-daygrid-day-events:after,.fc-daygrid-day-events:before,.fc-daygrid-day-frame:after,.fc-daygrid-day-frame:before,.fc-daygrid-event-harness:after,.fc-daygrid-event-harness:before{clear:both;content:"";display:table}.fc .fc-daygrid-body{position:relative;z-index:1}.fc .fc-daygrid-day.fc-day-today{background-color:var(--fc-today-bg-color)}.fc .fc-daygrid-day-frame{min-height:100%;position:relative}.fc .fc-daygrid-day-top{display:flex;flex-direction:row-reverse}.fc .fc-day-other .fc-daygrid-day-top{opacity:.3}.fc .fc-daygrid-day-number{padding:4px;position:relative;z-index:4}.fc .fc-daygrid-month-start{font-size:1.1em;font-weight:700}.fc .fc-daygrid-day-events{margin-top:1px}.fc .fc-daygrid-body-balanced .fc-daygrid-day-events{left:0;position:absolute;right:0}.fc .fc-daygrid-body-unbalanced .fc-daygrid-day-events{min-height:2em;position:relative}.fc .fc-daygrid-body-natural .fc-daygrid-day-events{margin-bottom:1em}.fc .fc-daygrid-event-harness{position:relative}.fc .fc-daygrid-event-harness-abs{left:0;position:absolute;right:0;top:0}.fc .fc-daygrid-bg-harness{bottom:0;position:absolute;top:0}.fc .fc-daygrid-day-bg .fc-non-business{z-index:1}.fc .fc-daygrid-day-bg .fc-bg-event{z-index:2}.fc .fc-daygrid-day-bg .fc-highlight{z-index:3}.fc .fc-daygrid-event{margin-top:1px;z-index:6}.fc .fc-daygrid-event.fc-event-mirror{z-index:7}.fc .fc-daygrid-day-bottom{font-size:.85em;margin:0 2px}.fc .fc-daygrid-day-bottom:after,.fc .fc-daygrid-day-bottom:before{clear:both;content:"";display:table}.fc .fc-daygrid-more-link{border-radius:3px;cursor:pointer;line-height:1;margin-top:1px;max-width:100%;overflow:hidden;padding:2px;position:relative;white-space:nowrap;z-index:4}.fc .fc-daygrid-more-link:hover{background-color:rgba(0,0,0,.1)}.fc .fc-daygrid-week-number{background-color:var(--fc-neutral-bg-color);color:var(--fc-neutral-text-color);min-width:1.5em;padding:2px;position:absolute;text-align:center;top:0;z-index:5}.fc .fc-more-popover .fc-popover-body{min-width:220px;padding:10px}.fc-direction-ltr .fc-daygrid-event.fc-event-start,.fc-direction-rtl .fc-daygrid-event.fc-event-end{margin-left:2px}.fc-direction-ltr .fc-daygrid-event.fc-event-end,.fc-direction-rtl .fc-daygrid-event.fc-event-start{margin-right:2px}.fc-direction-ltr .fc-daygrid-more-link{float:left}.fc-direction-ltr .fc-daygrid-week-number{border-radius:0 0 3px 0;left:0}.fc-direction-rtl .fc-daygrid-more-link{float:right}.fc-direction-rtl .fc-daygrid-week-number{border-radius:0 0 0 3px;right:0}.fc-liquid-hack .fc-daygrid-day-frame{position:static}.fc-daygrid-event{border-radius:3px;font-size:var(--fc-small-font-size);position:relative;white-space:nowrap}.fc-daygrid-block-event .fc-event-time{font-weight:700}.fc-daygrid-block-event .fc-event-time,.fc-daygrid-block-event .fc-event-title{padding:1px}.fc-daygrid-dot-event{align-items:center;display:flex;padding:2px 0}.fc-daygrid-dot-event .fc-event-title{flex-grow:1;flex-shrink:1;font-weight:700;min-width:0;overflow:hidden}.fc-daygrid-dot-event.fc-event-mirror,.fc-daygrid-dot-event:hover{background:rgba(0,0,0,.1)}.fc-daygrid-dot-event.fc-event-selected:before{bottom:-10px;top:-10px}.fc-daygrid-event-dot{border:calc(var(--fc-daygrid-event-dot-width)/2) solid var(--fc-event-border-color);border-radius:calc(var(--fc-daygrid-event-dot-width)/2);box-sizing:content-box;height:0;margin:0 4px;width:0}.fc-direction-ltr .fc-daygrid-event .fc-event-time{margin-right:3px}.fc-direction-rtl .fc-daygrid-event .fc-event-time{margin-left:3px}';
 injectStyles(css_248z2);
 
-// node_modules/@fullcalendar/daygrid/index.js
+// ../node_modules/@fullcalendar/daygrid/index.js
 var index = createPlugin({
   name: "@fullcalendar/daygrid",
   initialView: "dayGridMonth",
@@ -10202,7 +10202,7 @@ var index = createPlugin({
   }
 });
 
-// node_modules/@fullcalendar/interaction/index.js
+// ../node_modules/@fullcalendar/interaction/index.js
 config.touchMouseIgnoreWait = 500;
 var ignoreMouseDepth = 0;
 var listenerCnt = 0;
@@ -11779,7 +11779,7 @@ var index2 = createPlugin({
   listenerRefiners: LISTENER_REFINERS
 });
 
-// node_modules/@fullcalendar/list/internal.js
+// ../node_modules/@fullcalendar/list/internal.js
 var ListViewHeaderRow = class extends BaseComponent {
   constructor() {
     super(...arguments);
@@ -12050,7 +12050,7 @@ function groupSegsByDay(segs) {
 var css_248z3 = ':root{--fc-list-event-dot-width:10px;--fc-list-event-hover-bg-color:#f5f5f5}.fc-theme-standard .fc-list{border:1px solid var(--fc-border-color)}.fc .fc-list-empty{align-items:center;background-color:var(--fc-neutral-bg-color);display:flex;height:100%;justify-content:center}.fc .fc-list-empty-cushion{margin:5em 0}.fc .fc-list-table{border-style:hidden;width:100%}.fc .fc-list-table tr>*{border-left:0;border-right:0}.fc .fc-list-sticky .fc-list-day>*{background:var(--fc-page-bg-color);position:sticky;top:0}.fc .fc-list-table thead{left:-10000px;position:absolute}.fc .fc-list-table tbody>tr:first-child th{border-top:0}.fc .fc-list-table th{padding:0}.fc .fc-list-day-cushion,.fc .fc-list-table td{padding:8px 14px}.fc .fc-list-day-cushion:after{clear:both;content:"";display:table}.fc-theme-standard .fc-list-day-cushion{background-color:var(--fc-neutral-bg-color)}.fc-direction-ltr .fc-list-day-text,.fc-direction-rtl .fc-list-day-side-text{float:left}.fc-direction-ltr .fc-list-day-side-text,.fc-direction-rtl .fc-list-day-text{float:right}.fc-direction-ltr .fc-list-table .fc-list-event-graphic{padding-right:0}.fc-direction-rtl .fc-list-table .fc-list-event-graphic{padding-left:0}.fc .fc-list-event.fc-event-forced-url{cursor:pointer}.fc .fc-list-event:hover td{background-color:var(--fc-list-event-hover-bg-color)}.fc .fc-list-event-graphic,.fc .fc-list-event-time{white-space:nowrap;width:1px}.fc .fc-list-event-dot{border:calc(var(--fc-list-event-dot-width)/2) solid var(--fc-event-border-color);border-radius:calc(var(--fc-list-event-dot-width)/2);box-sizing:content-box;display:inline-block;height:0;width:0}.fc .fc-list-event-title a{color:inherit;text-decoration:none}.fc .fc-list-event.fc-event-forced-url:hover a{text-decoration:underline}';
 injectStyles(css_248z3);
 
-// node_modules/@fullcalendar/list/index.js
+// ../node_modules/@fullcalendar/list/index.js
 var OPTION_REFINERS2 = {
   listDayFormat: createFalsableFormatter,
   listDaySideFormat: createFalsableFormatter,
@@ -12100,7 +12100,7 @@ var index3 = createPlugin({
   }
 });
 
-// node_modules/@fullcalendar/core/locales/ko.js
+// ../node_modules/@fullcalendar/core/locales/ko.js
 var l45 = {
   code: "ko",
   buttonText: {
@@ -12119,7 +12119,7 @@ var l45 = {
   noEventsText: "\uC77C\uC815\uC774 \uC5C6\uC2B5\uB2C8\uB2E4"
 };
 
-// review-share/src/meal-timer.js
+// src/meal-timer.js
 var MEAL_LIMIT_MS = 60 * 60 * 1e3;
 var MEAL_PREFIX = "bb-staff:public-preview:meal:v1:";
 function timerState(record, now = Date.now()) {
@@ -12151,7 +12151,7 @@ function transitionMeal(record, action, now, id) {
   return { active: null, history: [...record.history, { ...record.active, endedAt, elapsed: endedAt - record.active.startedAt }] };
 }
 
-// review-share/src/daily-detail.js
+// src/daily-detail.js
 var esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
 var monthLabel = (month2) => `20${month2.slice(0, 2)}\uB144 ${Number(month2.slice(2))}\uC6D4`;
 var format = (value) => value === "" || value === null || value === void 0 ? "\uBBF8\uAE30\uC7AC" : typeof value === "number" ? value.toLocaleString("ko-KR") : String(value);
@@ -12318,7 +12318,7 @@ function openDailyDetail({ kind, initialRow, rows, months, localRecords: localRe
   return dialog;
 }
 
-// review-share/src/meal-dashboard.js
+// src/meal-dashboard.js
 function mealDate(timestamp) {
   const date = new Date(timestamp + 9 * 60 * 60 * 1e3);
   return Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : "";
@@ -12388,7 +12388,7 @@ function demoMealRecords(roster, month2, now = Date.now()) {
   return records;
 }
 
-// review-share/src/staff-activity.js
+// src/staff-activity.js
 var ACTIVITY_PREFIX = "bb-staff:public-preview:activity:v1:";
 var ACTIVITY_TYPES = { meal: { label: "\uC2DD\uC0AC", status: "\uC2DD\uC0AC\uC911" }, rest: { label: "\uD734\uC2DD", status: "\uD734\uC2DD\uC911" }, outing: { label: "\uC678\uCD9C", status: "\uC678\uCD9C\uC911" }, offsite: { label: "\uC678\uADFC", status: "\uC678\uADFC\uC911" } };
 function readActivity(storage, id) {
@@ -12452,7 +12452,7 @@ function recordsForActivity(states, kind) {
   }));
 }
 
-// review-share/src/staff-view.js
+// src/staff-view.js
 var esc2 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
 var time = (value) => new Date(value).toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
 var duration = (value) => value === null ? "\u2014" : clockText(value);
@@ -12484,7 +12484,7 @@ function activityDashboardView({ stats, month: month2, kind, live, demo, showAll
  <section class="panel"><div class="panel-heading"><div><h2>${label} \uC2DC\uC791\xB7\uC885\uB8CC \uAE30\uB85D</h2><p>${title} \xB7 ${completed.length}\uAC74 \xB7 \uCD5C\uADFC \uC2DC\uC791 \uC21C</p></div></div>${completed.length ? `<div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0 / \uD300</th><th>\uC2DC\uC791\uC77C</th><th>\uC2DC\uC791 \uC2DC\uAC01</th><th>\uC885\uB8CC \uC2DC\uAC01</th><th>\uC18C\uC694 \uC2DC\uAC04</th>${meal ? "<th>60\uBD84 \uCD08\uACFC</th>" : ""}</tr></thead><tbody>${(showAll ? completed : completed.slice(0, 20)).map((r3) => `<tr><th>${esc2(r3.person.name)}<small>${esc2(r3.person.rawTeam)}</small></th><td>${r3.date}</td><td>${time(r3.startedAt)}</td><td>${mealDate(r3.endedAt) !== r3.date ? mealDate(r3.endedAt) + "<br>" : ""}${time(r3.endedAt)}</td><td>${duration(r3.elapsed)}</td>${meal ? `<td>${r3.elapsed > MEAL_LIMIT_MS ? duration(r3.elapsed - MEAL_LIMIT_MS) : "\u2014"}</td>` : ""}</tr>`).join("")}</tbody></table></div>` : '<p class="empty">\uC120\uD0DD\uD55C \uC6D4\uC5D0 \uC644\uB8CC \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.</p>'}${completed.length > 20 ? `<div class="meal-history-more"><button data-action="meal-history-all">${showAll ? "\uCD5C\uADFC 20\uAC74\uB9CC \uBCF4\uAE30" : `\uC804\uCCB4 ${completed.length}\uAC74 \uBCF4\uAE30`}</button></div>` : ""}</section>`;
 }
 
-// review-share/src/receipt-store.js
+// src/receipt-store.js
 var RECEIPT_DB = "bb-staff:public-preview:receipts:v1";
 var RECEIPT_SIGNAL = "bb-staff:public-preview:receipts:changed:v1";
 var RETENTION_KEY = "bb-staff:public-preview:receipt-retention:v1";
@@ -12494,12 +12494,12 @@ function validReceiptDate(date) {
   const value = /* @__PURE__ */ new Date(date + "T12:00:00Z");
   return Number.isFinite(value.getTime()) && value.toISOString().slice(0, 10) === date;
 }
-function validateReceipt({ personId, date, amount, note = "", files, allowedMonths }) {
+function validateReceipt({ personId, date, amount, note = "", files = [], allowedMonths }) {
   if (!personId || !validReceiptDate(date)) throw new Error("\uC9C1\uC6D0\uACFC \uC0AC\uC6A9\uC77C\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
   if (allowedMonths && !allowedMonths.includes(date.slice(2, 4) + date.slice(5, 7))) throw new Error("\uD604\uC7AC \uC870\uD68C \uAC00\uB2A5\uD55C \uC6D4\uC758 \uC0AC\uC6A9\uC77C\uB85C \uB4F1\uB85D\uD574 \uC8FC\uC138\uC694.");
   if (!Number.isSafeInteger(amount) || amount < 0 || amount > 1e8) throw new Error("\uAE08\uC561\uC740 0\uC6D0\uBD80\uD130 1\uC5B5\uC6D0\uAE4C\uC9C0 \uC815\uC218\uB85C \uC785\uB825\uD574 \uC8FC\uC138\uC694.");
-  if (note.length > 2e3) throw new Error("\uBA54\uBAA8\uB294 2,000\uC790\uAE4C\uC9C0 \uC785\uB825\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.");
-  if (!files?.length || files.length > 5) throw new Error("\uD55C \uAC74\uC5D0 \uC0AC\uC9C4\uC744 1~5\uC7A5 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694.");
+  if (typeof note !== "string" || note.length > 2e3) throw new Error("\uBA54\uBAA8\uB294 2,000\uC790\uAE4C\uC9C0 \uC785\uB825\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.");
+  if (!Array.isArray(files) || files.length > 5) throw new Error("\uD55C \uAC74\uC5D0 \uC0AC\uC9C4\uC740 \uCD5C\uB300 5\uC7A5\uAE4C\uC9C0 \uB4F1\uB85D\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.");
   for (const file of files) if (!TYPES.includes(file.type) || file.size <= 0 || file.size > 10 * 1024 * 1024) throw new Error("\uC0AC\uC9C4\uC740 \uC7A5\uB2F9 10MB \uC774\uD558\uC758 JPG\xB7PNG\xB7WEBP \uD30C\uC77C\uB85C \uC120\uD0DD\uD574 \uC8FC\uC138\uC694.");
 }
 function openDB() {
@@ -12538,7 +12538,8 @@ async function listReceipts() {
 }
 async function saveReceipt(input) {
   validateReceipt(input);
-  for (const file of input.files) {
+  const files = input.files || [];
+  for (const file of files) {
     let bitmap;
     try {
       bitmap = await createImageBitmap(file);
@@ -12549,22 +12550,40 @@ async function saveReceipt(input) {
       bitmap?.close();
     }
   }
-  const record = { id: crypto.randomUUID(), personId: input.personId, name: input.name, teams: input.teams, rawTeam: input.rawTeam, date: input.date, amount: input.amount, note: input.note || "", createdAt: Date.now(), files: input.files.map((f3) => ({ name: f3.name, type: f3.type, blob: f3 })) };
+  let record = { id: input.id || crypto.randomUUID(), personId: input.personId, name: input.name, teams: input.teams, rawTeam: input.rawTeam, date: input.date, amount: input.amount, note: input.note || "", createdAt: Date.now(), files: files.map((f3) => ({ name: f3.name, type: f3.type, blob: f3 })) };
   const db = await openDB();
   await new Promise((resolve, reject) => {
-    const tx = db.transaction("receipts", "readwrite");
-    tx.objectStore("receipts").add(record);
+    const tx = db.transaction("receipts", "readwrite"), store = tx.objectStore("receipts");
+    let conflict = "";
+    if (input.id) {
+      const request = store.get(input.id);
+      request.onsuccess = () => {
+        const previous = request.result;
+        if (!previous || previous.personId !== input.personId || (previous.updatedAt || previous.createdAt) !== input.expectedUpdatedAt) {
+          conflict = "\uC800\uC7A5 \uB0B4\uC5ED\uC774 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C\uACE0\uCE68 \uD6C4 \uB2E4\uC2DC \uC120\uD0DD\uD574 \uC8FC\uC138\uC694.";
+          tx.abort();
+          return;
+        }
+        if (previous.files.length + record.files.length > 5) {
+          conflict = "\uAE30\uC874 \uC0AC\uC9C4\uC744 \uD3EC\uD568\uD574 \uD55C \uAC74\uC5D0 \uCD5C\uB300 5\uC7A5\uAE4C\uC9C0 \uB4F1\uB85D\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.";
+          tx.abort();
+          return;
+        }
+        record = { ...record, createdAt: previous.createdAt, updatedAt: Math.max(Date.now(), (previous.updatedAt || previous.createdAt) + 1), files: [...previous.files, ...record.files] };
+        store.put(record);
+      };
+    } else store.add(record);
     tx.oncomplete = () => {
       db.close();
       resolve();
     };
     tx.onabort = tx.onerror = () => {
       db.close();
-      reject(new Error("\uC0AC\uC9C4\uC744 \uC800\uC7A5\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC800\uC7A5 \uACF5\uAC04\uC744 \uD655\uC778\uD558\uACE0 \uB2E4\uC2DC \uB4F1\uB85D\uD574 \uC8FC\uC138\uC694. \uAE30\uC874 \uAE30\uB85D\uC740 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4."));
+      reject(new Error(conflict || "\uB0B4\uC6A9\uC744 \uC800\uC7A5\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC800\uC7A5 \uACF5\uAC04\uC744 \uD655\uC778\uD558\uACE0 \uB2E4\uC2DC \uC800\uC7A5\uD574 \uC8FC\uC138\uC694. \uAE30\uC874 \uAE30\uB85D\uC740 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4."));
     };
   });
   try {
-    localStorage.setItem(RECEIPT_SIGNAL, record.id);
+    localStorage.setItem(RECEIPT_SIGNAL, record.id + ":" + (record.updatedAt || record.createdAt));
   } catch {
   }
   return record;
@@ -12584,7 +12603,7 @@ function setRetentionDays(storage, value) {
   storage.setItem(RETENTION_KEY, String(value));
 }
 
-// review-share/src/receipt-zip.js
+// src/receipt-zip.js
 var encoder = new TextEncoder();
 var crcTable = Array.from({ length: 256 }, (_3, i3) => {
   let c3 = i3;
@@ -12657,7 +12676,7 @@ async function receiptArchive(rows) {
   return makeZip(files);
 }
 
-// review-share/src/receipt-view.js
+// src/receipt-view.js
 var esc3 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
 var won = (value) => Number(value).toLocaleString("ko-KR") + "\uC6D0";
 var dateOf = (month2, day) => `20${month2.slice(0, 2)}-${month2.slice(2)}-${String(day).padStart(2, "0")}`;
@@ -12666,11 +12685,12 @@ function receiptCalendar(rows, month2, selectedDate, photoURL) {
   return `<div class="receipt-weekdays">${["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"].map((d2) => `<span>${d2}</span>`).join("")}</div><div class="receipt-days">${calendarDays(month2).map((day) => {
     if (!day) return '<span class="receipt-blank"></span>';
     const date = dateOf(month2, day), entries = grouped[date] || [], count = entries.reduce((s3, r3) => s3 + r3.files.length, 0), sum = entries.reduce((s3, r3) => s3 + r3.amount, 0);
-    const preview = photoURL && entries[0]?.files[0]?.blob ? photoURL(entries[0].files[0].blob) : "";
-    return `<button type="button" data-receipt-day="${date}" class="${entries.length ? "has-receipts" : "no-receipts"} ${date === selectedDate ? "selected" : ""}" aria-pressed="${date === selectedDate}" aria-label="${day}\uC77C ${entries.length ? "\uB4F1\uB85D \uC644\uB8CC \xB7 \uC601\uC218\uC99D " + entries.length + "\uAC74 \uC0AC\uC9C4 " + count + "\uC7A5 \xB7 " + won(sum) : "\uC601\uC218\uC99D \uBBF8\uB4F1\uB85D"}"><strong>${day}</strong>${entries.length ? `<span class="receipt-day-status"><span class="receipt-status-label">\uB4F1\uB85D\uC644\uB8CC \xB7 </span>${entries.length}\uAC74</span><span class="receipt-calendar-entry">${preview ? `<img src="${esc3(preview)}" alt="" loading="lazy">` : ""}<span class="receipt-calendar-meta"><strong>${won(sum)}</strong><small>\uC0AC\uC9C4 ${count}\uC7A5</small></span></span>` : '<span class="receipt-missing"><span class="receipt-missing-full">\uBBF8\uB4F1\uB85D</span><span class="receipt-missing-short" aria-hidden="true">\u2014</span></span>'}</button>`;
+    const photo = entries.flatMap((r3) => r3.files)[0], preview = photoURL && photo?.blob ? photoURL(photo.blob) : "";
+    return `<button type="button" data-receipt-day="${date}" class="${entries.length ? "has-receipts" : "no-receipts"} ${date === selectedDate ? "selected" : ""}" aria-pressed="${date === selectedDate}" aria-label="${day}\uC77C ${entries.length ? (count ? "\uC601\uC218\uC99D \uB4F1\uB85D\uB428" : "\uB0B4\uC6A9 \uC800\uC7A5\uB428 \xB7 \uC0AC\uC9C4 \uC5C6\uC74C") + " \xB7 \uC601\uC218\uC99D " + entries.length + "\uAC74 \uC0AC\uC9C4 " + count + "\uC7A5 \xB7 " + won(sum) : "\uC601\uC218\uC99D \uBBF8\uB4F1\uB85D"}"><strong>${day}</strong>${entries.length ? `<span class="receipt-day-status"><span class="receipt-status-label">${count ? "\uC601\uC218\uC99D" : "\uB0B4\uC6A9 \uC800\uC7A5"} \xB7 </span>${entries.length}\uAC74</span><span class="receipt-calendar-entry">${preview ? `<img src="${esc3(preview)}" alt="" loading="lazy">` : ""}<span class="receipt-calendar-meta"><strong>${won(sum)}</strong><small>${count ? "\uC0AC\uC9C4 " + count + "\uC7A5" : "\uC0AC\uC9C4 \uC5C6\uC74C"}</small></span></span>` : '<span class="receipt-missing"><span class="receipt-missing-full">\uBBF8\uB4F1\uB85D</span><span class="receipt-missing-short" aria-hidden="true">\u2014</span></span>'}</button>`;
   }).join("")}</div>`;
 }
 function mountReceipts({ root, month: month2, months, person, admin, people, team: team2, search: search2, toast: toast2, compact = false, onTeamChange, viewState = {} }) {
+  let editing = null, saving = false;
   let all = [], selectedDate = dateOf(month2, 1), staffId = admin ? viewState.staffId || "" : "", urls = [], viewer = null, disposed = false, loading = 0, expanded = compact && !!viewState.expanded;
   const now = /* @__PURE__ */ new Date(), today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(now);
   if (today.startsWith("20" + month2.slice(0, 2) + "-" + month2.slice(2))) selectedDate = today;
@@ -12696,7 +12716,7 @@ function mountReceipts({ root, month: month2, months, person, admin, people, tea
   }
   root.innerHTML = `<section class="panel receipt-panel ${compact ? "is-compact" : ""} ${expanded ? "is-expanded" : ""}"><div class="panel-heading"><div><h2>${admin ? compact ? "\uC601\uC218\uC99D \uC81C\uCD9C \uAE30\uB85D" : "\uC9C1\uC6D0 \uC601\uC218\uC99D \uBAA8\uC544\uBCF4\uAE30" : "\uB0B4 \uC2DD\uB300 \uC601\uC218\uC99D"}</h2><p>\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC0AC\uC9C4\uACFC \uC0AC\uC6A9 \uB0B4\uC5ED\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694.</p></div>${admin ? `<div class="receipt-actions">${compact ? `<button data-receipt-expand aria-expanded="${expanded}">${expanded ? "\uB2EC\uB825 \uC811\uAE30" : "\uC601\uC218\uC99D \uBAA8\uC544\uBCF4\uAE30"}</button>` : ""}<button data-receipt-export>\uC870\uD68C \uC601\uC218\uC99D ZIP \uB2E4\uC6B4\uB85C\uB4DC</button></div>` : ""}</div>
  <p class="receipt-local-note">\uD604\uC7AC \uC0AC\uC9C4\uACFC \uAE30\uB85D\uC740 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4. \uB2E4\uB978 \uAE30\uAE30\uC640\uC758 \uACF5\uC720\uB294 \uC6B4\uC601 \uC11C\uBC84 \uC5F0\uACB0 \uD6C4 \uC801\uC6A9\uB429\uB2C8\uB2E4.</p>
- ${admin ? `<div class="receipt-controls"><label>\uD300\uBCC4 \uBCF4\uAE30<select data-receipt-team>${["\uC804\uCCB4", ...new Set(people.flatMap((p3) => p3.teams || []))].map((t3) => `<option value="${esc3(t3)}" ${team2 === t3 ? "selected" : ""}>${esc3(t3 === "\uC804\uCCB4" ? "\uC804\uCCB4 \uD300" : t3 + "\uD300")}</option>`).join("")}</select></label><label>\uC9C1\uC6D0\uBCC4 \uBCF4\uAE30<select data-receipt-person><option value="">\uC804\uCCB4 \uC9C1\uC6D0</option>${people.filter((p3) => team2 === "\uC804\uCCB4" || p3.teams?.includes(team2)).map((p3) => `<option value="${esc3(p3.personId)}" ${staffId === p3.personId ? "selected" : ""}>${esc3(p3.name)} \xB7 ${esc3(p3.rawTeam)}</option>`).join("")}</select></label><p>\uC0C1\uB2E8 \uC870\uD68C \uC6D4\uACFC \uC774\uB984 \uAC80\uC0C9, \uC120\uD0DD\uD55C \uD300\xB7\uC9C1\uC6D0\uC5D0 \uD574\uB2F9\uD558\uB294 \uC804\uCCB4 \uC601\uC218\uC99D\uC744 \uB2E4\uC6B4\uB85C\uB4DC\uD569\uB2C8\uB2E4.</p></div><details class="receipt-policy"><summary>\uC0AC\uC9C4 \uBCF4\uAD00 \uAE30\uAC04 \uC124\uC815 \xB7 <span data-retention-label>${days}\uC77C</span></summary><form data-retention-form><label>\uC5C5\uB85C\uB4DC \uD6C4 \uBCF4\uAD00 \uAE30\uAC04 (\uC77C)<input name="days" type="number" min="1" max="365" value="${days}" required></label><button type="submit">\uC124\uC815 \uC800\uC7A5</button><p>\uAE30\uBCF8 30\uC77C, 1~365\uC77C\uB85C \uC124\uC815\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uAE30\uAC04\uC774 \uC9C0\uB09C \uC0AC\uC9C4\uB9CC \uC0AD\uC81C\uD558\uACE0 \uC9C1\uC6D0\xB7\uC0AC\uC6A9\uC77C\xB7\uAE08\uC561\xB7\uBA54\uBAA8\uB294 \uB0A8\uAE41\uB2C8\uB2E4.</p><p class="notice">\uCD08\uC548\uC5D0\uC11C\uB294 \uC124\uC815\uB9CC \uC800\uC7A5\uD569\uB2C8\uB2E4. \uC2E4\uC81C \uC790\uB3D9\uC0AD\uC81C\uB294 \uC6B4\uC601 \uC11C\uBC84 \uC5F0\uACB0 \uD6C4 \uC801\uC6A9\uB418\uBA70, \uC9C0\uAE08 \uC62C\uB9B0 \uC0AC\uC9C4\uC740 \uC790\uB3D9\uC73C\uB85C \uC9C0\uC6CC\uC9C0\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.</p><p class="form-error" role="alert">${esc3(policyError)}</p></form></details>` : `<details class="receipt-upload" id="receipt-upload"><summary>+ \uC601\uC218\uC99D \uB4F1\uB85D</summary><form id="receipt-form"><div class="form-grid"><label>\uC0AC\uC6A9\uC77C<input name="date" type="date" required min="${dateOf(months[0], 1)}" max="${dateOf(months.at(-1), new Date(2e3 + Number(months.at(-1).slice(0, 2)), Number(months.at(-1).slice(2)), 0).getDate())}" value="${selectedDate}"></label><label>\uC2DD\uB300 \uAE08\uC561 (\uC6D0)<input name="amount" type="number" min="0" max="100000000" step="1" required inputmode="numeric" placeholder="\uC608: 12000"></label><label class="full">\uBA54\uBAA8<textarea name="note" maxlength="2000" rows="2" placeholder="\uAC00\uAC8C\uBA85 \uB4F1 \uD544\uC694\uD55C \uB0B4\uC6A9\uC744 \uC801\uC5B4 \uC8FC\uC138\uC694."></textarea></label></div><div class="receipt-file-controls"><label>\uC0AC\uC9C4 \uCD2C\uC601<input name="camera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label><label>\uC0AC\uC9C4 \uD30C\uC77C \uC120\uD0DD<input name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple></label></div><p>\uD55C \uAC74\uC5D0 \uCD5C\uB300 5\uC7A5 \xB7 \uC7A5\uB2F9 10MB \xB7 JPG, PNG, WEBP. \uAE08\uC561\uC740 \uC0AC\uC9C4 \uC218\uC640 \uAD00\uACC4\uC5C6\uC774 \uD55C \uBC88\uB9CC \uD569\uC0B0\uB429\uB2C8\uB2E4.</p><p data-file-selection>\uC120\uD0DD\uD55C \uC0AC\uC9C4\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.</p><div class="form-actions"><button type="submit" class="primary">\uC601\uC218\uC99D \uB4F1\uB85D\uD558\uAE30</button></div><p class="form-error" role="alert"></p></form></details>`}
+ ${admin ? `<div class="receipt-controls"><label>\uD300\uBCC4 \uBCF4\uAE30<select data-receipt-team>${["\uC804\uCCB4", ...new Set(people.flatMap((p3) => p3.teams || []))].map((t3) => `<option value="${esc3(t3)}" ${team2 === t3 ? "selected" : ""}>${esc3(t3 === "\uC804\uCCB4" ? "\uC804\uCCB4 \uD300" : t3 + "\uD300")}</option>`).join("")}</select></label><label>\uC9C1\uC6D0\uBCC4 \uBCF4\uAE30<select data-receipt-person><option value="">\uC804\uCCB4 \uC9C1\uC6D0</option>${people.filter((p3) => team2 === "\uC804\uCCB4" || p3.teams?.includes(team2)).map((p3) => `<option value="${esc3(p3.personId)}" ${staffId === p3.personId ? "selected" : ""}>${esc3(p3.name)} \xB7 ${esc3(p3.rawTeam)}</option>`).join("")}</select></label><p>\uC0C1\uB2E8 \uC870\uD68C \uC6D4\uACFC \uC774\uB984 \uAC80\uC0C9, \uC120\uD0DD\uD55C \uD300\xB7\uC9C1\uC6D0\uC5D0 \uD574\uB2F9\uD558\uB294 \uC804\uCCB4 \uC601\uC218\uC99D\uC744 \uB2E4\uC6B4\uB85C\uB4DC\uD569\uB2C8\uB2E4.</p></div><details class="receipt-policy"><summary>\uC0AC\uC9C4 \uBCF4\uAD00 \uAE30\uAC04 \uC124\uC815 \xB7 <span data-retention-label>${days}\uC77C</span></summary><form data-retention-form><label>\uC5C5\uB85C\uB4DC \uD6C4 \uBCF4\uAD00 \uAE30\uAC04 (\uC77C)<input name="days" type="number" min="1" max="365" value="${days}" required></label><button type="submit">\uC124\uC815 \uC800\uC7A5</button><p>\uAE30\uBCF8 30\uC77C, 1~365\uC77C\uB85C \uC124\uC815\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uAE30\uAC04\uC774 \uC9C0\uB09C \uC0AC\uC9C4\uB9CC \uC0AD\uC81C\uD558\uACE0 \uC9C1\uC6D0\xB7\uC0AC\uC6A9\uC77C\xB7\uAE08\uC561\xB7\uBA54\uBAA8\uB294 \uB0A8\uAE41\uB2C8\uB2E4.</p><p class="notice">\uCD08\uC548\uC5D0\uC11C\uB294 \uC124\uC815\uB9CC \uC800\uC7A5\uD569\uB2C8\uB2E4. \uC2E4\uC81C \uC790\uB3D9\uC0AD\uC81C\uB294 \uC6B4\uC601 \uC11C\uBC84 \uC5F0\uACB0 \uD6C4 \uC801\uC6A9\uB418\uBA70, \uC9C0\uAE08 \uC62C\uB9B0 \uC0AC\uC9C4\uC740 \uC790\uB3D9\uC73C\uB85C \uC9C0\uC6CC\uC9C0\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.</p><p class="form-error" role="alert">${esc3(policyError)}</p></form></details>` : `<details class="receipt-upload" id="receipt-upload"><summary>+ \uC2DD\uB300 \uB0B4\uC6A9 / \uC601\uC218\uC99D \uB4F1\uB85D</summary><form id="receipt-form"><div class="form-grid"><label>\uC0AC\uC6A9\uC77C<input name="date" type="date" required min="${dateOf(months[0], 1)}" max="${dateOf(months.at(-1), new Date(2e3 + Number(months.at(-1).slice(0, 2)), Number(months.at(-1).slice(2)), 0).getDate())}" value="${selectedDate}"></label><label>\uC2DD\uB300 \uAE08\uC561 (\uC6D0)<input name="amount" type="number" min="0" max="100000000" step="1" required inputmode="numeric" placeholder="\uC608: 12000"></label><label class="full">\uBA54\uBAA8<textarea name="note" maxlength="2000" rows="2" placeholder="\uAC00\uAC8C\uBA85 \uB4F1 \uD544\uC694\uD55C \uB0B4\uC6A9\uC744 \uC801\uC5B4 \uC8FC\uC138\uC694."></textarea></label></div><p class="receipt-editing" hidden></p><div class="receipt-photo-input" hidden><div class="receipt-file-controls"><label class="receipt-file-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 6h4l2-3h4l2 3h4v14H4z"/><circle cx="12" cy="12" r="4"/></svg><strong>\uC0AC\uC9C4 \uCD2C\uC601</strong><span>\uCE74\uBA54\uB77C\uB85C \uCC0D\uAE30</span><input name="camera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label><label class="receipt-file-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/></svg><strong>\uC0AC\uC9C4 \uD30C\uC77C \uC120\uD0DD</strong><span>\uC568\uBC94\uC5D0\uC11C \uACE0\uB974\uAE30</span><input name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple></label></div><p>\uD55C \uAC74\uC5D0 \uCD5C\uB300 5\uC7A5 \xB7 \uC7A5\uB2F9 10MB \xB7 JPG, PNG, WEBP</p><p data-file-selection role="status">\uC120\uD0DD\uD55C \uC0AC\uC9C4\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.</p></div><p class="receipt-save-hint">\uC601\uC218\uC99D\uC774 \uC5C6\uC5B4\uB3C4 \uB0A0\uC9DC\xB7\uAE08\uC561\xB7\uBA54\uBAA8\uB97C \uC800\uC7A5\uD560 \uC218 \uC788\uC5B4\uC694. \uC0AC\uC9C4\uC744 \uC120\uD0DD\uD55C \uB4A4\uC5D0\uB3C4 \u2018\uB0B4\uC6A9 \uC800\uC7A5\u2019\uC744 \uB20C\uB7EC \uC8FC\uC138\uC694.</p><div class="form-actions receipt-save-actions"><button type="submit" class="primary">\uB0B4\uC6A9 \uC800\uC7A5</button><button type="button" data-choose-receipt aria-expanded="false">\uC601\uC218\uC99D \uB4F1\uB85D\uD558\uAE30</button></div><p class="form-error" role="alert"></p></form></details>`}
  <p class="receipt-error" role="alert"></p><div class="receipt-body"><p class="empty">\uC601\uC218\uC99D\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4\u2026</p></div></section>`;
   const error = (message) => {
     if (!disposed) root.querySelector(".receipt-error").textContent = message;
@@ -12706,10 +12726,10 @@ function mountReceipts({ root, month: month2, months, person, admin, people, tea
     viewState.dates[month2] = selectedDate;
     release();
     const rows = filtered(), dayRows = rows.filter((r3) => r3.date === selectedDate), photos = rows.reduce((s3, r3) => s3 + r3.files.length, 0);
-    root.querySelector(".receipt-body").innerHTML = `<div class="receipt-summary"><span>\uC601\uC218\uC99D <strong>${rows.length}\uAC74</strong> \xB7 \uC0AC\uC9C4 ${photos}\uC7A5</span><span>\uC81C\uCD9C \uAE08\uC561 <strong>${won(rows.reduce((s3, r3) => s3 + r3.amount, 0))}</strong></span></div><p class="receipt-local-note">\uC81C\uCD9C \uAE08\uC561\uC740 \uC544\uB798 \uAC00\uC838\uC628 \uC2DD\uB300 \uD569\uACC4\uC640 \uBCC4\uB3C4\uB85C \uD45C\uC2DC\uD569\uB2C8\uB2E4.</p><div class="receipt-calendar-legend"><span><b>\uB4F1\uB85D\uC644\uB8CC \xB7 \uAC74\uC218</b> \uC601\uC218\uC99D \uB4F1\uB85D\uB428</span><span><b>\u2014</b> \uBBF8\uB4F1\uB85D</span><span>\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC544\uB798\uC5D0\uC11C \uB0B4\uC5ED\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694.</span></div><div class="receipt-calendar" aria-label="\uC601\uC218\uC99D \uC6D4\uAC04 \uB2EC\uB825">${receiptCalendar(rows, month2, selectedDate, blobURL)}</div><section class="receipt-selected"><h3>${esc3(selectedDate)} \uC601\uC218\uC99D</h3>${dayRows.length ? dayRows.map((r3) => `<article class="receipt-entry"><div class="receipt-entry-heading"><div><strong>${esc3(r3.name)}</strong><span>${esc3(r3.rawTeam)}</span></div><strong>${won(r3.amount)}</strong></div><p class="receipt-note">${esc3(r3.note || "\uBA54\uBAA8 \uC5C6\uC74C")}</p><div class="receipt-thumbnails">${r3.files.map((f3, i3) => `<button data-receipt-view="${esc3(r3.id)}" data-photo-index="${i3}" aria-label="${esc3(r3.name)} \uC601\uC218\uC99D \uC0AC\uC9C4 ${i3 + 1} \uD06C\uAC8C \uBCF4\uAE30"><img src="${blobURL(f3.blob)}" alt="${esc3(r3.name)} ${esc3(r3.date)} \uC601\uC218\uC99D ${i3 + 1}"><span>\uC0AC\uC9C4 ${i3 + 1} \uD06C\uAC8C \uBCF4\uAE30</span></button>`).join("")}</div></article>`).join("") : '<p class="empty">\uC774 \uB0A0\uC9DC\uC5D0 \uB4F1\uB85D\uB41C \uC601\uC218\uC99D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.</p>'}</section>`;
+    root.querySelector(".receipt-body").innerHTML = `<div class="receipt-summary"><span>\uC2DD\uB300 \uAE30\uB85D <strong>${rows.length}\uAC74</strong> \xB7 \uC0AC\uC9C4 ${photos}\uC7A5</span><span>\uC81C\uCD9C \uAE08\uC561 <strong>${won(rows.reduce((s3, r3) => s3 + r3.amount, 0))}</strong></span></div><p class="receipt-local-note">\uC81C\uCD9C \uAE08\uC561\uC740 \uC544\uB798 \uAC00\uC838\uC628 \uC2DD\uB300 \uD569\uACC4\uC640 \uBCC4\uB3C4\uB85C \uD45C\uC2DC\uD569\uB2C8\uB2E4.</p><div class="receipt-calendar-legend"><span><b>\uC601\uC218\uC99D</b> \uC0AC\uC9C4 \uB4F1\uB85D\uB428</span><span><b>\uB0B4\uC6A9 \uC800\uC7A5</b> \uC0AC\uC9C4 \uC5C6\uC774 \uC800\uC7A5\uB428</span><span><b>\u2014</b> \uBBF8\uB4F1\uB85D</span><span>\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC544\uB798\uC5D0\uC11C \uB0B4\uC5ED\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694.</span></div><div class="receipt-calendar" aria-label="\uC601\uC218\uC99D \uC6D4\uAC04 \uB2EC\uB825">${receiptCalendar(rows, month2, selectedDate, blobURL)}</div><section class="receipt-selected"><h3>${esc3(selectedDate)} \uC2DD\uB300 \uB0B4\uC5ED</h3>${dayRows.length ? dayRows.map((r3) => `<article class="receipt-entry"><div class="receipt-entry-heading"><div><strong>${esc3(r3.name)}</strong><span>${esc3(r3.rawTeam)}</span></div><strong>${won(r3.amount)}</strong></div><p class="receipt-note">${esc3(r3.note || "\uBA54\uBAA8 \uC5C6\uC74C")}</p><p class="receipt-record-status">${r3.files.length ? "\uC601\uC218\uC99D \uB4F1\uB85D\uB428 \xB7 \uC0AC\uC9C4 " + r3.files.length + "\uC7A5" : "\uB0B4\uC6A9 \uC800\uC7A5\uB428 \xB7 \uC0AC\uC9C4 \uC5C6\uC74C"}</p>${!admin ? `<button type="button" data-receipt-attach="${esc3(r3.id)}" ${r3.files.length >= 5 ? "disabled" : ""}>\uC601\uC218\uC99D \uB4F1\uB85D\uD558\uAE30</button>` : ""}<div class="receipt-thumbnails">${r3.files.map((f3, i3) => `<button data-receipt-view="${esc3(r3.id)}" data-photo-index="${i3}" aria-label="${esc3(r3.name)} \uC601\uC218\uC99D \uC0AC\uC9C4 ${i3 + 1} \uD06C\uAC8C \uBCF4\uAE30"><img src="${blobURL(f3.blob)}" alt="${esc3(r3.name)} ${esc3(r3.date)} \uC601\uC218\uC99D ${i3 + 1}"><span>\uC0AC\uC9C4 ${i3 + 1} \uD06C\uAC8C \uBCF4\uAE30</span></button>`).join("")}</div></article>`).join("") : '<p class="empty">\uC774 \uB0A0\uC9DC\uC5D0 \uB4F1\uB85D\uB41C \uC601\uC218\uC99D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.</p>'}</section>`;
     if (compact) {
       const recent = rows.toSorted((a3, b3) => b3.createdAt - a3.createdAt).slice(0, 5);
-      root.querySelector(".receipt-summary").insertAdjacentHTML("afterend", `<div class="receipt-submissions"><p>\uCD5C\uADFC \uC81C\uCD9C ${recent.length}\uAC74 \xB7 \uC870\uD68C\uB41C \uC804\uCCB4 ${rows.length}\uAC74</p>${recent.length ? recent.map((r3) => `<article class="receipt-submission"><div><strong>${esc3(r3.name)}</strong><span>${esc3(r3.rawTeam)} \xB7 \uC0AC\uC6A9\uC77C ${esc3(r3.date)}</span><small>\uC81C\uCD9C ${esc3(new Date(r3.createdAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }))}</small></div><div class="receipt-submission-total"><strong>${won(r3.amount)}</strong><span>\uC0AC\uC9C4 ${r3.files.length}\uC7A5</span></div><button data-receipt-view="${esc3(r3.id)}" data-photo-index="0">\uC0AC\uC9C4 \uBCF4\uAE30</button></article>`).join("") : '<p class="empty">\uC120\uD0DD\uD55C \uC870\uAC74\uC5D0 \uC81C\uCD9C\uB41C \uC601\uC218\uC99D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.</p>'}</div>`);
+      root.querySelector(".receipt-summary").insertAdjacentHTML("afterend", `<div class="receipt-submissions"><p>\uCD5C\uADFC \uC81C\uCD9C ${recent.length}\uAC74 \xB7 \uC870\uD68C\uB41C \uC804\uCCB4 ${rows.length}\uAC74</p>${recent.length ? recent.map((r3) => `<article class="receipt-submission"><div><strong>${esc3(r3.name)}</strong><span>${esc3(r3.rawTeam)} \xB7 \uC0AC\uC6A9\uC77C ${esc3(r3.date)}</span><small>\uC81C\uCD9C ${esc3(new Date(r3.createdAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }))}</small></div><div class="receipt-submission-total"><strong>${won(r3.amount)}</strong><span>\uC0AC\uC9C4 ${r3.files.length}\uC7A5</span></div>${r3.files.length ? `<button data-receipt-view="${esc3(r3.id)}" data-photo-index="0">\uC0AC\uC9C4 \uBCF4\uAE30</button>` : '<span class="badge">\uB0B4\uC6A9\uB9CC \uC800\uC7A5</span>'}</article>`).join("") : '<p class="empty">\uC120\uD0DD\uD55C \uC870\uAC74\uC5D0 \uC81C\uCD9C\uB41C \uC601\uC218\uC99D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.</p>'}</div>`);
     }
     const exportButton = root.querySelector("[data-receipt-export]");
     if (exportButton) exportButton.disabled = !rows.length;
@@ -12752,8 +12772,10 @@ function mountReceipts({ root, month: month2, months, person, admin, people, tea
   root.addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = event.target, button = form.querySelector("[type=submit]");
-    if (button.disabled) return;
+    if (saving) return;
+    saving = true;
     button.disabled = true;
+    root.querySelectorAll("[data-choose-receipt],[data-receipt-attach]").forEach((b3) => b3.disabled = true);
     form.querySelector(".form-error").textContent = "";
     try {
       if (form.matches("[data-retention-form]")) {
@@ -12763,25 +12785,55 @@ function mountReceipts({ root, month: month2, months, person, admin, people, tea
         toast2("\uBCF4\uAD00 \uAE30\uAC04 \uC124\uC815\uC744 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4. \uC790\uB3D9\uC0AD\uC81C\uB294 \uC6B4\uC601 \uC5F0\uACB0 \uD6C4 \uC801\uC6A9\uB429\uB2C8\uB2E4.");
       } else {
         const values = new FormData(form), files = [...form.querySelectorAll("input[type=file]")].flatMap((el) => [...el.files]);
-        const saved = await saveReceipt({ personId: person.personId, name: person.name, teams: person.teams, rawTeam: person.rawTeam, date: String(values.get("date")), amount: Number(values.get("amount")), note: String(values.get("note")).trim(), files, allowedMonths: months });
+        const saved = await saveReceipt({ id: editing?.id, expectedUpdatedAt: editing?.updatedAt || editing?.createdAt, personId: person.personId, name: person.name, teams: person.teams, rawTeam: person.rawTeam, date: String(values.get("date")), amount: Number(values.get("amount")), note: String(values.get("note")).trim(), files, allowedMonths: months });
         if (disposed) return;
+        editing = null;
         form.reset();
+        root.querySelector(".receipt-photo-input").hidden = true;
+        root.querySelector(".receipt-editing").hidden = true;
+        root.querySelector("[data-choose-receipt]").setAttribute("aria-expanded", "false");
         form.elements.date.value = saved.date;
         root.querySelector("[data-file-selection]").textContent = "\uC120\uD0DD\uD55C \uC0AC\uC9C4\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.";
         root.querySelector("#receipt-upload").open = false;
         const savedMonth = saved.date.slice(2, 4) + saved.date.slice(5, 7);
         await reload(savedMonth === month2 ? saved.date : void 0);
-        toast2(savedMonth === month2 ? "\uC601\uC218\uC99D\uC744 \uB4F1\uB85D\uD588\uC2B5\uB2C8\uB2E4." : `${saved.date.slice(0, 7)} \uC601\uC218\uC99D\uC744 \uB4F1\uB85D\uD588\uC2B5\uB2C8\uB2E4. \uC870\uD68C \uC6D4\uC744 \uBC14\uAFB8\uBA74 \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4.`);
+        toast2((saved.files.length ? "\uB0B4\uC6A9\uACFC \uC601\uC218\uC99D\uC744 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4." : "\uB0B4\uC6A9\uC744 \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4. \uC601\uC218\uC99D\uC740 \uB098\uC911\uC5D0 \uCD94\uAC00\uD560 \uC218 \uC788\uC5B4\uC694.") + (savedMonth === month2 ? "" : ` ${saved.date.slice(0, 7)} \uC870\uD68C \uC6D4\uC5D0\uC11C \uD655\uC778\uD574 \uC8FC\uC138\uC694.`));
       }
     } catch (e3) {
       if (!disposed) form.querySelector(".form-error").textContent = e3.message;
     } finally {
+      saving = false;
       button.disabled = false;
+      if (!disposed) {
+        root.querySelectorAll("[data-choose-receipt],[data-receipt-attach]").forEach((b3) => b3.disabled = b3.dataset.receiptAttach ? all.find((r3) => r3.id === b3.dataset.receiptAttach)?.files.length >= 5 : false);
+      }
     }
   });
   root.addEventListener("click", async (event) => {
     const button = event.target.closest("button");
     if (!button) return;
+    if (button.hasAttribute("data-choose-receipt") || button.hasAttribute("data-receipt-attach")) {
+      if (saving) return;
+      const form = root.querySelector("#receipt-form");
+      if (button.dataset.receiptAttach) {
+        const record = filtered().find((r3) => r3.id === button.dataset.receiptAttach && r3.personId === person.personId);
+        if (!record) return;
+        editing = record;
+        form.reset();
+        form.elements.date.value = record.date;
+        form.elements.amount.value = record.amount;
+        form.elements.note.value = record.note;
+        root.querySelector("[data-file-selection]").textContent = "\uC800\uC7A5\uB41C \uC0AC\uC9C4 " + record.files.length + "\uC7A5 \xB7 \uCD94\uAC00\uD560 \uC0AC\uC9C4\uC744 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694.";
+        const hint = root.querySelector(".receipt-editing");
+        hint.hidden = false;
+        hint.textContent = record.date + " \uC800\uC7A5 \uB0B4\uC5ED\uC5D0 \uC0AC\uC9C4\uC744 \uCD94\uAC00\uD569\uB2C8\uB2E4. \uAE08\uC561\uC740 \uD55C \uBC88\uB9CC \uD569\uC0B0\uB429\uB2C8\uB2E4.";
+      }
+      root.querySelector("#receipt-upload").open = true;
+      root.querySelector(".receipt-photo-input").hidden = false;
+      root.querySelector("[data-choose-receipt]").setAttribute("aria-expanded", "true");
+      root.querySelector(".receipt-photo-input").scrollIntoView({ block: "center", behavior: "smooth" });
+      return;
+    }
     if (button.hasAttribute("data-receipt-expand")) {
       expanded = !expanded;
       viewState.expanded = expanded;
@@ -12791,6 +12843,14 @@ function mountReceipts({ root, month: month2, months, person, admin, people, tea
       return;
     }
     if (button.dataset.receiptDay) {
+      if (saving) return;
+      if (editing) {
+        editing = null;
+        const form = root.querySelector("#receipt-form");
+        form?.reset();
+        root.querySelector(".receipt-editing").hidden = true;
+        root.querySelector("[data-file-selection]").textContent = "\uC120\uD0DD\uD55C \uC0AC\uC9C4\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.";
+      }
       selectedDate = button.dataset.receiptDay;
       const dateInput = root.querySelector("input[name=date]");
       if (dateInput) dateInput.value = selectedDate;
@@ -12816,6 +12876,7 @@ function mountReceipts({ root, month: month2, months, person, admin, people, tea
     }
   });
   function showPhotos(record, index4) {
+    if (!record.files.length) return;
     viewer?.close();
     const dialog = document.createElement("dialog");
     dialog.className = "receipt-viewer";
@@ -12847,8 +12908,26 @@ function mountReceipts({ root, month: month2, months, person, admin, people, tea
     paint();
     dialog.showModal();
   }
+  function newEntry() {
+    if (disposed || admin) return;
+    if (saving) {
+      toast2("\uC800\uC7A5 \uC911\uC785\uB2C8\uB2E4. \uC644\uB8CC \uD6C4 \uC0C8 \uB0B4\uC5ED\uC744 \uB4F1\uB85D\uD574 \uC8FC\uC138\uC694.");
+      return;
+    }
+    editing = null;
+    const form = root.querySelector("#receipt-form");
+    form.reset();
+    form.elements.date.value = selectedDate;
+    root.querySelector(".receipt-editing").hidden = true;
+    root.querySelector(".receipt-photo-input").hidden = true;
+    root.querySelector("[data-file-selection]").textContent = "\uC120\uD0DD\uD55C \uC0AC\uC9C4\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.";
+    root.querySelector("[data-choose-receipt]").setAttribute("aria-expanded", "false");
+    form.querySelector(".form-error").textContent = "";
+    root.querySelector("#receipt-upload").open = true;
+    form.elements.date.focus();
+  }
   reload();
-  return { refresh: reload, dispose() {
+  return { refresh: reload, newEntry, dispose() {
     disposed = true;
     release();
     viewer?.close();
@@ -12862,7 +12941,7 @@ function downloadBlob(blob, name) {
   setTimeout(() => URL.revokeObjectURL(url), 6e4);
 }
 
-// review-share/src/theme.js
+// src/theme.js
 var THEME_KEY = "bb-staff:public-preview:theme:v1";
 var preference = null;
 var media;
@@ -12913,7 +12992,7 @@ function initializeTheme() {
   });
 }
 
-// review-share/src/schedule-view.js
+// src/schedule-view.js
 var esc4 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
 var scheduleDate = (month2, day) => `20${month2.slice(0, 2)}-${month2.slice(2)}-${String(day).padStart(2, "0")}`;
 function addedSchedule(records, row, day) {
@@ -12929,7 +13008,7 @@ function schedulePickerDays(month2) {
   return `<div class="daily-weekdays">${["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"].map((d2) => `<span>${d2}</span>`).join("")}</div><div class="schedule-picker-days">${calendarDays(month2).map((day) => day ? `<button type="button" data-picker-date="${scheduleDate(month2, day)}" aria-label="${scheduleDate(month2, day)} \uC77C\uC815 \uCD94\uAC00"><strong>${day}</strong><span aria-hidden="true">+</span></button>` : "<span></span>").join("")}</div>`;
 }
 
-// review-share/src/preview-auth.js
+// src/preview-auth.js
 var SESSION_KEY = "bb-staff:public-preview:test-session:v1";
 var normalize = (value) => typeof value === "string" ? value.normalize("NFC").trim().replace(/\s+/g, "") : "";
 var esc5 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
@@ -13000,7 +13079,71 @@ function mountPreviewLogin(root, { people, themeControl: themeControl2, onLogin 
   paint();
 }
 
-// review-share/src/preview-feedback.js
+// src/picture-guide.js
+var esc6 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
+var step = (image, title, text) => ({ image, title, text });
+var common = {
+  login: { title: "\uB85C\uADF8\uC778\xB7\uB85C\uADF8\uC544\uC6C3", steps: [step("login", "\uB0B4 \uACC4\uC815\uC73C\uB85C \uB4E4\uC5B4\uAC00\uAE30", "\uC9C1\uC6D0\uC740 \uBCF8\uC778 \uC774\uB984\uACFC \uD14C\uC2A4\uD2B8 \uBE44\uBC00\uBC88\uD638\uB97C \uC785\uB825\uD574\uC694. \uAC19\uC740 \uC774\uB984\uC774 \uC788\uC73C\uBA74 \uBCF8\uC778 \uD300\uC744 \uC120\uD0DD\uD558\uC138\uC694."), step("logout", "\uC0AC\uC6A9 \uD6C4 \uB85C\uADF8\uC544\uC6C3", "\uC624\uB978\uCABD \uC704 \uB85C\uADF8\uC544\uC6C3\uC744 \uB204\uB974\uBA74 \uB85C\uADF8\uC778 \uD654\uBA74\uC73C\uB85C \uB3CC\uC544\uAC11\uB2C8\uB2E4.")] },
+  feedback: { title: "\uC758\uACAC \uB0A8\uAE30\uAE30", steps: [step("feedback-write", "\uD53C\uB4DC\uBC31\xB7\uC694\uCCAD\uC0AC\uD56D \uC5F4\uAE30", "\uBD88\uD3B8\uD588\uB358 \uD654\uBA74 \uC704\uCABD\uC758 \uD53C\uB4DC\uBC31\xB7\uC694\uCCAD\uC0AC\uD56D\uC744 \uD3BC\uCCD0 \uB0B4\uC6A9\uC744 \uC801\uC5B4\uC694."), step("feedback-saved", "\uBA54\uBAA8 \uC800\uC7A5 \uD655\uC778", "\uBA54\uBAA8 \uC800\uC7A5\uC744 \uB204\uB974\uACE0 \uC544\uB798 \uC800\uC7A5 \uB0B4\uC5ED\uC744 \uD655\uC778\uD574\uC694. \uB2E4\uB978 \uAE30\uAE30\uB85C \uC804\uB2EC\uD558\uB824\uBA74 \uB0B4 \uBA54\uBAA8 \uD30C\uC77C\uC744 \uB0B4\uB824\uBC1B\uC544 \uAD00\uB9AC\uC790\uC5D0\uAC8C \uBCF4\uB0B4 \uC8FC\uC138\uC694.")] }
+};
+var topics = {
+  employee: {
+    status: { title: "\uC2DD\uC0AC\xB7\uD734\uC2DD\xB7\uC678\uCD9C\xB7\uC678\uADFC", steps: [step("status-start", "\uB098\uAC08 \uB54C \uC2DC\uC791", "\uB0B4 \uD558\uB8E8\uC5D0\uC11C \uC2DD\uC0AC\uC911\xB7\uD734\uC2DD\uC911\xB7\uC678\uCD9C\uC911\xB7\uC678\uADFC\uC911 \uC911 \uD574\uB2F9 \uBC84\uD2BC\uC744 \uB20C\uB7EC\uC694."), step("status-end", "\uB3CC\uC544\uC624\uBA74 \uC885\uB8CC", "\uC2DC\uC791\uD55C \uBC84\uD2BC\uC774 \uC885\uB8CC \uBC84\uD2BC\uC73C\uB85C \uBC14\uB01D\uB2C8\uB2E4. \uBCF5\uADC0\uD558\uBA74 \uC885\uB8CC\uB97C \uB20C\uB7EC\uC694. \uC2DC\uC791\xB7\uC885\uB8CC \uC774\uB825\uC740 \uAD00\uB9AC\uC790 \uAE30\uB85D\uC5D0 \uB0A8\uC2B5\uB2C8\uB2E4.")] },
+    schedule: { title: "\uB0B4 \uADFC\uBB34\uD45C\xB7\uD734\uBB34 \uB4F1\uB85D", steps: [step("schedule-calendar", "\uB0A0\uC9DC\uC758 + \uB204\uB974\uAE30", "\uB0B4 \uADFC\uBB34\uD45C\uC5D0\uC11C \uD734\uBB34\xB7\uC5F0\uCC28\xB7\uBC18\uCC28\uB97C \uD655\uC778\uD574\uC694. \uC77C\uC815\uC744 \uCD94\uAC00\uD560 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC\uC694."), step("schedule-form", "\uB0B4\uC6A9\uC744 \uACE0\uB974\uACE0 \uB4F1\uB85D", "\uC77C\uC815 \uC885\uB958\uC640 \uBA54\uBAA8\uB97C \uC785\uB825\uD558\uACE0 \uB4F1\uB85D\uD558\uAE30\uB97C \uB204\uB974\uBA74 \uB0B4 \uADFC\uBB34\uD45C\uC640 \uD300 \uC77C\uC815\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4.")] },
+    team: { title: "\uD300 \uC77C\uC815 \uBCF4\uAE30", steps: [step("team-filter", "\uBCFC \uD300 \uC120\uD0DD", "\uD300 \uC77C\uC815\uC5D0\uC11C \uC870\uD68C \uC6D4\uACFC \uD300\uC744 \uC120\uD0DD\uD574\uC694. \uC9C1\uC6D0 \uCC3E\uAE30\uB97C \uD568\uAED8 \uC4F0\uBA74 \uB354 \uC881\uD600 \uBCFC \uC218 \uC788\uC5B4\uC694."), step("team-calendar", "\uB2EC\uB825\uC5D0\uC11C \uC77C\uC815 \uD655\uC778", "\uC120\uD0DD\uD55C \uD300\uC758 \uC77C\uC815\uB9CC \uBCF4\uC785\uB2C8\uB2E4. \uC77C\uC815 \uD56D\uBAA9\uC744 \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694.")] },
+    receipt: { title: "\uC2DD\uB300 \uB0B4\uC6A9\xB7\uC601\uC218\uC99D \uC800\uC7A5", steps: [step("receipt-content", "\uC0AC\uC9C4 \uC5C6\uC774 \uB0B4\uC6A9 \uC800\uC7A5", "\uC0AC\uC6A9\uC77C\xB7\uAE08\uC561\xB7\uBA54\uBAA8\uB97C \uC785\uB825\uD558\uACE0 \uB0B4\uC6A9 \uC800\uC7A5\uC744 \uB204\uB974\uC138\uC694. \uBC30\uB2EC \uC2DD\uB300\uCC98\uB7FC \uC601\uC218\uC99D\uC774 \uC5C6\uC5B4\uB3C4 \uC800\uC7A5\uB429\uB2C8\uB2E4."), step("receipt-photos", "\uC601\uC218\uC99D\uC774 \uC788\uC73C\uBA74 \uB4F1\uB85D", "\uC601\uC218\uC99D \uB4F1\uB85D\uD558\uAE30 \u2192 \uC0AC\uC9C4 \uCD2C\uC601 \uB610\uB294 \uC0AC\uC9C4 \uD30C\uC77C \uC120\uD0DD \u2192 \uB0B4\uC6A9 \uC800\uC7A5 \uC21C\uC11C\uC608\uC694. \uC800\uC7A5\uB41C \uB0B4\uC5ED\uC5D0\uB3C4 \uB098\uC911\uC5D0 \uC0AC\uC9C4\uC744 \uCD94\uAC00\uD560 \uC218 \uC788\uC5B4\uC694."), step("receipt-calendar", "\uB2EC\uB825\uC5D0\uC11C \uC800\uC7A5 \uD655\uC778", "\uB0B4\uC6A9 \uC800\uC7A5\uC740 \uC0AC\uC9C4 \uC5C6\uB294 \uAE30\uB85D, \uC601\uC218\uC99D\uC740 \uC0AC\uC9C4\uC774 \uC788\uB294 \uAE30\uB85D\uC785\uB2C8\uB2E4. \uB0A0\uC9DC\uB97C \uB20C\uB7EC \uAE08\uC561\xB7\uBA54\uBAA8\xB7\uC0AC\uC9C4\uC744 \uD655\uC778\uD574\uC694.")] },
+    daily: { title: "\uC2DD\uB300\xB7OT \uC77C\uBCC4 \uBCF4\uAE30", steps: [step("daily-button", "\uC77C\uBCC4 \uBCF4\uAE30 \uB204\uB974\uAE30", "\uB0B4 \uC2DD\uB300 \uB610\uB294 \uB0B4 OT\xB7\uC9C0\uAC01\uC5D0\uC11C \uC870\uD68C \uC6D4\uC744 \uACE0\uB974\uACE0 \uC77C\uBCC4 \uBCF4\uAE30\uB97C \uB20C\uB7EC\uC694."), step("daily-drawer", "\uC624\uB978\uCABD \uB2EC\uB825\uC5D0\uC11C \uD655\uC778", "\uD654\uBA74\uC744 \uBC14\uAFB8\uC9C0 \uC54A\uACE0 \uAC1C\uC778 \uB0B4\uC5ED\uC774 \uC5F4\uB9BD\uB2C8\uB2E4. \uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uADF8\uB0A0\uC758 \uAE08\uC561\xB7\uC2DC\uAC04\xB7\uBA54\uBAA8\uB97C \uBCFC \uC218 \uC788\uC5B4\uC694.")] },
+    ...common
+  },
+  admin: {
+    dashboard: { title: "\uC9C1\uC6D0 \uC0C1\uD0DC\xB7\uC6D4\uBCC4 \uD1B5\uACC4", steps: [step("admin-live", "\uD604\uC7AC \uC0C1\uD0DC \uD655\uC778", "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC\uC5D0\uC11C \uC2DD\uC0AC\xB7\uD734\uC2DD\xB7\uC678\uCD9C\xB7\uC678\uADFC \uC911\uC778 \uC9C1\uC6D0\uACFC \uACBD\uACFC \uC2DC\uAC04\uC744 \uD655\uC778\uD574\uC694. \uD604\uC7AC \uC0C1\uD0DC\uB294 \uC870\uD68C \uC6D4\uACFC \uAD00\uACC4\uC5C6\uC774 \uD45C\uC2DC\uB429\uB2C8\uB2E4."), step("admin-stats", "\uC6D4\xB7\uC885\uB958\uBCC4 \uD1B5\uACC4 \uD655\uC778", "\uC870\uD68C \uC6D4\xB7\uD300\xB7\uC9C1\uC6D0 \uAC80\uC0C9\uC744 \uC815\uD558\uACE0 \uC2DD\uC0AC \uAE30\uB85D \uB4F1 \uC885\uB958\uB97C \uC120\uD0DD\uD574\uC694. \uC644\uB8CC\uB41C \uAE30\uB85D\uACFC \uC6D4\uBCC4 \uC18C\uC694 \uC2DC\uAC04\uC744 \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4.")] },
+    schedule: { title: "\uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D", steps: [step("admin-schedule-picker", "\uC9C1\uC6D0\xB7\uB0A0\uC9DC \uC120\uD0DD", "\uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D\uC5D0\uC11C \uC9C1\uC6D0\uACFC \uC6D4\uC744 \uC120\uD0DD\uD558\uACE0 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC\uC694."), step("admin-schedule-form", "\uD734\uBB34 \uC885\uB958 \uB4F1\uB85D", "\uD734\uBB34\xB7\uC5F0\uCC28\xB7\uBC18\uCC28 \uB4F1 \uC885\uB958\uC640 \uBA54\uBAA8\uB97C \uD655\uC778\uD558\uACE0 \uB4F1\uB85D\uD558\uAE30\uB97C \uB204\uB974\uC138\uC694. \uC120\uD0DD\uD55C \uC9C1\uC6D0\uC758 \uADFC\uBB34\uD45C\uC5D0\uB3C4 \uBC18\uC601\uB429\uB2C8\uB2E4.")] },
+    receipt: { title: "\uC601\uC218\uC99D \uCDE8\uD569\xB7\uB2E4\uC6B4\uB85C\uB4DC", steps: [step("admin-receipts", "\uC6D4\xB7\uD300\xB7\uC9C1\uC6D0\uC73C\uB85C \uCC3E\uAE30", "\uB300\uC2DC\uBCF4\uB4DC\uC758 \uC601\uC218\uC99D \uC81C\uCD9C \uAE30\uB85D\uC5D0\uC11C \uD300\xB7\uC9C1\uC6D0\uC744 \uC120\uD0DD\uD574\uC694. \uC601\uC218\uC99D \uBAA8\uC544\uBCF4\uAE30\uB85C \uB2EC\uB825\uC744 \uD3BC\uCE58\uACE0 \uB0A0\uC9DC\uBCC4 \uC0AC\uC9C4\uC744 \uD655\uC778\uD558\uC138\uC694."), step("admin-receipt-calendar", "\uB0A0\uC9DC\uBCC4 \uB4F1\uB85D \uD655\uC778", "\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uD574\uB2F9 \uB0A0\uC9DC\uC758 \uB0B4\uC5ED\uC774 \uC544\uB798\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4. \uC0AC\uC9C4 \uBCF4\uAE30\uB97C \uB204\uB974\uBA74 \uD06C\uAC8C \uBCFC \uC218 \uC788\uC5B4\uC694."), step("admin-receipt-download", "\uC870\uD68C \uC870\uAC74\uC73C\uB85C \uB2E4\uC6B4\uB85C\uB4DC", "\uC870\uD68C \uC601\uC218\uC99D ZIP \uB2E4\uC6B4\uB85C\uB4DC\uB97C \uB204\uB974\uBA74 \uC120\uD0DD\uD55C \uC6D4\xB7\uD300\xB7\uC9C1\uC6D0\uC758 \uC0AC\uC9C4\uACFC \uC2DD\uB300 \uBAA9\uB85D\uC744 \uBC1B\uC2B5\uB2C8\uB2E4. \uC0AC\uC9C4 \uC5C6\uB294 \uB0B4\uC6A9\uB3C4 \uBAA9\uB85D\uC5D0 \uD3EC\uD568\uB429\uB2C8\uB2E4.")] },
+    notes: { title: "\uC9C1\uC6D0 \uBA54\uBAA8 \uD55C\uACF3\uC5D0 \uBCF4\uAE30", steps: [step("admin-notes", "\uB300\uC2DC\uBCF4\uB4DC\uC5D0\uC11C \uBC14\uB85C \uBCF4\uAE30", "\uC9C1\uC6D0 \uC694\uCCAD\uC0AC\uD56D\xB7\uBA54\uBAA8\uCDE8\uD569\uC5D0 \uBAA8\uB4E0 \uD654\uBA74\xB7\uC804\uCCB4 \uAE30\uAC04\uC758 \uC758\uACAC\uC774 \uBAA8\uC785\uB2C8\uB2E4. \uC791\uC131\uC790\xB7\uC791\uC131 \uD654\uBA74\xB7\uB0B4\uC6A9\uC73C\uB85C \uCC3E\uC544\uBCF4\uC138\uC694."), step("admin-notes-import", "\uB2E4\uB978 \uAE30\uAE30 \uBA54\uBAA8 \uAC00\uC838\uC624\uAE30", "\uD604\uC7AC\uB294 \uBE0C\uB77C\uC6B0\uC800\uBCC4\uB85C \uC800\uC7A5\uB429\uB2C8\uB2E4. \uC9C1\uC6D0\uC5D0\uAC8C \uBC1B\uC740 \uBA54\uBAA8 \uD30C\uC77C\uC744 \uAC00\uC838\uC624\uBA74 \uAC19\uC740 \uBAA9\uB85D\uC5D0 \uCDE8\uD569\uB418\uACE0, \uC870\uD68C\uD55C \uBA54\uBAA8\uB97C \uB0B4\uB824\uBC1B\uC744 \uC218 \uC788\uC5B4\uC694.")] },
+    ...common,
+    login: { title: "\uB85C\uADF8\uC778\xB7\uB85C\uADF8\uC544\uC6C3", steps: [step("admin-login", "\uAD00\uB9AC\uC790\uB85C \uB4E4\uC5B4\uAC00\uAE30", "\uAD00\uB9AC\uC790 \uB85C\uADF8\uC778\uC744 \uC120\uD0DD\uD55C \uB4A4 \uAD00\uB9AC\uC790 \uC544\uC774\uB514\uC640 \uBE44\uBC00\uBC88\uD638\uB85C \uB4E4\uC5B4\uAC00\uC138\uC694."), step("logout", "\uC0AC\uC6A9 \uD6C4 \uB85C\uADF8\uC544\uC6C3", "\uC624\uB978\uCABD \uC704 \uB85C\uADF8\uC544\uC6C3\uC73C\uB85C \uC138\uC158\uC744 \uC885\uB8CC\uD558\uC138\uC694. \uC9C1\uC6D0 \uACC4\uC815\uC73C\uB85C \uBC14\uAFC0 \uB54C\uC5D0\uB3C4 \uBA3C\uC800 \uB85C\uADF8\uC544\uC6C3\uD569\uB2C8\uB2E4.")] }
+  }
+};
+var routeTopic = { "meal-timer": "status", roster: "schedule", "team-calendar": "team", meals: "receipt", attendance: "daily", "admin-dashboard": "dashboard", feedback: "notes" };
+var guideAssets = [...new Set(Object.values(topics).flatMap((role) => Object.values(role).flatMap((topic) => topic.steps.map((s3) => s3.image + ".png"))))];
+function mountPictureGuide(root, { role, view: view2 }) {
+  const available = topics[role], initial = routeTopic[view2];
+  let selected = available[initial] ? initial : Object.keys(available)[0], viewer = null, disposed = false;
+  root.innerHTML = `<div class="picture-guide"><label class="guide-topic-label">\uBCF4\uACE0 \uC2F6\uC740 \uC0AC\uC6A9 \uBC29\uBC95<select data-guide-topic>${Object.entries(available).map(([id, t3]) => `<option value="${id}" ${id === selected ? "selected" : ""}>${t3.title}</option>`).join("")}</select></label><p class="guide-caption">\uC0AC\uC9C4 \uC21C\uC11C\uB300\uB85C \uB530\uB77C \uD574 \uBCF4\uC138\uC694. \uC0AC\uC9C4\uC744 \uB204\uB974\uBA74 \uD06C\uAC8C \uBCFC \uC218 \uC788\uC5B4\uC694. \uD654\uBA74\uC758 \uAE30\uB85D\uC740 \uC124\uBA85\uC6A9 \uC608\uC2DC\uC785\uB2C8\uB2E4.</p><ol class="picture-guide-steps"></ol></div>`;
+  function paint() {
+    root.querySelector("ol").innerHTML = available[selected].steps.map((s3, i3) => `<li><button type="button" class="guide-image-button" data-guide-image="${i3}" aria-label="${esc6(s3.title)} \uD654\uBA74 \uD06C\uAC8C \uBCF4\uAE30"><img src="./assets/guide/${s3.image}.png" alt="${esc6(s3.title)} \uC2E4\uC81C \uD654\uBA74" loading="lazy" decoding="async"><span>\uC0AC\uC9C4 \uD06C\uAC8C \uBCF4\uAE30 \u2197</span></button><h3><span>${i3 + 1}</span> ${esc6(s3.title)}</h3><p>${esc6(s3.text)}</p></li>`).join("");
+  }
+  root.querySelector("select").addEventListener("change", (event) => {
+    selected = event.target.value;
+    paint();
+  });
+  root.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-guide-image]");
+    if (!button || disposed) return;
+    const s3 = available[selected].steps[Number(button.dataset.guideImage)];
+    if (!s3) return;
+    viewer?.close();
+    const dialog = document.createElement("dialog");
+    dialog.className = "guide-viewer";
+    dialog.setAttribute("aria-label", s3.title);
+    dialog.innerHTML = `<div class="dialog-heading"><h2>${esc6(s3.title)}</h2><button type="button" data-guide-close>\uB2EB\uAE30 \u2715</button></div><img src="./assets/guide/${s3.image}.png" alt="${esc6(s3.title)} \uC2E4\uC81C \uD654\uBA74"><p>${esc6(s3.text)}</p>`;
+    dialog.querySelector("button").onclick = () => dialog.close();
+    dialog.addEventListener("close", () => {
+      dialog.remove();
+      if (viewer === dialog) viewer = null;
+    });
+    document.body.append(dialog);
+    viewer = dialog;
+    dialog.showModal();
+  });
+  paint();
+  return { dispose() {
+    disposed = true;
+    viewer?.close();
+  } };
+}
+
+// src/preview-feedback.js
 var FEEDBACK_PREFIX = "bb-staff:public-preview:review-note:v1:";
 var FEEDBACK_MAX_BYTES = 2e7;
 var FEEDBACK_VIEWS = ["meal-timer", "roster", "team-calendar", "meals", "attendance", "admin-dashboard", "sources", "feedback"];
@@ -13056,15 +13199,11 @@ function feedbackFile(notes) {
   return JSON.stringify({ format: "bb-staff-review-notes", version: 1, notes }, null, 2);
 }
 
-// review-share/src/workspace-help.js
-var esc6 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
+// src/workspace-help.js
+var esc7 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
 var titles = { "meal-timer": "\uB0B4 \uD558\uB8E8", roster: "\uADFC\uBB34\uD45C", "team-calendar": "\uD300 \uC77C\uC815", meals: "\uC2DD\uB300\xB7\uC601\uC218\uC99D", attendance: "OT\xB7\uC9C0\uAC01", "admin-dashboard": "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", sources: "\uAC80\uC218 \uC790\uB8CC", feedback: "\uBA54\uBAA8\uCDE8\uD569" };
 var drafts = /* @__PURE__ */ new Map();
 var mine = (note, session) => note.role === session.role && (session.role === "admin" || note.personId === session.personId);
-var guide = {
-  employee: [["\uB0B4 \uD558\uB8E8", "\uC2DD\uC0AC\uC911\xB7\uD734\uC2DD\uC911\xB7\uC678\uCD9C\uC911\xB7\uC678\uADFC\uC911\uC744 \uB204\uB974\uACE0 \uB3CC\uC544\uC624\uBA74 \uC885\uB8CC\uB97C \uB20C\uB7EC \uC8FC\uC138\uC694. \uC2DC\uC791\xB7\uC885\uB8CC \uC774\uB825\uC740 \uAD00\uB9AC\uC790 \uAE30\uB85D\uC5D0 \uB0A8\uC2B5\uB2C8\uB2E4."], ["\uB0B4 \uADFC\uBB34\uD45C / \uD300 \uC77C\uC815", "\uB0B4 \uADFC\uBB34\uD45C\uC5D0\uC11C \uD734\uBB34\xB7\uC5F0\uCC28\xB7\uBC18\uCC28\uB97C \uD655\uC778\uD558\uC138\uC694. \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC73C\uB85C \uB0B4 \uC77C\uC815\uC744 \uB4F1\uB85D\uD558\uACE0, \uD300 \uC77C\uC815\uC5D0\uC11C\uB294 \uD300\uC744 \uC120\uD0DD\uD574 \uD568\uAED8 \uBCFC \uC218 \uC788\uC5B4\uC694."], ["\uB0B4 \uC2DD\uB300 / \uC601\uC218\uC99D", "\uC601\uC218\uC99D \uB4F1\uB85D\uC5D0\uC11C \uB0A0\uC9DC\xB7\uAE08\uC561\uACFC \uC0AC\uC9C4\uC744 \uB123\uACE0 \uC800\uC7A5\uD558\uC138\uC694. \uB2EC\uB825\uC758 \uB4F1\uB85D \uD45C\uC2DC\uB97C \uB20C\uB7EC \uC0AC\uC9C4\uC744 \uD655\uC778\uD558\uACE0, \uC77C\uBCC4 \uBCF4\uAE30\uC5D0\uC11C \uC0AC\uC6A9 \uB0B4\uC5ED\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694."], ["\uB0B4 OT\xB7\uC9C0\uAC01", "\uC870\uD68C \uC6D4\uC744 \uC120\uD0DD\uD558\uACE0 \uC77C\uBCC4 \uBCF4\uAE30\uB97C \uB204\uB974\uBA74 \uB0A0\uC9DC\uBCC4 \uAE30\uB85D\uC774 \uC624\uB978\uCABD \uB2EC\uB825\uC5D0 \uC5F4\uB9BD\uB2C8\uB2E4."], ["\uAC80\uC218 \uBA54\uBAA8", "\uAC01 \uD654\uBA74\uC758 \uD53C\uB4DC\uBC31\xB7\uC694\uCCAD\uC0AC\uD56D\uC5D0 \uC758\uACAC\uC744 \uC800\uC7A5\uD558\uC138\uC694. \uB2E4\uB978 \uAE30\uAE30\uC5D0\uC11C \uC791\uC131\uD588\uB2E4\uBA74 \uBA54\uBAA8 \uD30C\uC77C\uC744 \uB0B4\uB824\uBC1B\uC544 \uAD00\uB9AC\uC790\uC5D0\uAC8C \uC804\uB2EC\uD574 \uC8FC\uC138\uC694."]],
-  admin: [["\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", "\uC9C1\uC6D0 \uD604\uC7AC \uC0C1\uD0DC\uC640 \uACBD\uACFC \uC2DC\uAC04, \uC2DD\uC0AC\xB7\uD734\uC2DD\xB7\uC678\uCD9C\xB7\uC678\uADFC \uC6D4\uBCC4 \uD1B5\uACC4\uB97C \uD655\uC778\uD558\uC138\uC694. \uC870\uD68C \uC6D4\xB7\uD300\xB7\uC9C1\uC6D0\uC73C\uB85C \uAE30\uB85D\uC744 \uC881\uD790 \uC218 \uC788\uC5B4\uC694."], ["\uC77C\uC815 / \uC9C1\uC6D0 \uD734\uBB34", "\uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D\uC5D0\uC11C \uC9C1\uC6D0\uACFC \uC6D4\uC744 \uC120\uD0DD\uD55C \uB4A4 \uB2EC\uB825\uC758 + \uBC84\uD2BC\uC73C\uB85C \uB4F1\uB85D\uD558\uC138\uC694. \uD300 \uC77C\uC815\xB7\uC9C1\uC6D0\uBCC4 \uADFC\uBB34\uD45C\uC5D0\uC11C\uB3C4 \uB0A0\uC9DC\uBCC4 \uB4F1\uB85D\uC774 \uAC00\uB2A5\uD569\uB2C8\uB2E4."], ["\uC601\uC218\uC99D \uCDE8\uD569", "\uB300\uC2DC\uBCF4\uB4DC\uC640 \uC2DD\uB300\xB7\uC601\uC218\uC99D\uC5D0\uC11C \uC81C\uCD9C \uC0AC\uC9C4\uC744 \uB2EC\uB825\uC73C\uB85C \uD655\uC778\uD558\uC138\uC694. \uC6D4\xB7\uD300\xB7\uC9C1\uC6D0\uC744 \uC120\uD0DD\uD55C \uB4A4 ZIP \uB2E4\uC6B4\uB85C\uB4DC\uB85C \uD574\uB2F9 \uC0AC\uC9C4\uACFC \uBAA9\uB85D\uC744 \uBC1B\uC744 \uC218 \uC788\uC5B4\uC694."], ["\uBA54\uBAA8\uCDE8\uD569", "\uC9C1\uC6D0\uACFC \uAD00\uB9AC\uC790 \uC758\uACAC\uC744 \uC791\uC131\uC790\xB7\uD654\uBA74\uBCC4\uB85C \uD655\uC778\uD558\uC138\uC694. \uB2E4\uB978 \uAE30\uAE30\uC5D0\uC11C \uBC1B\uC740 \uBA54\uBAA8 \uD30C\uC77C\uC744 \uAC00\uC838\uC624\uBA74 \uD568\uAED8 \uBCFC \uC218 \uC788\uC5B4\uC694. \uAC19\uC740 \uBA54\uBAA8\uB97C \uB2E4\uC2DC \uAC00\uC838\uC640\uB3C4 \uC911\uBCF5\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."], ["\uCD08\uC548 \uC800\uC7A5 \uBC94\uC704", "\uD604\uC7AC \uB370\uC774\uD130\uB294 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4. \uC11C\uBC84 \uACF5\uC720\xB7\uC2E4\uC81C \uAD8C\uD55C\xB7\uC601\uC218\uC99D \uC790\uB3D9\uC0AD\uC81C\uB294 \uC544\uC9C1 \uC5F0\uACB0\uB418\uC9C0 \uC54A\uC558\uACE0, \uBCF4\uAD00 \uAE30\uAC04\uC740 \uC124\uC815\uB9CC \uC800\uC7A5\uB429\uB2C8\uB2E4."]]
-};
 var guidance = {
   "meal-timer": "\uC5C5\uBB34 \uC0C1\uD0DC\uB97C \uC2DC\uC791\uD558\uACE0 \uBCF5\uADC0\uD560 \uB54C \uC885\uB8CC\uD574 \uC8FC\uC138\uC694.",
   roster: "\uC6D4\uC744 \uACE0\uB974\uACE0 \uB0A0\uC9DC\uB97C \uB20C\uB7EC \uC77C\uC815\xB7\uD734\uBB34\uB97C \uD655\uC778\uD558\uC138\uC694. + \uBC84\uD2BC\uC73C\uB85C \uB4F1\uB85D\uD560 \uC218 \uC788\uC5B4\uC694.",
@@ -13085,12 +13224,13 @@ function download(notes) {
   setTimeout(() => URL.revokeObjectURL(url), 1e3);
 }
 function noteCards(notes) {
-  return notes.map((note) => `<article class="feedback-card"><div><strong>${esc6(note.name)} \xB7 ${esc6(note.team)}</strong><span>${note.role === "admin" ? "\uAD00\uB9AC\uC790" : "\uC9C1\uC6D0"} \xB7 ${esc6(titles[note.view])}</span><time>${esc6(new Date(note.createdAt).toLocaleString("ko-KR"))}</time></div><p class="prewrap">${esc6(note.text)}</p></article>`).join("");
+  return notes.map((note) => `<article class="feedback-card"><div><strong>${esc7(note.name)} \xB7 ${esc7(note.team)}</strong><span>${note.role === "admin" ? "\uAD00\uB9AC\uC790" : "\uC9C1\uC6D0"} \xB7 ${esc7(titles[note.view])}</span><time>${esc7(new Date(note.createdAt).toLocaleString("ko-KR"))}</time></div><p class="prewrap">${esc7(note.text)}</p></article>`).join("");
 }
 function mountWorkspaceHelp(root, { session, view: view2, people, toast: toast2, onSaved }) {
   const key = session.role + ":" + (session.personId || "admin") + ":" + view2;
   let disposed = false;
-  root.innerHTML = `<section class="workspace-support" aria-label="\uC0AC\uC6A9 \uC548\uB0B4\uC640 \uAC80\uC218 \uBA54\uBAA8"><details class="workspace-guide"><summary><strong>${session.role === "admin" ? "\uAD00\uB9AC\uC790" : "\uC9C1\uC6D0"} \uC0AC\uC6A9\uC124\uBA85\uC11C</strong><span>${esc6(guidance[view2])}</span></summary><div class="guide-steps">${guide[session.role].map(([title, text]) => `<div><h3>${title}</h3><p>${text}</p></div>`).join("")}</div></details><details class="workspace-feedback"><summary><strong>\uD53C\uB4DC\uBC31\xB7\uC694\uCCAD\uC0AC\uD56D</strong><span>\uC774 \uD654\uBA74\uC5D0 \uB300\uD55C \uC758\uACAC \uB0A8\uAE30\uAE30 \xB7 \uAC80\uC218\uC6A9</span></summary><form class="feedback-form"><label>\uBA54\uBAA8<textarea name="feedback" rows="4" maxlength="4000" required placeholder="\uBD88\uD3B8\uD55C \uC810\uC774\uB098 \uBC14\uAFB8\uACE0 \uC2F6\uC740 \uB0B4\uC6A9\uC744 \uC801\uC5B4 \uC8FC\uC138\uC694.">${esc6(drafts.get(key) || "")}</textarea></label><p>\uC800\uC7A5\uD558\uBA74 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC758 \uAD00\uB9AC\uC790 \u2018\uBA54\uBAA8\uCDE8\uD569\u2019\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4. \uB2E4\uB978 \uAE30\uAE30\uC5D0\uB294 \uC790\uB3D9 \uC804\uC1A1\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.</p><div class="feedback-actions"><button type="submit" class="primary">\uBA54\uBAA8 \uC800\uC7A5</button><button type="button" data-note-export>\uB0B4 \uBA54\uBAA8 \uD30C\uC77C \uB0B4\uB824\uBC1B\uAE30</button></div><p class="feedback-status" role="status"></p></form><div class="my-feedback"></div><p class="review-only-note">\uAC80\uC218\uC6A9 \uBA54\uBAA8\uC7A5\uC740 \uCD5C\uC885 \uBC30\uD3EC \uB54C \uC81C\uAC70\uB429\uB2C8\uB2E4.</p></details></section>`;
+  root.innerHTML = `<section class="workspace-support" aria-label="\uC0AC\uC6A9 \uC548\uB0B4\uC640 \uAC80\uC218 \uBA54\uBAA8"><details class="workspace-guide"><summary><strong>${session.role === "admin" ? "\uAD00\uB9AC\uC790" : "\uC9C1\uC6D0"} \uC0AC\uC6A9\uC124\uBA85\uC11C</strong><span>${esc7(guidance[view2])}</span></summary><div data-picture-guide></div></details><details class="workspace-feedback"><summary><strong>\uD53C\uB4DC\uBC31\xB7\uC694\uCCAD\uC0AC\uD56D</strong><span>\uC774 \uD654\uBA74\uC5D0 \uB300\uD55C \uC758\uACAC \uB0A8\uAE30\uAE30 \xB7 \uAC80\uC218\uC6A9</span></summary><form class="feedback-form"><label>\uBA54\uBAA8<textarea name="feedback" rows="4" maxlength="4000" required placeholder="\uBD88\uD3B8\uD55C \uC810\uC774\uB098 \uBC14\uAFB8\uACE0 \uC2F6\uC740 \uB0B4\uC6A9\uC744 \uC801\uC5B4 \uC8FC\uC138\uC694.">${esc7(drafts.get(key) || "")}</textarea></label><p>\uC800\uC7A5\uD558\uBA74 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC758 \uAD00\uB9AC\uC790 \u2018\uBA54\uBAA8\uCDE8\uD569\u2019\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4. \uB2E4\uB978 \uAE30\uAE30\uC5D0\uB294 \uC790\uB3D9 \uC804\uC1A1\uB418\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.</p><div class="feedback-actions"><button type="submit" class="primary">\uBA54\uBAA8 \uC800\uC7A5</button><button type="button" data-note-export>\uB0B4 \uBA54\uBAA8 \uD30C\uC77C \uB0B4\uB824\uBC1B\uAE30</button></div><p class="feedback-status" role="status"></p></form><div class="my-feedback"></div><p class="review-only-note">\uAC80\uC218\uC6A9 \uBA54\uBAA8\uC7A5\uC740 \uCD5C\uC885 \uBC30\uD3EC \uB54C \uC81C\uAC70\uB429\uB2C8\uB2E4.</p></details></section>`;
+  const pictures = mountPictureGuide(root.querySelector("[data-picture-guide]"), { role: session.role, view: view2 });
   const form = root.querySelector("form"), status = root.querySelector(".feedback-status"), input = form.querySelector("textarea");
   function update() {
     try {
@@ -13138,15 +13278,19 @@ function mountWorkspaceHelp(root, { session, view: view2, people, toast: toast2,
   update();
   return { dispose() {
     disposed = true;
+    pictures.dispose();
     removeEventListener("storage", changed);
   } };
 }
-function mountFeedbackCollection(root, { people, toast: toast2 }) {
+function mountFeedbackCollection(root, { people, toast: toast2, dashboard = false, viewState = {} }) {
   let disposed = false, rows = [];
-  root.innerHTML = `<section class="panel feedback-collection"><div class="panel-heading"><div><h2>\uBA54\uBAA8\uCDE8\uD569</h2><p>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB418\uAC70\uB098 \uD30C\uC77C\uB85C \uAC00\uC838\uC628 \uC9C1\uC6D0\xB7\uAD00\uB9AC\uC790 \uC758\uACAC\uC785\uB2C8\uB2E4.</p></div><span class="badge" data-note-count></span></div><div class="feedback-filters"><label>\uC791\uC131\uC790<select data-note-person><option value="">\uC804\uCCB4 \uC791\uC131\uC790</option></select></label><label>\uC791\uC131 \uD654\uBA74<select data-note-view><option value="">\uBAA8\uB4E0 \uD654\uBA74</option>${Object.entries(titles).map(([id, title]) => `<option value="${id}">${title}</option>`).join("")}</select></label><label>\uB0B4\uC6A9 \uCC3E\uAE30<input type="search" data-note-search maxlength="100" placeholder="\uC694\uCCAD \uB0B4\uC6A9 \uAC80\uC0C9"></label></div><div class="feedback-actions"><button data-notes-download>\uC870\uD68C\uD55C \uBA54\uBAA8 \uB0B4\uB824\uBC1B\uAE30</button><label class="button feedback-import">\uBA54\uBAA8 \uD30C\uC77C \uAC00\uC838\uC624\uAE30<input type="file" accept="application/json,.json" data-notes-import></label></div><p class="notice">\uB2E4\uB978 \uAE30\uAE30\uC758 \uC758\uACAC\uC740 \uC9C1\uC6D0\uC774 \uB0B4\uB824\uBC1B\uC740 \uBA54\uBAA8 \uD30C\uC77C\uC744 \uAC00\uC838\uC640 \uC8FC\uC138\uC694.</p><p class="feedback-status" role="status"></p><div class="feedback-list"></div></section>`;
+  root.innerHTML = `<section class="panel feedback-collection"><div class="panel-heading"><div><h2>${dashboard ? "\uC9C1\uC6D0 \uC694\uCCAD\uC0AC\uD56D \xB7 \uBA54\uBAA8\uCDE8\uD569" : "\uBA54\uBAA8\uCDE8\uD569"}</h2><p>\uBAA8\uB4E0 \uD654\uBA74\xB7\uC804\uCCB4 \uAE30\uAC04\uC758 \uC758\uACAC\uC744 \uBAA8\uC558\uC2B5\uB2C8\uB2E4. \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB418\uAC70\uB098 \uD30C\uC77C\uB85C \uAC00\uC838\uC628 \uB0B4\uC6A9\uC785\uB2C8\uB2E4.</p></div><span class="badge" data-note-count></span></div><div class="feedback-filters"><label>\uC791\uC131\uC790<select data-note-person><option value="">\uC804\uCCB4 \uC791\uC131\uC790</option></select></label><label>\uC791\uC131 \uD654\uBA74<select data-note-view><option value="">\uBAA8\uB4E0 \uD654\uBA74</option>${Object.entries(titles).map(([id, title]) => `<option value="${id}">${title}</option>`).join("")}</select></label><label>\uB0B4\uC6A9 \uCC3E\uAE30<input type="search" data-note-search maxlength="100" placeholder="\uC694\uCCAD \uB0B4\uC6A9 \uAC80\uC0C9"></label></div><div class="feedback-actions"><button data-notes-download>\uC870\uD68C\uD55C \uBA54\uBAA8 \uB0B4\uB824\uBC1B\uAE30</button><label class="button feedback-import">\uBA54\uBAA8 \uD30C\uC77C \uAC00\uC838\uC624\uAE30<input type="file" accept="application/json,.json" data-notes-import></label></div><p class="notice">\uB2E4\uB978 \uAE30\uAE30\uC758 \uC758\uACAC\uC740 \uC9C1\uC6D0\uC774 \uB0B4\uB824\uBC1B\uC740 \uBA54\uBAA8 \uD30C\uC77C\uC744 \uAC00\uC838\uC640 \uC8FC\uC138\uC694.</p><p class="feedback-status" role="status"></p><div class="feedback-list"></div></section>`;
   const person = root.querySelector("[data-note-person]"), screen = root.querySelector("[data-note-view]"), search2 = root.querySelector("[data-note-search]"), status = root.querySelector(".feedback-status");
+  screen.value = viewState.screen || "";
+  search2.value = viewState.search || "";
   const filtered = () => rows.filter((n2) => (!person.value || n2.role + ":" + n2.personId === person.value) && (!screen.value || n2.view === screen.value) && (!search2.value.trim() || [n2.name, n2.team, n2.text].some((v3) => v3.includes(search2.value.trim()))));
   function paint() {
+    Object.assign(viewState, { person: person.value, screen: screen.value, search: search2.value });
     const notes = filtered();
     root.querySelector("[data-note-count]").textContent = `${notes.length} / ${rows.length}\uAC74`;
     root.querySelector(".feedback-list").innerHTML = notes.length ? noteCards(notes) : '<div class="empty">\uC120\uD0DD\uD55C \uC870\uAC74\uC758 \uBA54\uBAA8\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.</div>';
@@ -13156,8 +13300,8 @@ function mountFeedbackCollection(root, { people, toast: toast2 }) {
     try {
       const result = readFeedback(localStorage, people);
       rows = result.notes;
-      const selected = person.value, authors = [...new Map(rows.map((n2) => [n2.role + ":" + n2.personId, n2])).entries()];
-      person.innerHTML = '<option value="">\uC804\uCCB4 \uC791\uC131\uC790</option>' + authors.map(([id, n2]) => `<option value="${esc6(id)}">${esc6(n2.name)} \xB7 ${esc6(n2.team)}</option>`).join("");
+      const selected = person.value || viewState.person, authors = [...new Map(rows.map((n2) => [n2.role + ":" + n2.personId, n2])).entries()];
+      person.innerHTML = '<option value="">\uC804\uCCB4 \uC791\uC131\uC790</option>' + authors.map(([id, n2]) => `<option value="${esc7(id)}">${esc7(n2.name)} \xB7 ${esc7(n2.team)}</option>`).join("");
       person.value = authors.some(([id]) => id === selected) ? selected : "";
       if (result.errors.length) status.textContent = `\uC77D\uC9C0 \uBABB\uD55C \uBA54\uBAA8 ${result.errors.length}\uAC74\uC740 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4.`;
       paint();
@@ -13213,10 +13357,10 @@ function mountFeedbackCollection(root, { people, toast: toast2 }) {
   } };
 }
 
-// review-share/src/clinic-app.js
+// src/clinic-app.js
 initializeTheme();
 var app = document.querySelector("#app");
-var esc7 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
+var esc8 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
 var number = (value) => typeof value === "number" ? value.toLocaleString("ko-KR") : String(value ?? "");
 var display = (value) => value === "" || value === void 0 || value === null ? "\u2014" : number(value);
 var localDate = (date = /* @__PURE__ */ new Date()) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -13226,7 +13370,7 @@ var monthText = (month2) => `20${month2.slice(0, 2)}\uB144 ${Number(month2.slice
 var menus = [["feedback", "\uBA54\uBAA8\uCDE8\uD569", "\uC9C1\uC6D0\xB7\uAD00\uB9AC\uC790 \uC758\uACAC\uC744 \uD55C\uACF3\uC5D0", "file"], ["admin-dashboard", "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", "\uC9C1\uC6D0 \uC0C1\uD0DC\uC640 \uC6D4\uAC04 \uAE30\uB85D", "chart"], ["team-calendar", "\uD300 \uC77C\uC815", "\uD734\uBB34\uC640 \uD300 \uC77C\uC815\uC744 \uD55C\uB208\uC5D0", "calendar"], ["roster", "\uC9C1\uC6D0\uBCC4 \uADFC\uBB34\uD45C", "\uC9C1\uC6D0 \xD7 \uB0A0\uC9DC\uB85C \uBE44\uAD50", "grid"], ["meal-timer", "\uB0B4 \uD558\uB8E8", "\uADFC\uBB34 \uC0C1\uD0DC\uC640 \uB0B4 \uC5C5\uBB34", "clock"], ["meals", "\uC2DD\uB300\xB7\uC601\uC218\uC99D", "\uC0AC\uC6A9 \uB0B4\uC5ED\uACFC \uC601\uC218\uC99D \uBAA8\uC544\uBCF4\uAE30", "meal"], ["attendance", "OT\xB7\uC9C0\uAC01", "\uC774\uC6D4\uBD80\uD130 \uC0AC\uC6A9\xB7\uB9C8\uAC10\uAE4C\uC9C0", "chart"], ["sources", "\uC608\uC2DC\xB7\uAC80\uC99D", "37\uAC1C \uD0ED\uACFC \uC608\uC2DC \uAE30\uB85D \uD655\uC778", "file"]];
 var paths = { calendar: "M5 3v4M19 3v4M3 10h18M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2ZM7 14h2m3 0h2m3 0h1M7 18h2m3 0h2", grid: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z", clock: "M12 8v5l3 2M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z", meal: "M4 3v7m3-7v7M2 7h7M5.5 10v11M18 3c-4 4-4 9 0 9V3Zm0 9v9", chart: "M3 3v18h18M7 17v-6m5 6V7m5 10V4", file: "M14 3H5v18h14V8l-5-5Zm0 0v5h5M8 12h8m-8 4h8" };
 var icon = (key) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[key] || paths.file}"/></svg>`;
-var badge = (label, cls = "") => `<span class="badge ${cls}">${esc7(label)}</span>`;
+var badge = (label, cls = "") => `<span class="badge ${cls}">${esc8(label)}</span>`;
 var swatch = (color) => /^[A-Fa-f0-9]{6}$/.test(color || "") ? `<i class="swatch" style="--source-color:#${color}" title="\uC608\uC2DC \uC0C9\uC0C1 #${color}" aria-label="\uC608\uC2DC \uC0C9\uC0C1 #${color}"></i>` : "";
 var data;
 var calendar;
@@ -13243,6 +13387,7 @@ var sourceQuery = "";
 var rawCache = /* @__PURE__ */ new Map();
 var pendingMeals = /* @__PURE__ */ new Set();
 var receiptViewState = {};
+var feedbackViewState = {};
 var LOCAL_KEY = "bb-staff:public-preview:v1";
 var authSession = null;
 var employees = [];
@@ -13276,7 +13421,7 @@ function changeSession(session) {
   sourceTab = "";
   sourcePage = 0;
   month = data.months.includes(monthOf(localDate())) ? monthOf(localDate()) : data.months.at(-1);
-  for (const key of Object.keys(receiptViewState)) delete receiptViewState[key];
+  for (const state of [receiptViewState, feedbackViewState]) for (const key of Object.keys(state)) delete state[key];
   try {
     if (session) sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
     else sessionStorage.removeItem(SESSION_KEY);
@@ -13323,13 +13468,13 @@ async function saveDraft(row) {
   return navigator.locks ? navigator.locks.request(LOCAL_KEY, work) : work();
 }
 function sourceButton(source, label = "\uC608\uC2DC \uBCF4\uAE30") {
-  return source ? `<button class="text-button" data-source="${esc7(JSON.stringify(source))}">${esc7(label)} \u2197</button>` : "";
+  return source ? `<button class="text-button" data-source="${esc8(JSON.stringify(source))}">${esc8(label)} \u2197</button>` : "";
 }
 function metric2(label, value, detail = "") {
-  return `<div class="metric"><span>${esc7(label)}</span><strong>${esc7(value)}</strong><small>${esc7(detail)}</small></div>`;
+  return `<div class="metric"><span>${esc8(label)}</span><strong>${esc8(value)}</strong><small>${esc8(detail)}</small></div>`;
 }
 function empty(message = "\uC120\uD0DD\uD55C \uC870\uAC74\uC758 \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.") {
-  return `<div class="empty">${esc7(message)}</div>`;
+  return `<div class="empty">${esc8(message)}</div>`;
 }
 function teamOptions() {
   return [...new Set([...data.roster, ...data.mealRows, ...data.otRows].filter((r3) => r3.month === month).flatMap((r3) => r3.teams))];
@@ -13341,16 +13486,17 @@ function shell() {
     const order = ["meal-timer", "roster", "team-calendar", "meals", "attendance"];
     visibleMenus.sort((a3, b3) => order.indexOf(a3[0]) - order.indexOf(b3[0]));
   }
-  app.innerHTML = `<aside class="sidebar"><a class="brand" href="#/${personal ? "meal-timer" : "admin-dashboard"}"><img class="brand-mark" src="./assets/clinic-logo.png" width="52" height="52" alt="\uBDF0\uD2F0\uBE14\uB77C\uC378 \uB85C\uACE0"><span>\uBDF0\uD2F0\uBE14\uB77C\uC378<small>\uD568\uAED8\uD558\uB294 \uD558\uB8E8</small></span></a><div class="nav-caption">${personal ? "\uB098\uC758 \uC5C5\uBB34" : "\uC9C1\uC6D0 \uC5C5\uBB34 \uAD00\uB9AC"}</div><nav aria-label="\uC9C1\uC6D0 \uC5C5\uBB34 \uBA54\uB274">${visibleMenus.map(([id, title, desc, key]) => `<a class="nav-card ${view === id ? "selected" : ""}" href="#/${id}" ${view === id ? 'aria-current="page"' : ""}>${icon(key)}<span><strong>${title}</strong><small>${desc}</small></span><span class="nav-arrow">\u203A</span></a>`).join("")}</nav><div class="sidebar-note"><span class="status-dot"></span>${personal ? esc7(signedInPerson.name) + " \uB2D8" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}<small>${personal ? esc7(signedInPerson.rawTeam) + " \xB7 \uD14C\uC2A4\uD2B8 \uB85C\uADF8\uC778" : "\uC9C1\uC6D0 \uC0C1\uD0DC \xB7 \uAE30\uB85D \xB7 \uC601\uC218\uC99D"}</small></div></aside><div class="main"><header class="topbar"><span class="login-role-badge">${personal ? "\uC9C1\uC6D0 \uD654\uBA74" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}</span><span class="signed-in-person">${personal ? esc7(signedInPerson.name) + " \uB2D8 \xB7 " + esc7(signedInPerson.rawTeam) : "\uBDF0\uD2F0\uBE14\uB77C\uC378 \uAD00\uB9AC\uC790"}</span>${themeControl()}<span class="date-label">${new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "long" }).format(/* @__PURE__ */ new Date())}</span><button type="button" class="logout-button" data-action="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v16h5M14 8l4 4-4 4M8 12h12"/></svg><span>\uB85C\uADF8\uC544\uC6C3</span></button></header><main><div id="workspace-help"></div><div class="page-heading"><div><h1>${current[1]}</h1><p>${current[2]}</p></div>${view === "admin-dashboard" ? '<button class="primary" data-action="staff-leave">+ \uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D</button>' : ["sources", "meal-timer", "feedback"].includes(view) ? "" : `<button class="primary" data-action="${personal && view === "meals" ? "receipt-new" : "new"}">+ ${view === "meals" ? personal ? "\uC601\uC218\uC99D" : "\uC2DD\uB300" : view === "attendance" ? "OT\xB7\uC9C0\uAC01" : "\uC77C\uC815"} \uB4F1\uB85D</button>`}</div>${["meal-timer", "feedback"].includes(view) ? "" : `<section class="filters" aria-label="\uC870\uD68C \uD544\uD130"><div class="filter-top"><label class="month-field">\uC870\uD68C \uC6D4<select id="month-filter">${data.months.map((m3) => `<option value="${m3}" ${m3 === month ? "selected" : ""}>${monthText(m3)}</option>`).join("")}</select></label>${personalView() ? `<p class="personal-filter-note">${esc7(signedInPerson.name)} \uB2D8\uC758 \uAE30\uB85D\uC785\uB2C8\uB2E4.</p>` : `<label class="search-field">\uC9C1\uC6D0 \uCC3E\uAE30<input id="staff-search" type="search" value="${esc7(search)}" placeholder="\uC9C1\uC6D0 \uC774\uB984 \uB610\uB294 \uD300" maxlength="100"></label><label class="team-field">\uD300 \uC120\uD0DD<select id="team-filter">${["\uC804\uCCB4", ...teams].map((t3) => `<option value="${esc7(t3)}" ${team === t3 ? "selected" : ""}>${esc7(t3)}${t3 === "\uC804\uCCB4" ? "" : "\uD300"}</option>`).join("")}</select></label><span class="filter-note">\uD654\uBA74\uC744 \uBC14\uAFD4\uB3C4 \uC6D4\uACFC \uD300\uC774 \uC720\uC9C0\uB3FC\uC694.</span>`}</div></section>`}<div id="content" aria-live="polite"></div></main><footer>\uBDF0\uD2F0\uBE14\uB77C\uC378 \uC9C1\uC6D0 \uC5C5\uBB34 \xB7 \uC608\uC2DC \uAC00\uC838\uC628 \uB0A0\uC9DC ${esc7(data.importedAt?.slice(0, 10))}<span>\uCD94\uAC00\uD55C \uAE30\uB85D\uACFC \uC0AC\uC9C4\uC740 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</span></footer></div>`;
+  app.innerHTML = `<aside class="sidebar"><a class="brand" href="#/${personal ? "meal-timer" : "admin-dashboard"}"><img class="brand-mark" src="./assets/clinic-logo.png" width="52" height="52" alt="\uBDF0\uD2F0\uBE14\uB77C\uC378 \uB85C\uACE0"><span>\uBDF0\uD2F0\uBE14\uB77C\uC378<small>\uD568\uAED8\uD558\uB294 \uD558\uB8E8</small></span></a><div class="nav-caption">${personal ? "\uB098\uC758 \uC5C5\uBB34" : "\uC9C1\uC6D0 \uC5C5\uBB34 \uAD00\uB9AC"}</div><nav aria-label="\uC9C1\uC6D0 \uC5C5\uBB34 \uBA54\uB274">${visibleMenus.map(([id, title, desc, key]) => `<a class="nav-card ${view === id ? "selected" : ""}" href="#/${id}" ${view === id ? 'aria-current="page"' : ""}>${icon(key)}<span><strong>${title}</strong><small>${desc}</small></span><span class="nav-arrow">\u203A</span></a>`).join("")}</nav><div class="sidebar-note"><span class="status-dot"></span>${personal ? esc8(signedInPerson.name) + " \uB2D8" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}<small>${personal ? esc8(signedInPerson.rawTeam) + " \xB7 \uD14C\uC2A4\uD2B8 \uB85C\uADF8\uC778" : "\uC9C1\uC6D0 \uC0C1\uD0DC \xB7 \uAE30\uB85D \xB7 \uC601\uC218\uC99D"}</small></div></aside><div class="main"><header class="topbar"><span class="login-role-badge">${personal ? "\uC9C1\uC6D0 \uD654\uBA74" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}</span><span class="signed-in-person">${personal ? esc8(signedInPerson.name) + " \uB2D8 \xB7 " + esc8(signedInPerson.rawTeam) : "\uBDF0\uD2F0\uBE14\uB77C\uC378 \uAD00\uB9AC\uC790"}</span>${themeControl()}<span class="date-label">${new Intl.DateTimeFormat("ko-KR", { month: "long", day: "numeric", weekday: "long" }).format(/* @__PURE__ */ new Date())}</span><button type="button" class="logout-button" data-action="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v16h5M14 8l4 4-4 4M8 12h12"/></svg><span>\uB85C\uADF8\uC544\uC6C3</span></button></header><main><div id="workspace-help"></div><div class="page-heading"><div><h1>${current[1]}</h1><p>${current[2]}</p></div>${view === "admin-dashboard" ? '<button class="primary" data-action="staff-leave">+ \uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D</button>' : ["sources", "meal-timer", "feedback"].includes(view) ? "" : `<button class="primary" data-action="${personal && view === "meals" ? "receipt-new" : "new"}">+ ${view === "meals" ? personal ? "\uC2DD\uB300\xB7\uC601\uC218\uC99D" : "\uC2DD\uB300" : view === "attendance" ? "OT\xB7\uC9C0\uAC01" : "\uC77C\uC815"} \uB4F1\uB85D</button>`}</div>${["meal-timer", "feedback"].includes(view) ? "" : `<section class="filters" aria-label="\uC870\uD68C \uD544\uD130"><div class="filter-top"><label class="month-field">\uC870\uD68C \uC6D4<select id="month-filter">${data.months.map((m3) => `<option value="${m3}" ${m3 === month ? "selected" : ""}>${monthText(m3)}</option>`).join("")}</select></label>${personalView() ? `<p class="personal-filter-note">${esc8(signedInPerson.name)} \uB2D8\uC758 \uAE30\uB85D\uC785\uB2C8\uB2E4.</p>` : `<label class="search-field">\uC9C1\uC6D0 \uCC3E\uAE30<input id="staff-search" type="search" value="${esc8(search)}" placeholder="\uC9C1\uC6D0 \uC774\uB984 \uB610\uB294 \uD300" maxlength="100"></label><label class="team-field">\uD300 \uC120\uD0DD<select id="team-filter">${["\uC804\uCCB4", ...teams].map((t3) => `<option value="${esc8(t3)}" ${team === t3 ? "selected" : ""}>${esc8(t3)}${t3 === "\uC804\uCCB4" ? "" : "\uD300"}</option>`).join("")}</select></label><span class="filter-note">\uD654\uBA74\uC744 \uBC14\uAFD4\uB3C4 \uC6D4\uACFC \uD300\uC774 \uC720\uC9C0\uB3FC\uC694.</span>`}</div></section>`}<div id="content" aria-live="polite"></div></main><footer>\uBDF0\uD2F0\uBE14\uB77C\uC378 \uC9C1\uC6D0 \uC5C5\uBB34 \xB7 \uC608\uC2DC \uAC00\uC838\uC628 \uB0A0\uC9DC ${esc8(data.importedAt?.slice(0, 10))}<span>\uCD94\uAC00\uD55C \uAE30\uB85D\uACFC \uC0AC\uC9C4\uC740 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</span></footer></div>`;
 }
 function render() {
   if (!data) return;
+  const retainedFeedback = authSession?.role === "admin" && view === "admin-dashboard" && location.hash.split("?")[0] === "#/admin-dashboard" && document.querySelector("#dashboard-feedback") ? { node: document.querySelector("#dashboard-feedback"), controller: feedbackController } : null;
   renderVersion++;
   receiptController?.dispose();
   receiptController = null;
   helpController?.dispose();
   helpController = null;
-  feedbackController?.dispose();
+  if (!retainedFeedback) feedbackController?.dispose();
   feedbackController = null;
   calendar?.destroy();
   calendar = null;
@@ -13367,10 +13513,11 @@ function render() {
   helpController = mountWorkspaceHelp(document.querySelector("#workspace-help"), { session: authSession, view, people: employees, toast, onSaved: () => feedbackController?.refresh() });
   try {
     ({ feedback: (root) => {
-      feedbackController = mountFeedbackCollection(root, { people: employees, toast });
-    }, "admin-dashboard": renderMealManager, "team-calendar": renderCalendar, roster: renderRoster, "meal-timer": renderTimers, meals: renderMeals, attendance: renderAttendance, sources: renderSources })[view](content);
+      feedbackController = mountFeedbackCollection(root, { people: employees, toast, viewState: feedbackViewState });
+    }, "admin-dashboard": (root) => renderMealManager(root, retainedFeedback), "team-calendar": renderCalendar, roster: renderRoster, "meal-timer": renderTimers, meals: renderMeals, attendance: renderAttendance, sources: renderSources })[view](content);
     labelMobileTables(content);
   } catch (error) {
+    retainedFeedback?.controller?.dispose();
     content.innerHTML = empty("\uD654\uBA74\uC744 \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4. \uC0C8\uB85C\uACE0\uCE68 \uD6C4 \uB2E4\uC2DC \uD655\uC778\uD574 \uC8FC\uC138\uC694.");
     toast(error.message);
     console.error(error);
@@ -13383,7 +13530,7 @@ function calendarRows() {
 }
 function renderCalendar(content) {
   const events = calendarRows(), people = rosterRows();
-  content.innerHTML = `<div class="metrics">${metric2("\uC870\uD68C \uC9C1\uC6D0", `${new Set(people.map((r3) => r3.personId)).size}\uBA85`, team === "\uC804\uCCB4" ? "\uC774\uB2EC \uC2A4\uCF00\uC904 \uBA85\uBD80" : `${team}\uD300`)}${metric2("\uC77C\uC815 \uD45C\uC2DC", `${events.length}\uAC74`, "\uACF5\uD1B5 \uC77C\uC815 \uD3EC\uD568")}${metric2("\uC608\uC2DC \uC0C9\uC0C1", `${events.filter((r3) => r3.unresolved).length}\uAC74`, "\uC758\uBBF8 \uD655\uC778 \uC804\uC5D0\uB3C4 \uC608\uC2DC \uC0C9\uC0C1 \uBCF4\uC874")}</div><section class="panel calendar-panel"><div class="panel-heading"><div><h2>${team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${esc7(team)}\uD300`}\uC758 \uC77C\uC815</h2><p>\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC77C\uC815 \uB4F1\uB85D, \uAE30\uB85D\uC744 \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694.</p></div><span class="legend-dot">\u25CF \uD734\uBB34\xB7\uD734\uAC00\u3000<span>\u25CF \uC608\uC2DC \uC0C9\uC0C1</span></span></div><div id="calendar"></div></section>`;
+  content.innerHTML = `<div class="metrics">${metric2("\uC870\uD68C \uC9C1\uC6D0", `${new Set(people.map((r3) => r3.personId)).size}\uBA85`, team === "\uC804\uCCB4" ? "\uC774\uB2EC \uC2A4\uCF00\uC904 \uBA85\uBD80" : `${team}\uD300`)}${metric2("\uC77C\uC815 \uD45C\uC2DC", `${events.length}\uAC74`, "\uACF5\uD1B5 \uC77C\uC815 \uD3EC\uD568")}${metric2("\uC608\uC2DC \uC0C9\uC0C1", `${events.filter((r3) => r3.unresolved).length}\uAC74`, "\uC758\uBBF8 \uD655\uC778 \uC804\uC5D0\uB3C4 \uC608\uC2DC \uC0C9\uC0C1 \uBCF4\uC874")}</div><section class="panel calendar-panel"><div class="panel-heading"><div><h2>${team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${esc8(team)}\uD300`}\uC758 \uC77C\uC815</h2><p>\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC77C\uC815 \uB4F1\uB85D, \uAE30\uB85D\uC744 \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694.</p></div><span class="legend-dot">\u25CF \uD734\uBB34\xB7\uD734\uAC00\u3000<span>\u25CF \uC608\uC2DC \uC0C9\uC0C1</span></span></div><div id="calendar"></div></section>`;
   calendar = new Calendar(document.querySelector("#calendar"), {
     plugins: [index, index2, index3],
     locale: l45,
@@ -13439,16 +13586,16 @@ function findDayColor(event) {
   return r3?.days[Number(event.date.slice(-2))]?.color || "";
 }
 function showSchedule(record) {
-  openDialog(`${record.name || "\uACF5\uD1B5"} \xB7 ${record.label}`, `<dl><dt>\uB0A0\uC9DC</dt><dd>${esc7(record.date)}</dd><dt>\uD300</dt><dd>${esc7(record.teams?.join(" \xB7 ") || "\uACF5\uD1B5")}</dd><dt>\uC608\uC2DC \uD45C\uC2DC</dt><dd>${swatch(record.color || findDayColor(record))} ${esc7(record.rawValue || record.label)}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc7(record.note || "\uBA54\uBAA8 \uC5C6\uC74C")}</dd></dl>${record.unresolved ? '<p class="notice">\uC608\uC2DC \uC0C9\uC0C1\uC744 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uC758\uBBF8\uB294 \uC544\uC9C1 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>' : ""}${sourceButton(record.source)}${record.local ? '<p class="notice">\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uC77C\uC815\uC785\uB2C8\uB2E4.</p>' : ""}`);
+  openDialog(`${record.name || "\uACF5\uD1B5"} \xB7 ${record.label}`, `<dl><dt>\uB0A0\uC9DC</dt><dd>${esc8(record.date)}</dd><dt>\uD300</dt><dd>${esc8(record.teams?.join(" \xB7 ") || "\uACF5\uD1B5")}</dd><dt>\uC608\uC2DC \uD45C\uC2DC</dt><dd>${swatch(record.color || findDayColor(record))} ${esc8(record.rawValue || record.label)}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc8(record.note || "\uBA54\uBAA8 \uC5C6\uC74C")}</dd></dl>${record.unresolved ? '<p class="notice">\uC608\uC2DC \uC0C9\uC0C1\uC744 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uC758\uBBF8\uB294 \uC544\uC9C1 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>' : ""}${sourceButton(record.source)}${record.local ? '<p class="notice">\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uC77C\uC815\uC785\uB2C8\uB2E4.</p>' : ""}`);
 }
 function renderRoster(content) {
   if (previewMode === "employee") {
     const people2 = rosterRows();
-    content.innerHTML = `<section class="panel personal-roster"><div class="panel-heading"><div><h2>${monthText(month)} \uB0B4 \uADFC\uBB34\uD45C</h2><p>${esc7(signedInPerson.name)} \uB2D8 \xB7 \uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694.</p></div></div>${people2.length ? mobileRoster(people2) : empty("\uC774\uB2EC\uC758 \uADFC\uBB34\uD45C\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>${localRecords("schedule")}`;
+    content.innerHTML = `<section class="panel personal-roster"><div class="panel-heading"><div><h2>${monthText(month)} \uB0B4 \uADFC\uBB34\uD45C</h2><p>${esc8(signedInPerson.name)} \uB2D8 \xB7 \uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694.</p></div></div>${people2.length ? mobileRoster(people2) : empty("\uC774\uB2EC\uC758 \uADFC\uBB34\uD45C\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>${localRecords("schedule")}`;
     return;
   }
   const people = rosterRows(), added = localRows("schedule"), count = new Date(2e3 + Number(month.slice(0, 2)), Number(month.slice(2)), 0).getDate(), days = Array.from({ length: count }, (_3, i3) => i3 + 1);
-  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${monthText(month)} \uADFC\uBB34\uD45C</h2><p>${people.length}\uBA85 \xB7 \uC608\uC2DC \uC0C9\uC0C1\uC744 \uADF8\uB300\uB85C \uBCF4\uC874\uD588\uC5B4\uC694. \uBE48\uCE78\uC740 \uBBF8\uAE30\uC7AC \uC0C1\uD0DC\uC785\uB2C8\uB2E4.</p></div><span class="desktop-roster-hint">${badge("\uAC00\uB85C\uB85C \uC2A4\uD06C\uB864")}</span><span class="mobile-roster-hint">\uC9C1\uC6D0\uC744 \uB20C\uB7EC \uC6D4\uAC04 \uADFC\uBB34\uD45C \uD655\uC778</span></div><div class="table-scroll roster-scroll"><table class="roster-table"><thead><tr><th class="sticky-cell">\uC9C1\uC6D0 / \uD300</th>${days.map((d2) => `<th>${d2}<small>${new Intl.DateTimeFormat("ko-KR", { weekday: "short" }).format(/* @__PURE__ */ new Date(dateOf2(month, d2) + "T12:00:00"))}</small></th>`).join("")}</tr></thead><tbody>${people.map((r3) => `<tr><th class="sticky-cell"><strong>${esc7(r3.name)}</strong><small>${esc7(r3.rawTeam)}${r3.role ? " \xB7 " + esc7(r3.role) : ""}</small></th>${days.map((d2) => `<td>${rosterDayCell(r3, d2, added)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>${mobileRoster(people)}${people.length ? "" : empty()}</section>${localRecords("schedule")}`;
+  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${monthText(month)} \uADFC\uBB34\uD45C</h2><p>${people.length}\uBA85 \xB7 \uC608\uC2DC \uC0C9\uC0C1\uC744 \uADF8\uB300\uB85C \uBCF4\uC874\uD588\uC5B4\uC694. \uBE48\uCE78\uC740 \uBBF8\uAE30\uC7AC \uC0C1\uD0DC\uC785\uB2C8\uB2E4.</p></div><span class="desktop-roster-hint">${badge("\uAC00\uB85C\uB85C \uC2A4\uD06C\uB864")}</span><span class="mobile-roster-hint">\uC9C1\uC6D0\uC744 \uB20C\uB7EC \uC6D4\uAC04 \uADFC\uBB34\uD45C \uD655\uC778</span></div><div class="table-scroll roster-scroll"><table class="roster-table"><thead><tr><th class="sticky-cell">\uC9C1\uC6D0 / \uD300</th>${days.map((d2) => `<th>${d2}<small>${new Intl.DateTimeFormat("ko-KR", { weekday: "short" }).format(/* @__PURE__ */ new Date(dateOf2(month, d2) + "T12:00:00"))}</small></th>`).join("")}</tr></thead><tbody>${people.map((r3) => `<tr><th class="sticky-cell"><strong>${esc8(r3.name)}</strong><small>${esc8(r3.rawTeam)}${r3.role ? " \xB7 " + esc8(r3.role) : ""}</small></th>${days.map((d2) => `<td>${rosterDayCell(r3, d2, added)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>${mobileRoster(people)}${people.length ? "" : empty()}</section>${localRecords("schedule")}`;
 }
 function labelMobileTables(root) {
   root.querySelectorAll(".table-scroll table:not(.roster-table)").forEach((table) => {
@@ -13462,11 +13609,11 @@ function labelMobileTables(root) {
 }
 function mobileRoster(people) {
   const added = localRows("schedule");
-  return '<div class="mobile-roster">' + people.map((r3, i3) => `<details class="mobile-roster-person" ${i3 === 0 ? "open" : ""}><summary><strong>${esc7(r3.name)}</strong><span>${esc7(r3.rawTeam)}${r3.role ? " \xB7 " + esc7(r3.role) : ""}</span></summary><div class="mobile-roster-month"><div class="daily-weekdays">${["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"].map((w4) => "<span>" + w4 + "</span>").join("")}</div><div class="mobile-roster-days">${calendarDays(month).map((day) => day ? rosterDayCell(r3, day, added, true) : '<span class="mobile-roster-blank"></span>').join("")}</div></div></details>`).join("") + "</div>";
+  return '<div class="mobile-roster">' + people.map((r3, i3) => `<details class="mobile-roster-person" ${i3 === 0 ? "open" : ""}><summary><strong>${esc8(r3.name)}</strong><span>${esc8(r3.rawTeam)}${r3.role ? " \xB7 " + esc8(r3.role) : ""}</span></summary><div class="mobile-roster-month"><div class="daily-weekdays">${["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"].map((w4) => "<span>" + w4 + "</span>").join("")}</div><div class="mobile-roster-days">${calendarDays(month).map((day) => day ? rosterDayCell(r3, day, added, true) : '<span class="mobile-roster-blank"></span>').join("")}</div></div></details>`).join("") + "</div>";
 }
 function showRosterDay(row, day) {
   const cell = row.days[day], added = addedSchedule(localRows("schedule"), row, day);
-  openDialog(esc7(row.name) + " \xB7 " + dateOf2(row.month, day), `${cell ? '<section class="notice"><h3>\uAC00\uC838\uC628 \uC77C\uC815</h3><p>' + swatch(cell.color) + " " + esc7(cell.value || cell.colorMeaning || cell.label || "\uC0C9\uC0C1 \uD45C\uC2DC") + '</p><p class="prewrap">' + esc7(cell.note || "") + "</p>" + sourceButton(cell.source) + "</section>" : ""}${added.map((r3) => '<section class="daily-record"><h3>' + esc7(r3.label) + '</h3><p class="prewrap">' + esc7(r3.note || "\uBA54\uBAA8 \uC5C6\uC74C") + "</p><small>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uB4F1\uB85D\uD55C \uC77C\uC815</small></section>").join("")}`);
+  openDialog(esc8(row.name) + " \xB7 " + dateOf2(row.month, day), `${cell ? '<section class="notice"><h3>\uAC00\uC838\uC628 \uC77C\uC815</h3><p>' + swatch(cell.color) + " " + esc8(cell.value || cell.colorMeaning || cell.label || "\uC0C9\uC0C1 \uD45C\uC2DC") + '</p><p class="prewrap">' + esc8(cell.note || "") + "</p>" + sourceButton(cell.source) + "</section>" : ""}${added.map((r3) => '<section class="daily-record"><h3>' + esc8(r3.label) + '</h3><p class="prewrap">' + esc8(r3.note || "\uBA54\uBAA8 \uC5C6\uC74C") + "</p><small>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uB4F1\uB85D\uD55C \uC77C\uC815</small></section>").join("")}`);
 }
 function schedulePeople(targetMonth) {
   return [...new Map(data.roster.filter((p3) => p3.month === targetMonth).map((p3) => [p3.personId, p3])).values()];
@@ -13478,7 +13625,7 @@ function openSchedulePicker(leaveOnly = false) {
   function paint() {
     const people = previewMode === "employee" ? [signedInPerson] : schedulePeople(pickerMonth);
     if (!people.some((p3) => p3.personId === selectedPerson)) selectedPerson = people[0]?.personId || "";
-    area.innerHTML = `<div class="schedule-picker-fields"><label>\uC870\uD68C \uC6D4<select data-picker-month>${data.months.map((m3) => '<option value="' + m3 + '" ' + (m3 === pickerMonth ? "selected" : "") + ">" + monthText(m3) + "</option>").join("")}</select></label>${previewMode === "employee" ? "<p>" + esc7(signedInPerson.name) + " \uB2D8\uC758 \uC77C\uC815</p>" : "<label>\uC9C1\uC6D0<select data-picker-person>" + people.map((p3) => '<option value="' + esc7(p3.personId) + '" ' + (p3.personId === selectedPerson ? "selected" : "") + ">" + esc7(p3.name) + " \xB7 " + esc7(p3.rawTeam) + "</option>").join("") + "</select></label>"}</div><p>\uB4F1\uB85D\uD560 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC \uC8FC\uC138\uC694.</p><div class="schedule-picker-calendar">${schedulePickerDays(pickerMonth)}</div>`;
+    area.innerHTML = `<div class="schedule-picker-fields"><label>\uC870\uD68C \uC6D4<select data-picker-month>${data.months.map((m3) => '<option value="' + m3 + '" ' + (m3 === pickerMonth ? "selected" : "") + ">" + monthText(m3) + "</option>").join("")}</select></label>${previewMode === "employee" ? "<p>" + esc8(signedInPerson.name) + " \uB2D8\uC758 \uC77C\uC815</p>" : "<label>\uC9C1\uC6D0<select data-picker-person>" + people.map((p3) => '<option value="' + esc8(p3.personId) + '" ' + (p3.personId === selectedPerson ? "selected" : "") + ">" + esc8(p3.name) + " \xB7 " + esc8(p3.rawTeam) + "</option>").join("") + "</select></label>"}</div><p>\uB4F1\uB85D\uD560 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC \uC8FC\uC138\uC694.</p><div class="schedule-picker-calendar">${schedulePickerDays(pickerMonth)}</div>`;
   }
   dialog.addEventListener("change", (event) => {
     if (event.target.hasAttribute("data-picker-month")) {
@@ -13498,7 +13645,7 @@ function openSchedulePicker(leaveOnly = false) {
 function renderTimers(content) {
   content.innerHTML = employeeStatusView({ person: signedInPerson, state: readStaffState(localStorage, signedInPerson.personId) });
 }
-function renderMealManager(content) {
+function renderMealManager(content, retainedFeedback = null) {
   const now = Date.now(), ids = [...new Set(data.roster.map((r3) => r3.personId))];
   let states = Object.fromEntries(ids.map((id) => [id, readStaffState(localStorage, id)]));
   if (mealDemo) {
@@ -13516,6 +13663,11 @@ function renderMealManager(content) {
   const live = Object.entries(statsByKind).flatMap(([kind, stats]) => stats.active.map((r3) => ({ ...r3, kind }))).sort((a3, b3) => a3.startedAt - b3.startedAt);
   const errors = mealPeople(data.roster, month).flatMap((p3) => (states[p3.personId]?.errors || []).map((message) => p3.name + ": " + message));
   content.innerHTML = activityDashboardView({ stats: statsByKind[activityKind], month, kind: activityKind, live, demo: mealDemo, showAll: showAllMealHistory, errors });
+  content.insertAdjacentHTML("afterbegin", '<div id="dashboard-feedback"></div>');
+  if (retainedFeedback) {
+    content.querySelector("#dashboard-feedback").replaceWith(retainedFeedback.node);
+    feedbackController = retainedFeedback.controller;
+  } else feedbackController = mountFeedbackCollection(content.querySelector("#dashboard-feedback"), { people: employees, toast, dashboard: true, viewState: feedbackViewState });
   content.querySelector(".meal-live-panel").insertAdjacentHTML("afterend", '<div id="dashboard-receipts"></div>');
   receiptController = mountReceipts({ root: content.querySelector("#dashboard-receipts"), month, months: data.months, person: signedInPerson, admin: true, people: mealPeople(data.roster, month), team, search, toast, viewState: receiptViewState, compact: true, onTeamChange: (value) => {
     team = value;
@@ -13538,7 +13690,7 @@ function tickTimers() {
 }
 function renderMeals(content) {
   const rows = data.mealRows.filter((r3) => matches(r3)), sum = (label) => rows.reduce((s3, r3) => s3 + (typeof r3.totals[label]?.value === "number" ? r3.totals[label].value : 0), 0);
-  content.innerHTML = `<div class="metrics">${metric2("\uC608\uC2DC \uC0AC\uC6A9 \uD569\uACC4", `${number(sum("\uC0AC\uC6A9"))}\uC6D0`, `${rows.length}\uBA85`)}${metric2("\uC608\uC2DC \uD55C\uB3C4 \uD569\uACC4", `${number(sum("\uD55C\uB3C4"))}\uC6D0`, "\uC2DC\uD2B8\uC758 \uD55C\uB3C4 \uAE30\uC900")}${metric2("\uC608\uC2DC \uC794\uC561 \uD569\uACC4", `${number(sum("\uC794\uC561"))}\uC6D0`, "\uC0C8 \uB4F1\uB85D \uB0B4\uC5ED\uC740 \uC544\uB798\uC5D0 \uBCC4\uB3C4 \uD45C\uC2DC")}</div><section class="panel"><div class="panel-heading"><div><h2>${previewMode === "employee" ? "\uB0B4 \uC2DD\uB300 \uC0AC\uC6A9 \uB0B4\uC5ED" : "\uC9C1\uC6D0\uBCC4 \uC2DD\uB300"}</h2><p>\uC9C1\uC6D0\uC744 \uB204\uB974\uBA74 \uC77C\uBCC4 \uAE08\uC561\uACFC \uBA54\uBAA8\uB97C \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694. 0\uC6D0\uACFC \uBE48\uCE78\uC740 \uAD6C\uBD84\uD574\uC11C \uBCF4\uC874\uD569\uB2C8\uB2E4.</p></div></div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0</th><th>\uC608\uC2DC \uD300</th><th>\uC0AC\uC6A9</th><th>\uD55C\uB3C4</th><th>\uC794\uC561</th><th>\uADFC\uBB34\uC77C\uC218</th><th>\uC785\uAE08 \uC5EC\uBD80</th><th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc7(r3.name)}${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th><td>${esc7(r3.rawTeam)}</td>${["\uC0AC\uC6A9", "\uD55C\uB3C4", "\uC794\uC561", "\uADFC\uBB34\uC77C\uC790", "\uC785\uAE08\uC5EC\uBD80"].map((label) => `<td>${esc7(display(r3.totals[label]?.value))}</td>`).join("")}<td><button data-detail="${esc7(r3.id)}" data-kind="meals">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty()}</section>${localRecords("meals")}`;
+  content.innerHTML = `<div class="metrics">${metric2("\uC608\uC2DC \uC0AC\uC6A9 \uD569\uACC4", `${number(sum("\uC0AC\uC6A9"))}\uC6D0`, `${rows.length}\uBA85`)}${metric2("\uC608\uC2DC \uD55C\uB3C4 \uD569\uACC4", `${number(sum("\uD55C\uB3C4"))}\uC6D0`, "\uC2DC\uD2B8\uC758 \uD55C\uB3C4 \uAE30\uC900")}${metric2("\uC608\uC2DC \uC794\uC561 \uD569\uACC4", `${number(sum("\uC794\uC561"))}\uC6D0`, "\uC0C8 \uB4F1\uB85D \uB0B4\uC5ED\uC740 \uC544\uB798\uC5D0 \uBCC4\uB3C4 \uD45C\uC2DC")}</div><section class="panel"><div class="panel-heading"><div><h2>${previewMode === "employee" ? "\uB0B4 \uC2DD\uB300 \uC0AC\uC6A9 \uB0B4\uC5ED" : "\uC9C1\uC6D0\uBCC4 \uC2DD\uB300"}</h2><p>\uC9C1\uC6D0\uC744 \uB204\uB974\uBA74 \uC77C\uBCC4 \uAE08\uC561\uACFC \uBA54\uBAA8\uB97C \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694. 0\uC6D0\uACFC \uBE48\uCE78\uC740 \uAD6C\uBD84\uD574\uC11C \uBCF4\uC874\uD569\uB2C8\uB2E4.</p></div></div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0</th><th>\uC608\uC2DC \uD300</th><th>\uC0AC\uC6A9</th><th>\uD55C\uB3C4</th><th>\uC794\uC561</th><th>\uADFC\uBB34\uC77C\uC218</th><th>\uC785\uAE08 \uC5EC\uBD80</th><th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc8(r3.name)}${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th><td>${esc8(r3.rawTeam)}</td>${["\uC0AC\uC6A9", "\uD55C\uB3C4", "\uC794\uC561", "\uADFC\uBB34\uC77C\uC790", "\uC785\uAE08\uC5EC\uBD80"].map((label) => `<td>${esc8(display(r3.totals[label]?.value))}</td>`).join("")}<td><button data-detail="${esc8(r3.id)}" data-kind="meals">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty()}</section>${localRecords("meals")}`;
   content.insertAdjacentHTML("afterbegin", '<div id="receipt-area"></div>');
   receiptController = mountReceipts({ root: content.querySelector("#receipt-area"), month, months: data.months, person: signedInPerson, admin: previewMode === "admin", people: mealPeople(data.roster, month), team, search, toast, viewState: receiptViewState, onTeamChange: (value) => {
     team = value;
@@ -13547,11 +13699,11 @@ function renderMeals(content) {
 }
 function renderAttendance(content) {
   const rows = data.otRows.filter((r3) => matches(r3)), labels = [...new Set(rows.flatMap((r3) => r3.categories.map((c3) => c3.label)))];
-  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>OT\xB7\uC9C0\uAC01 \uD604\uD669</h2><p>${rows.length}\uBA85 \xB7 \uC2DC\uAC04 \uB2E8\uC704\uB294 \uBD84\uC785\uB2C8\uB2E4. \uC774\uC6D4\xB7\uC0AC\uC6A9\xB7\uC9C0\uAC01\xB7\uB9C8\uAC10\uC758 \uC608\uC2DC \uBD80\uD638\uB97C \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div>${badge("\uB2E8\uC704: \uBD84")}</div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0 / \uC608\uC2DC \uD300</th>${labels.map((l3) => `<th>${esc7(l3)}</th>`).join("")}<th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc7(r3.name)}<small>${esc7(r3.rawTeam)}</small>${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th>${labels.map((l3) => `<td>${esc7(display(r3.categories.find((c3) => c3.label === l3)?.total))}</td>`).join("")}<td><button data-detail="${esc7(r3.id)}" data-kind="attendance">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty()}</section>${localRecords("attendance")}`;
+  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>OT\xB7\uC9C0\uAC01 \uD604\uD669</h2><p>${rows.length}\uBA85 \xB7 \uC2DC\uAC04 \uB2E8\uC704\uB294 \uBD84\uC785\uB2C8\uB2E4. \uC774\uC6D4\xB7\uC0AC\uC6A9\xB7\uC9C0\uAC01\xB7\uB9C8\uAC10\uC758 \uC608\uC2DC \uBD80\uD638\uB97C \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div>${badge("\uB2E8\uC704: \uBD84")}</div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0 / \uC608\uC2DC \uD300</th>${labels.map((l3) => `<th>${esc8(l3)}</th>`).join("")}<th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc8(r3.name)}<small>${esc8(r3.rawTeam)}</small>${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th>${labels.map((l3) => `<td>${esc8(display(r3.categories.find((c3) => c3.label === l3)?.total))}</td>`).join("")}<td><button data-detail="${esc8(r3.id)}" data-kind="attendance">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty()}</section>${localRecords("attendance")}`;
 }
 function localRecords(kind) {
   const rows = localRows(kind);
-  return `<section class="panel local-records"><div class="panel-heading"><div><h2>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uAE30\uB85D</h2><p>\uAC00\uC838\uC628 \uC608\uC2DC \uD569\uACC4\uC640 \uAD6C\uBD84\uD574 \uD45C\uC2DC\uD569\uB2C8\uB2E4.</p></div>${badge(`${rows.length}\uAC74`)}</div>${rows.length ? `<div class="table-scroll"><table><thead><tr><th>\uB0A0\uC9DC</th><th>\uC9C1\uC6D0</th><th>\uB0B4\uC6A9</th><th>\uBA54\uBAA8</th></tr></thead><tbody>${rows.map((r3) => `<tr><td>${esc7(r3.date)}</td><th>${esc7(r3.name)}</th><td>${esc7(r3.label)}${r3.amount !== void 0 ? " \xB7 " + esc7(number(r3.amount)) + (kind === "meals" ? "\uC6D0" : "\uBD84") : ""}</td><td class="prewrap">${esc7(r3.note)}</td></tr>`).join("")}</tbody></table></div>` : empty("\uCD94\uAC00\uD55C \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>`;
+  return `<section class="panel local-records"><div class="panel-heading"><div><h2>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uAE30\uB85D</h2><p>\uAC00\uC838\uC628 \uC608\uC2DC \uD569\uACC4\uC640 \uAD6C\uBD84\uD574 \uD45C\uC2DC\uD569\uB2C8\uB2E4.</p></div>${badge(`${rows.length}\uAC74`)}</div>${rows.length ? `<div class="table-scroll"><table><thead><tr><th>\uB0A0\uC9DC</th><th>\uC9C1\uC6D0</th><th>\uB0B4\uC6A9</th><th>\uBA54\uBAA8</th></tr></thead><tbody>${rows.map((r3) => `<tr><td>${esc8(r3.date)}</td><th>${esc8(r3.name)}</th><td>${esc8(r3.label)}${r3.amount !== void 0 ? " \xB7 " + esc8(number(r3.amount)) + (kind === "meals" ? "\uC6D0" : "\uBD84") : ""}</td><td class="prewrap">${esc8(r3.note)}</td></tr>`).join("")}</tbody></table></div>` : empty("\uCD94\uAC00\uD55C \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>`;
 }
 function showDetail(kind, id) {
   const rows = (kind === "meals" ? data.mealRows : data.otRows).filter((r3) => previewMode === "admin" || r3.personId === signedInPerson.personId), initialRow = rows.find((r3) => r3.id === id);
@@ -13569,7 +13721,7 @@ function openDialog(title, body) {
   dialogVersion++;
   const container = document.querySelector("#overlays");
   container.querySelector("dialog")?.close();
-  container.innerHTML = `<dialog aria-labelledby="dialog-title"><div class="dialog-heading"><h2 id="dialog-title">${esc7(title)}</h2><button data-action="close" aria-label="\uB2EB\uAE30">\uB2EB\uAE30 \u2715</button></div><div class="dialog-body">${body}</div></dialog>`;
+  container.innerHTML = `<dialog aria-labelledby="dialog-title"><div class="dialog-heading"><h2 id="dialog-title">${esc8(title)}</h2><button data-action="close" aria-label="\uB2EB\uAE30">\uB2EB\uAE30 \u2715</button></div><div class="dialog-body">${body}</div></dialog>`;
   const dialog = container.querySelector("dialog");
   dialog.showModal();
   dialog.addEventListener("click", (event) => {
@@ -13602,14 +13754,14 @@ async function showSource(source) {
     const raw = await rawData(source);
     if (version !== dialogVersion) return;
     const cell = raw.cells[source.cell], color = rawColor(raw, source.cell), meta = data.sources.find((s3) => s3.book === source.book && s3.tab === source.tab);
-    document.querySelector(".dialog-body").innerHTML = `<p>${esc7(meta.label)} / ${esc7(source.tab)} / ${esc7(source.cell)}</p><dl><dt>\uC608\uC2DC \uAC12</dt><dd class="prewrap">${esc7(display(cell?.v))}</dd><dt>\uC608\uC2DC \uC0C9\uC0C1</dt><dd>${swatch(color)} ${esc7(color ? "#" + color : "\uC9C0\uC815 \uC5C6\uC74C")}</dd><dt>\uC218\uC2DD</dt><dd class="prewrap">${esc7(cell?.f || "\uC5C6\uC74C")}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc7(cell?.note || "\uC5C6\uC74C")}</dd></dl><a class="button" href="${esc7(meta.url)}" target="_blank" rel="noopener noreferrer">\uAC80\uC218 \uC548\uB0B4 \uBCF4\uAE30 \u2197</a>`;
+    document.querySelector(".dialog-body").innerHTML = `<p>${esc8(meta.label)} / ${esc8(source.tab)} / ${esc8(source.cell)}</p><dl><dt>\uC608\uC2DC \uAC12</dt><dd class="prewrap">${esc8(display(cell?.v))}</dd><dt>\uC608\uC2DC \uC0C9\uC0C1</dt><dd>${swatch(color)} ${esc8(color ? "#" + color : "\uC9C0\uC815 \uC5C6\uC74C")}</dd><dt>\uC218\uC2DD</dt><dd class="prewrap">${esc8(cell?.f || "\uC5C6\uC74C")}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc8(cell?.note || "\uC5C6\uC74C")}</dd></dl><a class="button" href="${esc8(meta.url)}" target="_blank" rel="noopener noreferrer">\uAC80\uC218 \uC548\uB0B4 \uBCF4\uAE30 \u2197</a>`;
   } catch (error) {
     if (version === dialogVersion) document.querySelector(".dialog-body").textContent = error.message;
   }
 }
 function renderSources(content) {
   const review = [...data.mealRows, ...data.otRows].filter((r3) => r3.identityNeedsReview && matches(r3)), issues = data.issues.filter((issue) => data.mealRows.some((r3) => matches(r3) && r3.source.book === issue.source.book && r3.source.tab === issue.source.tab && r3.source.cell === issue.source.cell));
-  content.innerHTML = `<div class="metrics">${metric2("\uC608\uC2DC \uC804\uCCB4", `${data.audit.tabs}\uAC1C \uD0ED`, "\uC2A4\uCF00\uC904 12 \xB7 \uC2DD\uB300 13 \xB7 OT/\uC9C0\uAC01 12")}${metric2("\uBCF4\uC874\uD55C \uC140", `${number(data.audit.importedCells)}\uAC1C`, "\uC608\uC2DC\uC640 \uC140 \uAC12 \uC77C\uCE58 \uAC80\uC0AC \uC644\uB8CC")}${metric2("\uBA54\uBAA8 / \uC218\uC2DD", `${number(data.audit.notes)} / ${number(data.audit.formulas)}`, "\uC608\uC2DC XLSX\uC640 \uCD9C\uCC98 \uC88C\uD45C \uBCF4\uC874")}</div><section class="panel"><div class="panel-heading"><div><h2>\uC5F0\uACB0\xB7\uD569\uACC4 \uD655\uC778</h2><p>\uC120\uD0DD\uD55C \uC6D4\xB7\uD300\uC758 \uD655\uC778 \uD56D\uBAA9\uC785\uB2C8\uB2E4. \uD655\uC778 \uC804\uC5D0\uB294 \uC608\uC2DC\uC744 \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div></div>${issues.map((i3) => `<div class="notice">${esc7(i3.name)} \xB7 ${esc7(i3.kind)}: \uC608\uC2DC ${number(i3.sourceTotal)}\uC6D0 / \uC77C\uBCC4 \uD569 ${number(i3.dailySum)}\uC6D0 ${sourceButton(i3.source)}</div>`).join("")}${review.length ? `<div class="review-list">${review.map((r3) => `<span>${esc7(r3.name)} \xB7 ${esc7(r3.rawTeam)} ${sourceButton(r3.source, "\uC774\uB984\xB7\uD300 \uD655\uC778")}</span>`).join("")}</div>` : empty("\uC774 \uC870\uAC74\uC5D0\uC11C \uC774\uB984\xB7\uD300 \uC5F0\uACB0 \uD655\uC778 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}<p class="panel-foot">\uC608\uC2DC \uC0C9\uC0C1\uC740 \uBAA8\uB450 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uBC94\uB840\uC640 \uC77C\uCE58\uD558\uC9C0 \uC54A\uB294 \uC0C9\uC740 \uC758\uBBF8\uB97C \uC784\uC758 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p></section><section class="panel"><div class="panel-heading"><div><h2>\uC608\uC2DC \uD0ED \uC804\uCCB4 \uBCF4\uAE30</h2><p>\uC774 \uC601\uC5ED\uC740 \uD300 \uD544\uD130 \uC5C6\uC774 \uC120\uD0DD\uD55C \uD0ED \uC804\uCCB4\uB97C \uBCF4\uC5EC\uC90D\uB2C8\uB2E4. \uD45C \uC544\uB798\uC758 \uCD94\uAC00 \uAE30\uB85D\uB3C4 \uD3EC\uD568\uD569\uB2C8\uB2E4.</p></div></div><div class="source-controls"><label>\uC608\uC2DC<select id="source-book">${[["schedule", "\uC2A4\uCF00\uC904"], ["meals", "\uC2DD\uB300"], ["attendance", "OT/\uC9C0\uAC01"]].map(([k3, l3]) => `<option value="${k3}" ${sourceBook === k3 ? "selected" : ""}>${l3}</option>`).join("")}</select></label><label>\uD0ED<select id="source-tab">${data.sources.filter((s3) => s3.book === sourceBook).map((s3) => `<option value="${s3.tab}" ${(sourceTab || month) === s3.tab ? "selected" : ""}>${esc7(s3.tab === "\uCC38\uACE0\uC6A9" ? "\uCC38\uACE0\uC6A9" : monthText(s3.tab))}</option>`).join("")}</select></label><label>\uC140\xB7\uB0B4\uC6A9 \uAC80\uC0C9<input id="source-query" value="${esc7(sourceQuery)}" placeholder="\uC608: A320 \uB610\uB294 \uC9C1\uC6D0 \uC774\uB984" maxlength="100"></label><button data-action="source-search">\uAC80\uC0C9</button></div><div id="raw-table">\uC608\uC2DC\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4\u2026</div></section>`;
+  content.innerHTML = `<div class="metrics">${metric2("\uC608\uC2DC \uC804\uCCB4", `${data.audit.tabs}\uAC1C \uD0ED`, "\uC2A4\uCF00\uC904 12 \xB7 \uC2DD\uB300 13 \xB7 OT/\uC9C0\uAC01 12")}${metric2("\uBCF4\uC874\uD55C \uC140", `${number(data.audit.importedCells)}\uAC1C`, "\uC608\uC2DC\uC640 \uC140 \uAC12 \uC77C\uCE58 \uAC80\uC0AC \uC644\uB8CC")}${metric2("\uBA54\uBAA8 / \uC218\uC2DD", `${number(data.audit.notes)} / ${number(data.audit.formulas)}`, "\uC608\uC2DC XLSX\uC640 \uCD9C\uCC98 \uC88C\uD45C \uBCF4\uC874")}</div><section class="panel"><div class="panel-heading"><div><h2>\uC5F0\uACB0\xB7\uD569\uACC4 \uD655\uC778</h2><p>\uC120\uD0DD\uD55C \uC6D4\xB7\uD300\uC758 \uD655\uC778 \uD56D\uBAA9\uC785\uB2C8\uB2E4. \uD655\uC778 \uC804\uC5D0\uB294 \uC608\uC2DC\uC744 \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div></div>${issues.map((i3) => `<div class="notice">${esc8(i3.name)} \xB7 ${esc8(i3.kind)}: \uC608\uC2DC ${number(i3.sourceTotal)}\uC6D0 / \uC77C\uBCC4 \uD569 ${number(i3.dailySum)}\uC6D0 ${sourceButton(i3.source)}</div>`).join("")}${review.length ? `<div class="review-list">${review.map((r3) => `<span>${esc8(r3.name)} \xB7 ${esc8(r3.rawTeam)} ${sourceButton(r3.source, "\uC774\uB984\xB7\uD300 \uD655\uC778")}</span>`).join("")}</div>` : empty("\uC774 \uC870\uAC74\uC5D0\uC11C \uC774\uB984\xB7\uD300 \uC5F0\uACB0 \uD655\uC778 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}<p class="panel-foot">\uC608\uC2DC \uC0C9\uC0C1\uC740 \uBAA8\uB450 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uBC94\uB840\uC640 \uC77C\uCE58\uD558\uC9C0 \uC54A\uB294 \uC0C9\uC740 \uC758\uBBF8\uB97C \uC784\uC758 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p></section><section class="panel"><div class="panel-heading"><div><h2>\uC608\uC2DC \uD0ED \uC804\uCCB4 \uBCF4\uAE30</h2><p>\uC774 \uC601\uC5ED\uC740 \uD300 \uD544\uD130 \uC5C6\uC774 \uC120\uD0DD\uD55C \uD0ED \uC804\uCCB4\uB97C \uBCF4\uC5EC\uC90D\uB2C8\uB2E4. \uD45C \uC544\uB798\uC758 \uCD94\uAC00 \uAE30\uB85D\uB3C4 \uD3EC\uD568\uD569\uB2C8\uB2E4.</p></div></div><div class="source-controls"><label>\uC608\uC2DC<select id="source-book">${[["schedule", "\uC2A4\uCF00\uC904"], ["meals", "\uC2DD\uB300"], ["attendance", "OT/\uC9C0\uAC01"]].map(([k3, l3]) => `<option value="${k3}" ${sourceBook === k3 ? "selected" : ""}>${l3}</option>`).join("")}</select></label><label>\uD0ED<select id="source-tab">${data.sources.filter((s3) => s3.book === sourceBook).map((s3) => `<option value="${s3.tab}" ${(sourceTab || month) === s3.tab ? "selected" : ""}>${esc8(s3.tab === "\uCC38\uACE0\uC6A9" ? "\uCC38\uACE0\uC6A9" : monthText(s3.tab))}</option>`).join("")}</select></label><label>\uC140\xB7\uB0B4\uC6A9 \uAC80\uC0C9<input id="source-query" value="${esc8(sourceQuery)}" placeholder="\uC608: A320 \uB610\uB294 \uC9C1\uC6D0 \uC774\uB984" maxlength="100"></label><button data-action="source-search">\uAC80\uC0C9</button></div><div id="raw-table">\uC608\uC2DC\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4\u2026</div></section>`;
   loadRawTable();
 }
 function coordSort(a3, b3) {
@@ -13626,7 +13778,7 @@ async function loadRawTable() {
     sourcePage = Math.min(sourcePage, pages - 1);
     document.querySelector("#raw-table").innerHTML = `<div class="raw-summary"><span>\uAC80\uC0C9 ${number(coords.length)}\uC140 \xB7 ${sourcePage + 1} / ${pages}\uCABD</span><div><button data-action="raw-prev" ${sourcePage === 0 ? "disabled" : ""}>\uC774\uC804</button><button data-action="raw-next" ${sourcePage + 1 >= pages ? "disabled" : ""}>\uB2E4\uC74C</button></div></div><div class="table-scroll"><table class="raw-table"><thead><tr><th>\uC140</th><th>\uC608\uC2DC \uAC12</th><th>\uC0C9\uC0C1</th><th>\uC218\uC2DD</th><th>\uBA54\uBAA8</th></tr></thead><tbody>${coords.slice(sourcePage * pageSize, (sourcePage + 1) * pageSize).map((coord) => {
       const c3 = raw.cells[coord];
-      return `<tr><th>${sourceButton({ ...source, cell: coord }, coord)}</th><td class="prewrap">${esc7(display(c3?.v))}</td><td>${swatch(rawColor(raw, coord))}</td><td class="prewrap">${esc7(c3?.f || "\u2014")}</td><td class="prewrap">${esc7(c3?.note || "\u2014")}</td></tr>`;
+      return `<tr><th>${sourceButton({ ...source, cell: coord }, coord)}</th><td class="prewrap">${esc8(display(c3?.v))}</td><td>${swatch(rawColor(raw, coord))}</td><td class="prewrap">${esc8(c3?.f || "\u2014")}</td><td class="prewrap">${esc8(c3?.note || "\u2014")}</td></tr>`;
     }).join("")}</tbody></table></div>${coords.length ? "" : empty()}`;
     labelMobileTables(document.querySelector("#raw-table"));
   } catch (error) {
@@ -13640,7 +13792,7 @@ function openEntry(kind = view === "meals" ? "meals" : view === "attendance" ? "
     toast("\uC120\uD0DD\uD55C \uC870\uAC74\uC758 \uC2A4\uCF00\uC904 \uBA85\uBD80\uC5D0 \uC9C1\uC6D0\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uD300\xB7\uAC80\uC0C9 \uC870\uAC74\uC744 \uBCC0\uACBD\uD574 \uC8FC\uC138\uC694.");
     return;
   }
-  openDialog(`${leaveOnly ? "\uC9C1\uC6D0 \uD734\uBB34" : kind === "schedule" ? "\uC77C\uC815" : kind === "meals" ? "\uC2DD\uB300" : "OT\xB7\uC9C0\uAC01"} \uB4F1\uB85D`, `<form id="entry-form" data-kind="${kind}"><div class="form-grid">${previewMode === "employee" ? `<label>\uC9C1\uC6D0<input value="${esc7(signedInPerson.name)}" readonly><input type="hidden" name="person" value="${esc7(signedInPerson.personId)}"></label>` : `<label>\uC9C1\uC6D0<select name="person" required>${people.map((r3) => `<option value="${r3.personId}">${esc7(r3.name)} \xB7 ${esc7(r3.rawTeam)}</option>`).join("")}</select></label>`}<label>\uB0A0\uC9DC<input name="date" type="date" value="${defaultDate}" required min="2026-01-01" max="2026-12-31"></label>${kind === "schedule" ? `<label>\uC77C\uC815<select name="label">${(leaveOnly ? ["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28"] : ["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28", "\uD300 \uC77C\uC815", "\uAE30\uD0C0"]).map((l3) => `<option>${l3}</option>`).join("")}</select></label>` : kind === "attendance" ? '<label>\uAD6C\uBD84<select name="label"><option>OT</option><option>\uACF5\uD734\uC77C OT</option><option>OT \uC0AC\uC6A9</option><option>\uC9C0\uAC01</option><option>\uC870\uC815</option></select></label>' : ""}${kind !== "schedule" ? `<label>${kind === "meals" ? "\uAE08\uC561 (\uC6D0)" : "\uC2DC\uAC04 (\uBD84)"}<input name="amount" type="number" required min="${kind === "meals" ? 0 : -1e6}" max="100000000" step="1" inputmode="numeric"></label>` : ""}<label class="full">\uBA54\uBAA8<textarea name="note" rows="3" maxlength="2000" placeholder="\uD544\uC694\uD55C \uB0B4\uC6A9\uC744 \uB0A8\uACA8 \uC8FC\uC138\uC694."></textarea></label></div><p class="notice">\uAC00\uC838\uC628 \uC608\uC2DC\uC640 \uAD6C\uBD84\uD574 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uD569\uB2C8\uB2E4.${kind === "attendance" ? " OT \uC0AC\uC6A9\xB7\uC9C0\uAC01\uC740 \uC591\uC218\uB85C \uC785\uB825\uD574\uB3C4 \uC74C\uC218\uB85C \uAE30\uB85D\uD569\uB2C8\uB2E4." : ""}</p><div class="form-actions"><button type="button" data-action="close">\uCDE8\uC18C</button><button class="primary" type="submit">\uB4F1\uB85D\uD558\uAE30</button></div><p class="form-error" role="alert"></p></form>`);
+  openDialog(`${leaveOnly ? "\uC9C1\uC6D0 \uD734\uBB34" : kind === "schedule" ? "\uC77C\uC815" : kind === "meals" ? "\uC2DD\uB300" : "OT\xB7\uC9C0\uAC01"} \uB4F1\uB85D`, `<form id="entry-form" data-kind="${kind}"><div class="form-grid">${previewMode === "employee" ? `<label>\uC9C1\uC6D0<input value="${esc8(signedInPerson.name)}" readonly><input type="hidden" name="person" value="${esc8(signedInPerson.personId)}"></label>` : `<label>\uC9C1\uC6D0<select name="person" required>${people.map((r3) => `<option value="${r3.personId}">${esc8(r3.name)} \xB7 ${esc8(r3.rawTeam)}</option>`).join("")}</select></label>`}<label>\uB0A0\uC9DC<input name="date" type="date" value="${defaultDate}" required min="2026-01-01" max="2026-12-31"></label>${kind === "schedule" ? `<label>\uC77C\uC815<select name="label">${(leaveOnly ? ["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28"] : ["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28", "\uD300 \uC77C\uC815", "\uAE30\uD0C0"]).map((l3) => `<option>${l3}</option>`).join("")}</select></label>` : kind === "attendance" ? '<label>\uAD6C\uBD84<select name="label"><option>OT</option><option>\uACF5\uD734\uC77C OT</option><option>OT \uC0AC\uC6A9</option><option>\uC9C0\uAC01</option><option>\uC870\uC815</option></select></label>' : ""}${kind !== "schedule" ? `<label>${kind === "meals" ? "\uAE08\uC561 (\uC6D0)" : "\uC2DC\uAC04 (\uBD84)"}<input name="amount" type="number" required min="${kind === "meals" ? 0 : -1e6}" max="100000000" step="1" inputmode="numeric"></label>` : ""}<label class="full">\uBA54\uBAA8<textarea name="note" rows="3" maxlength="2000" placeholder="\uD544\uC694\uD55C \uB0B4\uC6A9\uC744 \uB0A8\uACA8 \uC8FC\uC138\uC694."></textarea></label></div><p class="notice">\uAC00\uC838\uC628 \uC608\uC2DC\uC640 \uAD6C\uBD84\uD574 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uD569\uB2C8\uB2E4.${kind === "attendance" ? " OT \uC0AC\uC6A9\xB7\uC9C0\uAC01\uC740 \uC591\uC218\uB85C \uC785\uB825\uD574\uB3C4 \uC74C\uC218\uB85C \uAE30\uB85D\uD569\uB2C8\uB2E4." : ""}</p><div class="form-actions"><button type="button" data-action="close">\uCDE8\uC18C</button><button class="primary" type="submit">\uB4F1\uB85D\uD558\uAE30</button></div><p class="form-error" role="alert"></p></form>`);
   if (personId && people.some((p3) => p3.personId === personId)) document.querySelector("#entry-form [name=person]").value = personId;
 }
 document.addEventListener("submit", async (event) => {
@@ -13726,7 +13878,7 @@ document.addEventListener("click", async (event) => {
     if (previewMode !== "admin" || mealDemo) return;
     const p3 = mealPeople(data.roster, month).find((r3) => r3.personId === target.dataset.personId), kind = target.dataset.adminEnd;
     if (!p3 || !ACTIVITY_TYPES[kind]) return;
-    openDialog("\uC0C1\uD0DC \uC885\uB8CC \uCC98\uB9AC", `<p>${esc7(p3.name)} \uB2D8\uC758 ${ACTIVITY_TYPES[kind].label}\uC744 \uC9C0\uAE08 \uC2DC\uAC01\uC73C\uB85C \uC885\uB8CC\uD560\uAE4C\uC694?</p><div class="form-actions"><button data-action="close">\uCDE8\uC18C</button><button class="primary" data-admin-end-confirm="${kind}" data-expected-active="${esc7(target.dataset.activeId)}" data-person-id="${esc7(p3.personId)}">\uC885\uB8CC \uAE30\uB85D\uD558\uAE30</button></div>`);
+    openDialog("\uC0C1\uD0DC \uC885\uB8CC \uCC98\uB9AC", `<p>${esc8(p3.name)} \uB2D8\uC758 ${ACTIVITY_TYPES[kind].label}\uC744 \uC9C0\uAE08 \uC2DC\uAC01\uC73C\uB85C \uC885\uB8CC\uD560\uAE4C\uC694?</p><div class="form-actions"><button data-action="close">\uCDE8\uC18C</button><button class="primary" data-admin-end-confirm="${kind}" data-expected-active="${esc8(target.dataset.activeId)}" data-person-id="${esc8(p3.personId)}">\uC885\uB8CC \uAE30\uB85D\uD558\uAE30</button></div>`);
     return;
   }
   if (target.dataset.activityTab) {
@@ -13738,14 +13890,9 @@ document.addEventListener("click", async (event) => {
     return;
   }
   switch (target.dataset.action) {
-    case "receipt-new": {
-      const form = document.querySelector("#receipt-upload");
-      if (form) {
-        form.open = true;
-        form.scrollIntoView({ block: "start", behavior: "smooth" });
-      }
+    case "receipt-new":
+      receiptController?.newEntry();
       break;
-    }
     case "meal-demo":
       mealDemo = !mealDemo;
       showAllMealHistory = false;
@@ -13788,7 +13935,7 @@ document.addEventListener("change", (event) => {
   if (!authSession) return;
   if (previewMode === "admin" && event.target.matches("#entry-form [name=date]")) {
     const select = document.querySelector("#entry-form [name=person]"), selected = select.value, people = schedulePeople(monthOf(event.target.value));
-    select.innerHTML = '<option value="">\uC9C1\uC6D0\uC744 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694</option>' + people.map((p3) => '<option value="' + esc7(p3.personId) + '">' + esc7(p3.name) + " \xB7 " + esc7(p3.rawTeam) + "</option>").join("");
+    select.innerHTML = '<option value="">\uC9C1\uC6D0\uC744 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694</option>' + people.map((p3) => '<option value="' + esc8(p3.personId) + '">' + esc8(p3.name) + " \xB7 " + esc8(p3.rawTeam) + "</option>").join("");
     select.value = people.some((p3) => p3.personId === selected) ? selected : "";
     return;
   }
@@ -13893,7 +14040,7 @@ async function start() {
     document.title = "\uBDF0\uD2F0\uBE14\uB77C\uC378 \xB7 \uC9C1\uC6D0 \uC5C5\uBB34";
     render();
   } catch (error) {
-    app.innerHTML = `<main class="load-error"><h1>\uC9C1\uC6D0 \uC790\uB8CC\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.</h1><p>${esc7(error.message)}</p><button data-action="retry">\uB2E4\uC2DC \uBD88\uB7EC\uC624\uAE30</button></main>`;
+    app.innerHTML = `<main class="load-error"><h1>\uC9C1\uC6D0 \uC790\uB8CC\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.</h1><p>${esc8(error.message)}</p><button data-action="retry">\uB2E4\uC2DC \uBD88\uB7EC\uC624\uAE30</button></main>`;
   }
 }
 start();
