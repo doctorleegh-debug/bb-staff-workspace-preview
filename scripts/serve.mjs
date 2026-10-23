@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const base = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../docs');
 const types = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json; charset=utf-8', '.svg':'image/svg+xml', '.png':'image/png', '.woff2':'font/woff2', '.woff':'font/woff' };
 const server = http.createServer((req, res) => {
-  const headers = { 'X-Content-Type-Options':'nosniff', 'X-Robots-Tag':'noindex, nofollow', 'Cache-Control':'no-store', 'Referrer-Policy':'no-referrer', 'Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'" };
+  const headers = { 'X-Content-Type-Options':'nosniff', 'X-Robots-Tag':'noindex, nofollow', 'Cache-Control':'no-store', 'Referrer-Policy':'no-referrer', 'Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'" };
   if (!['GET','HEAD'].includes(req.method)) { res.writeHead(405, headers); res.end(); return; }
   let rel;
   try { rel = decodeURIComponent(new URL(req.url, 'http://127.0.0.1').pathname); } catch { res.writeHead(400, headers); res.end(); return; }

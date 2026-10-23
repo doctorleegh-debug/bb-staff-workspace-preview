@@ -1,0 +1,64 @@
+import {calendarDays} from './daily-detail.js';
+import {listReceipts,saveReceipt,receiptRows,retentionDays,setRetentionDays} from './receipt-store.js';
+import {receiptArchive,safeFilename} from './receipt-zip.js';
+const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const won=value=>Number(value).toLocaleString('ko-KR')+'원';
+const dateOf=(month,day)=>`20${month.slice(0,2)}-${month.slice(2)}-${String(day).padStart(2,'0')}`;
+export function receiptCalendar(rows,month,selectedDate){
+ const grouped=Object.groupBy(rows,r=>r.date);
+ return `<div class="receipt-weekdays">${['일','월','화','수','목','금','토'].map(d=>`<span>${d}</span>`).join('')}</div><div class="receipt-days">${calendarDays(month).map(day=>{
+  if(!day)return'<span class="receipt-blank"></span>';const date=dateOf(month,day),entries=grouped[date]||[],count=entries.reduce((s,r)=>s+r.files.length,0),sum=entries.reduce((s,r)=>s+r.amount,0);
+  return `<button type="button" data-receipt-day="${date}" class="${date===selectedDate?'selected':''}" aria-pressed="${date===selectedDate}" aria-label="${day}일 영수증 ${entries.length}건 사진 ${count}장"><strong>${day}</strong>${entries.length?`<span>${entries.length}건</span><small>${won(sum)}</small>`:''}</button>`;
+ }).join('')}</div>`;
+}
+export function mountReceipts({root,month,months,person,admin,people,team,search,toast}){
+ let all=[],selectedDate=dateOf(month,1),staffId='',urls=[],viewer=null,disposed=false,loading=0;
+ const now=new Date(),today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(now);
+ if(today.startsWith('20'+month.slice(0,2)+'-'+month.slice(2)))selectedDate=today;
+ const filtered=()=>receiptRows(all,{month,personId:admin?staffId:person.personId,team:admin?team:'전체',search:admin?search:''});
+ const release=()=>{urls.forEach(URL.revokeObjectURL);urls=[];};
+ const blobURL=blob=>{const url=URL.createObjectURL(blob);urls.push(url);return url;};
+ let days=30,policyError='';try{days=retentionDays(localStorage);}catch(e){policyError=e.message;}
+ root.innerHTML=`<section class="panel receipt-panel"><div class="panel-heading"><div><h2>${admin?'직원 영수증 모아보기':'내 식대 영수증'}</h2><p>날짜를 누르면 사진과 사용 내역을 확인할 수 있어요.</p></div>${admin?'<button data-receipt-export>조회 영수증 ZIP 다운로드</button>':''}</div>
+ <p class="receipt-local-note">현재 사진과 기록은 이 브라우저에 저장됩니다. 다른 기기와의 공유는 운영 서버 연결 후 적용됩니다.</p>
+ ${admin?`<div class="receipt-controls"><label>직원별 보기<select data-receipt-person><option value="">전체 직원</option>${people.map(p=>`<option value="${esc(p.personId)}">${esc(p.name)} · ${esc(p.rawTeam)}</option>`).join('')}</select></label><p>조회 월·팀·이름 조건에 맞는 영수증을 모읍니다.</p></div><details class="receipt-policy"><summary>사진 보관 기간 설정 · <span data-retention-label>${days}일</span></summary><form data-retention-form><label>업로드 후 보관 기간 (일)<input name="days" type="number" min="1" max="365" value="${days}" required></label><button type="submit">설정 저장</button><p>기본 30일, 1~365일로 설정할 수 있습니다. 기간이 지난 사진만 삭제하고 직원·사용일·금액·메모는 남깁니다.</p><p class="notice">초안에서는 설정만 저장합니다. 실제 자동삭제는 운영 서버 연결 후 적용되며, 지금 올린 사진은 자동으로 지워지지 않습니다.</p><p class="form-error" role="alert">${esc(policyError)}</p></form></details>`:
+ `<details class="receipt-upload" id="receipt-upload"><summary>+ 영수증 등록</summary><form id="receipt-form"><div class="form-grid"><label>사용일<input name="date" type="date" required min="${dateOf(months[0],1)}" max="${dateOf(months.at(-1),new Date(2000+Number(months.at(-1).slice(0,2)),Number(months.at(-1).slice(2)),0).getDate())}" value="${selectedDate}"></label><label>식대 금액 (원)<input name="amount" type="number" min="0" max="100000000" step="1" required inputmode="numeric" placeholder="예: 12000"></label><label class="full">메모<textarea name="note" maxlength="2000" rows="2" placeholder="가게명 등 필요한 내용을 적어 주세요."></textarea></label></div><div class="receipt-file-controls"><label>사진 촬영<input name="camera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></label><label>사진 파일 선택<input name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple></label></div><p>한 건에 최대 5장 · 장당 10MB · JPG, PNG, WEBP. 금액은 사진 수와 관계없이 한 번만 합산됩니다.</p><p data-file-selection>선택한 사진이 없습니다.</p><div class="form-actions"><button type="submit" class="primary">영수증 등록하기</button></div><p class="form-error" role="alert"></p></form></details>`}
+ <p class="receipt-error" role="alert"></p><div class="receipt-body"><p class="empty">영수증을 불러오는 중입니다…</p></div></section>`;
+ const error=message=>{if(!disposed)root.querySelector('.receipt-error').textContent=message;};
+ function draw(){
+  if(disposed)return;release();const rows=filtered(),dayRows=rows.filter(r=>r.date===selectedDate),photos=rows.reduce((s,r)=>s+r.files.length,0);
+  root.querySelector('.receipt-body').innerHTML=`<div class="receipt-summary"><span>영수증 <strong>${rows.length}건</strong> · 사진 ${photos}장</span><span>제출 금액 <strong>${won(rows.reduce((s,r)=>s+r.amount,0))}</strong></span></div><p class="receipt-local-note">제출 금액은 아래 가져온 식대 합계와 별도로 표시합니다.</p><div class="receipt-calendar" aria-label="영수증 월간 달력">${receiptCalendar(rows,month,selectedDate)}</div><section class="receipt-selected"><h3>${esc(selectedDate)} 영수증</h3>${dayRows.length?dayRows.map(r=>`<article class="receipt-entry"><div class="receipt-entry-heading"><div><strong>${esc(r.name)}</strong><span>${esc(r.rawTeam)}</span></div><strong>${won(r.amount)}</strong></div><p class="receipt-note">${esc(r.note||'메모 없음')}</p><div class="receipt-thumbnails">${r.files.map((f,i)=>`<button data-receipt-view="${esc(r.id)}" data-photo-index="${i}" aria-label="${esc(r.name)} 영수증 사진 ${i+1} 크게 보기"><img src="${blobURL(f.blob)}" alt="${esc(r.name)} ${esc(r.date)} 영수증 ${i+1}"><span>사진 ${i+1} 크게 보기</span></button>`).join('')}</div></article>`).join(''):'<p class="empty">이 날짜에 등록된 영수증이 없습니다.</p>'}</section>`;
+  const exportButton=root.querySelector('[data-receipt-export]');if(exportButton)exportButton.disabled=!rows.length;
+ }
+ async function reload(preferredDate){const version=++loading;try{const rows=await listReceipts();if(disposed||version!==loading)return;all=rows;if(preferredDate)selectedDate=preferredDate;else if(!all.some(r=>r.date===selectedDate)){const first=filtered()[0];if(first)selectedDate=first.date;}error('');draw();}catch(e){if(disposed||version!==loading)return;error(e.message);root.querySelector('.receipt-body').innerHTML='<p class="empty">영수증을 표시하지 못했습니다. 새로고침 후 다시 확인해 주세요.</p>';}}
+ root.addEventListener('change',event=>{
+  if(event.target.matches('[data-receipt-person]')){staffId=event.target.value;draw();}
+  if(event.target.type==='file'){const files=[...root.querySelectorAll('input[type=file]')].flatMap(el=>[...el.files]);root.querySelector('[data-file-selection]').textContent=files.length?files.map(f=>f.name).join(' · '):'선택한 사진이 없습니다.';}
+ });
+ root.addEventListener('submit',async event=>{
+  event.preventDefault();const form=event.target,button=form.querySelector('[type=submit]');if(button.disabled)return;button.disabled=true;form.querySelector('.form-error').textContent='';
+  try{
+   if(form.matches('[data-retention-form]')){const value=Number(new FormData(form).get('days'));setRetentionDays(localStorage,value);root.querySelector('[data-retention-label]').textContent=value+'일';toast('보관 기간 설정을 저장했습니다. 자동삭제는 운영 연결 후 적용됩니다.');}
+   else{
+    const values=new FormData(form),files=[...form.querySelectorAll('input[type=file]')].flatMap(el=>[...el.files]);
+    const saved=await saveReceipt({personId:person.personId,name:person.name,teams:person.teams,rawTeam:person.rawTeam,date:String(values.get('date')),amount:Number(values.get('amount')),note:String(values.get('note')).trim(),files,allowedMonths:months});
+    if(disposed)return;form.reset();form.elements.date.value=saved.date;root.querySelector('[data-file-selection]').textContent='선택한 사진이 없습니다.';root.querySelector('#receipt-upload').open=false;
+    const savedMonth=saved.date.slice(2,4)+saved.date.slice(5,7);await reload(savedMonth===month?saved.date:undefined);toast(savedMonth===month?'영수증을 등록했습니다.':`${saved.date.slice(0,7)} 영수증을 등록했습니다. 조회 월을 바꾸면 볼 수 있습니다.`);
+   }
+  }catch(e){if(!disposed)form.querySelector('.form-error').textContent=e.message;}finally{button.disabled=false;}
+ });
+ root.addEventListener('click',async event=>{
+  const button=event.target.closest('button');if(!button)return;
+  if(button.dataset.receiptDay){selectedDate=button.dataset.receiptDay;const dateInput=root.querySelector('input[name=date]');if(dateInput)dateInput.value=selectedDate;draw();return;}
+  if(button.hasAttribute('data-receipt-export')){button.disabled=true;try{const rows=filtered(),zip=await receiptArchive(rows);if(!disposed)downloadBlob(zip,`식대영수증_${month}_${staffId?safeFilename(people.find(p=>p.personId===staffId)?.name):'전체'}.zip`);}catch(e){error(e.message);}finally{if(!disposed)button.disabled=!filtered().length;}return;}
+  if(button.dataset.receiptView){const record=filtered().find(r=>r.id===button.dataset.receiptView);if(!record)return;showPhotos(record,Number(button.dataset.photoIndex));}
+ });
+ function showPhotos(record,index){
+  viewer?.close();const dialog=document.createElement('dialog');dialog.className='receipt-viewer';let photoURL='';
+  function paint(){if(photoURL)URL.revokeObjectURL(photoURL);const file=record.files[index];photoURL=URL.createObjectURL(file.blob);dialog.innerHTML=`<div class="dialog-heading"><div><h2>${esc(record.name)} 영수증</h2><p>${esc(record.date)} · ${won(record.amount)} · ${index+1}/${record.files.length}장</p></div><button data-photo-close aria-label="영수증 사진 닫기">닫기 ✕</button></div><div class="receipt-photo"><img src="${photoURL}" alt="${esc(record.date)} ${esc(record.name)} 영수증"></div><div class="receipt-photo-actions"><button data-photo-prev ${index===0?'disabled':''}>이전 사진</button><a class="button" href="${photoURL}" download="${esc(safeFilename(record.name)+'_'+record.date+'_'+(index+1)+'.'+({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[file.type]||'bin'))}">사진 다운로드</a><button data-photo-next ${index===record.files.length-1?'disabled':''}>다음 사진</button></div>`;}
+  dialog.addEventListener('click',event=>{if(event.target.closest('[data-photo-close]'))dialog.close();if(event.target.closest('[data-photo-prev]')&&index>0){index--;paint();}if(event.target.closest('[data-photo-next]')&&index<record.files.length-1){index++;paint();}});
+  dialog.addEventListener('close',()=>{URL.revokeObjectURL(photoURL);dialog.remove();if(viewer===dialog)viewer=null;});root.append(dialog);viewer=dialog;paint();dialog.showModal();
+ }
+ reload();return{refresh:reload,dispose(){disposed=true;release();viewer?.close();}};
+}
+function downloadBlob(blob,name){const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}
