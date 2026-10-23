@@ -13042,7 +13042,7 @@ function employeeDirectory(roster, rosterMonth = "2610") {
   const people = /* @__PURE__ */ new Map();
   for (const row of roster) {
     if (row.month !== rosterMonth || !row.personId || !row.name) continue;
-    if (!people.has(row.personId)) people.set(row.personId, { personId: row.personId, name: row.name, rawTeam: row.rawTeam || "", teams: [...row.teams || []] });
+    if (!people.has(row.personId)) people.set(row.personId, { personId: row.personId, name: row.name, rawTeam: row.rawTeam || "", teams: [...row.teams || []], jobTitle: typeof row.role === "string" ? row.role.trim() : "" });
   }
   return [...people.values()];
 }
@@ -13116,7 +13116,7 @@ var topics = {
   employee: {
     status: { title: "\uC2DD\uC0AC \uC2DC\uC791\xB7\uB2E4\uB978 \uD300 \uD604\uD669", steps: [step("status-start", "\uC2DD\uC0AC\uD558\uB7EC \uAC08 \uB54C \uC2DC\uC791", "\uB0B4 \uD558\uB8E8\uC5D0\uC11C \uC2DD\uC0AC\uC911\uC744 \uB20C\uB7EC\uC694. \uC2DC\uC791\uD558\uBA74 \uC2DD\uC0AC \uC2DC\uC791 \uC2DC\uAC01\uC774 \uD45C\uC2DC\uB429\uB2C8\uB2E4."), step("status-end", "\uC2DD\uC0AC \uD604\uD669 \uD655\uC778\xB7\uBCF5\uADC0", "\uC544\uB798\uC5D0\uC11C \uB2E4\uB978 \uD300\uC758 \uC2DD\uC0AC \uD604\uD669\uB3C4 \uBCFC \uC218 \uC788\uC5B4\uC694. \uD604\uC7AC \uC2DD\uC0AC\uC885\uB8CC \uBC84\uD2BC\uC740 \uC720\uC9C0\uB429\uB2C8\uB2E4. \uBCF5\uADC0\uD558\uBA74 \uB20C\uB7EC \uC8FC\uC138\uC694.")] },
     schedule: { title: "\uB0B4 \uADFC\uBB34\uD45C\xB7\uD734\uBB34 \uB4F1\uB85D", steps: [step("schedule-calendar", "\uB0A0\uC9DC\uC758 + \uB204\uB974\uAE30", "\uB0B4 \uADFC\uBB34\uD45C\uC5D0\uC11C \uD734\uBB34\xB7\uC5F0\uCC28\xB7\uBC18\uCC28\uB97C \uD655\uC778\uD574\uC694. \uC77C\uC815\uC744 \uCD94\uAC00\uD560 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC\uC694."), step("schedule-form", "\uB0B4\uC6A9\uC744 \uACE0\uB974\uACE0 \uB4F1\uB85D", "\uC77C\uC815 \uC885\uB958\uC640 \uBA54\uBAA8\uB97C \uC785\uB825\uD558\uACE0 \uB4F1\uB85D\uD558\uAE30\uB97C \uB204\uB974\uBA74 \uB0B4 \uADFC\uBB34\uD45C\uC640 \uD300 \uC77C\uC815\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4.")] },
-    team: { title: "\uD300 \uC77C\uC815 \uBCF4\uAE30", steps: [step("team-filter", "\uBCFC \uD300 \uC120\uD0DD", "\uD300 \uC77C\uC815\uC5D0\uC11C \uC870\uD68C \uC6D4\uACFC \uD300\uC744 \uC120\uD0DD\uD574\uC694. \uC9C1\uC6D0 \uCC3E\uAE30\uB97C \uD568\uAED8 \uC4F0\uBA74 \uB354 \uC881\uD600 \uBCFC \uC218 \uC788\uC5B4\uC694."), step("duty-workers", "\uC704\uCABD\uC5D0\uC11C \uADFC\uBB34\uC790 \uD655\uC778", "\uD655\uC778\uD560 \uB0A0\uC9DC\uB97C \uACE0\uB974\uBA74 \uADFC\uBB34\xB7\uC624\uC804 \uADFC\uBB34\xB7\uC624\uD6C4 \uADFC\uBB34\xB7\uD734\uBB34 \uC778\uC6D0\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694. \uC77C\uC815\uC774 \uBE44\uC5B4 \uC788\uC73C\uBA74 \uBBF8\uAE30\uC7AC\uB85C \uB0A8\uC2B5\uB2C8\uB2E4."), step("team-calendar", "\uB2EC\uB825\uC5D0\uC11C \uC77C\uC815 \uD655\uC778", "\uC120\uD0DD\uD55C \uD300\uC758 \uC77C\uC815\uB9CC \uBCF4\uC785\uB2C8\uB2E4. \uAD00\uB9AC\uC790\uC5D0\uAC8C \uB2F4\uB2F9\uC790\uB85C \uC9C0\uC815\uBC1B\uC740 \uC8FC\uC784 \uC774\uC0C1 \uC9C1\uC6D0\uC740 \uBCF8\uC778 \uD300\uC6D0 \uC77C\uC815\uB3C4 \uB4F1\uB85D\uD560 \uC218 \uC788\uC5B4\uC694.")] },
+    team: { title: "\uD300 \uC77C\uC815 \uBCF4\uAE30", steps: [step("team-filter", "\uBCFC \uD300 \uC120\uD0DD", "\uD300 \uC77C\uC815\uC5D0\uC11C \uC870\uD68C \uC6D4\uACFC \uD300\uC744 \uC120\uD0DD\uD574\uC694. \uC9C1\uC6D0 \uCC3E\uAE30\uB97C \uD568\uAED8 \uC4F0\uBA74 \uB354 \uC881\uD600 \uBCFC \uC218 \uC788\uC5B4\uC694."), step("duty-workers", "\uC704\uCABD\uC5D0\uC11C \uADFC\uBB34\uC790 \uD655\uC778", "\uD655\uC778\uD560 \uB0A0\uC9DC\uB97C \uACE0\uB974\uBA74 \uADFC\uBB34\xB7\uC624\uC804 \uADFC\uBB34\xB7\uC624\uD6C4 \uADFC\uBB34\xB7\uD734\uBB34 \uC778\uC6D0\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694. \uC77C\uC815\uC774 \uBE44\uC5B4 \uC788\uC73C\uBA74 \uBBF8\uAE30\uC7AC\uB85C \uB0A8\uC2B5\uB2C8\uB2E4."), step("team-calendar", "\uB2EC\uB825\uC5D0\uC11C \uC77C\uC815 \uD655\uC778", "\uC120\uD0DD\uD55C \uD300\uC758 \uC77C\uC815\uB9CC \uBCF4\uC785\uB2C8\uB2E4. \uC2DC\uD2B8 \uC9C1\uCC45 \uAE30\uC900\uC73C\uB85C \uAD8C\uD55C\uC774 \uC801\uC6A9\uB41C \uC8FC\uC784 \uC774\uC0C1 \uC9C1\uC6D0\uC740 \uBCF8\uC778 \uD300\uC6D0 \uC77C\uC815\uB3C4 \uB4F1\uB85D\uD560 \uC218 \uC788\uC5B4\uC694. \uAD00\uB9AC\uC790\uC5D0\uAC8C \uAD8C\uD55C\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.")] },
     receipt: { title: "\uC2DD\uB300 \uD55C\uB3C4\xB7\uAE08\uC561 \uAE30\uB85D", steps: [step("receipt-budget", "\uD55C\uB3C4\uC640 \uC794\uC561 \uBA3C\uC800 \uD655\uC778", "\uB0B4 \uC2DD\uB300 \uB9E8 \uC704\uC5D0\uC11C \uC774\uB2EC \uD55C\uB3C4\xB7\uC0AC\uC6A9\uC561\xB7\uC794\uC561\uC744 \uD655\uC778\uD574\uC694. \uCD94\uAC00 \uC0AC\uC6A9\uC561\uB3C4 \uC794\uC561\uC5D0 \uBC18\uC601\uB429\uB2C8\uB2E4."), step("receipt-content", "\uAE08\uC561\uB9CC \uC785\uB825\uD574\uC11C \uC800\uC7A5", "\uC0AC\uC6A9\uC77C\uACFC \uAE08\uC561\uC744 \uC801\uACE0 \uB0B4\uC6A9 \uC800\uC7A5\uC744 \uB204\uB974\uC138\uC694. \uC601\uC218\uC99D \uCCA8\uBD80\uB294 \uD544\uC694 \uC5C6\uACE0 \uBA54\uBAA8\uB294 \uC120\uD0DD\uC785\uB2C8\uB2E4."), step("receipt-calendar", "\uB2EC\uB825\uC5D0\uC11C \uC2DD\uB300\uC640 \uD734\uBB34 \uD655\uC778", "\uC0AC\uC6A9 \uB0B4\uC5ED\uACFC \uD568\uAED8 \uBCF8\uC778\uC758 \uD734\uBB34\xB7\uC5F0\uCC28\xB7\uBC18\uCC28\uB97C \uC0C9\uC0C1\uC73C\uB85C \uD655\uC778\uD574\uC694. \uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC5ED\uC774 \uBCF4\uC785\uB2C8\uB2E4.")] },
     snacks: { title: "\uD300 \uAC04\uC2DD\uBE44 \uAE30\uB85D", steps: [step("snack-form", "\uAC04\uC2DD \uC8FC\uBB38 \uAE08\uC561 \uC800\uC7A5", "\uD300 \uAC04\uC2DD\uBE44\uC5D0\uC11C \uC0AC\uC6A9\uC77C\xB7\uC0AC\uC6A9 \uD300\xB7\uAE08\uC561\uC744 \uC785\uB825\uD574\uC694. \uCFE0\uD321 \uC8FC\uBB38 \uB0B4\uC6A9\uC740 \uBA54\uBAA8\uB85C \uB0A8\uAE38 \uC218 \uC788\uC5B4\uC694."), step("snack-list", "\uC6D4\uBCC4 \uC0AC\uC6A9 \uB0B4\uC5ED \uBCF4\uAE30", "\uC870\uD68C \uC6D4\xB7\uD300\uC744 \uACE0\uB974\uBA74 \uD574\uB2F9 \uAC04\uC2DD\uBE44 \uD569\uACC4\uAC00 \uD45C\uC2DC\uB429\uB2C8\uB2E4. \uC870\uD68C \uB0B4\uC5ED \uB2E4\uC6B4\uB85C\uB4DC\uB85C \uD30C\uC77C\uC744 \uBC1B\uC744 \uC218 \uC788\uC5B4\uC694.")] },
     daily: { title: "\uC2DD\uB300\xB7OT \uC77C\uBCC4 \uBCF4\uAE30", steps: [step("daily-button", "\uC77C\uBCC4 \uBCF4\uAE30 \uB204\uB974\uAE30", "\uB0B4 \uC2DD\uB300 \uB610\uB294 \uB0B4 OT\xB7\uC9C0\uAC01\uC5D0\uC11C \uC870\uD68C \uC6D4\uC744 \uACE0\uB974\uACE0 \uC77C\uBCC4 \uBCF4\uAE30\uB97C \uB20C\uB7EC\uC694."), step("daily-drawer", "\uC624\uB978\uCABD \uB2EC\uB825\uC5D0\uC11C \uD655\uC778", "\uD654\uBA74\uC744 \uBC14\uAFB8\uC9C0 \uC54A\uACE0 \uAC1C\uC778 \uB0B4\uC5ED\uC774 \uC5F4\uB9BD\uB2C8\uB2E4. \uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uADF8\uB0A0\uC758 \uAE08\uC561\xB7\uC2DC\uAC04\xB7\uBA54\uBAA8\uB97C \uBCFC \uC218 \uC788\uC5B4\uC694.")] },
@@ -13124,7 +13124,7 @@ var topics = {
   },
   admin: {
     dashboard: { title: "\uC9C1\uC6D0 \uC0C1\uD0DC\xB7\uC6D4\uBCC4 \uD1B5\uACC4", steps: [step("admin-live", "\uD604\uC7AC \uC0C1\uD0DC \uD655\uC778", "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC\uC5D0\uC11C \uC2DD\uC0AC\xB7\uD734\uC2DD\xB7\uC678\uCD9C\xB7\uC678\uADFC \uC911\uC778 \uC9C1\uC6D0\uACFC \uACBD\uACFC \uC2DC\uAC04\uC744 \uD655\uC778\uD574\uC694. \uD604\uC7AC \uC0C1\uD0DC\uB294 \uC870\uD68C \uC6D4\uACFC \uAD00\uACC4\uC5C6\uC774 \uD45C\uC2DC\uB429\uB2C8\uB2E4."), step("admin-stats", "\uC6D4\xB7\uC885\uB958\uBCC4 \uD1B5\uACC4 \uD655\uC778", "\uC870\uD68C \uC6D4\xB7\uD300\xB7\uC9C1\uC6D0 \uAC80\uC0C9\uC744 \uC815\uD558\uACE0 \uC2DD\uC0AC \uAE30\uB85D \uB4F1 \uC885\uB958\uB97C \uC120\uD0DD\uD574\uC694. \uC644\uB8CC\uB41C \uAE30\uB85D\uACFC \uC6D4\uBCC4 \uC18C\uC694 \uC2DC\uAC04\uC744 \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4.")] },
-    schedule: { title: "\uC9C1\uC6D0 \uD734\uBB34\xB7\uB2F4\uB2F9\uC790 \uC124\uC815", steps: [step("team-permission", "\uD300 \uC77C\uC815 \uB2F4\uB2F9\uC790 \uC9C0\uC815", "\uD300 \uC77C\uC815 \uB610\uB294 \uC9C1\uC6D0\uBCC4 \uADFC\uBB34\uD45C \uC704\uCABD\uC758 \uD300\uC6D0 \uD734\uBB34 \uB4F1\uB85D \uAD8C\uD55C\uC744 \uD3BC\uCCD0\uC694. \uC8FC\uC784 \uC774\uC0C1 \uB2F4\uB2F9\uC790\uB97C \uC120\uD0DD\uD558\uACE0 \uC800\uC7A5\uD558\uBA74 \uADF8 \uC9C1\uC6D0\uC740 \uBCF8\uC778 \uD300 \uC77C\uC815\uB9CC \uB4F1\uB85D\uD560 \uC218 \uC788\uC5B4\uC694."), step("duty-workers", "\uB0A0\uC9DC\uBCC4 \uADFC\uBB34\uC790 \uD655\uC778", "\uC870\uD68C \uB0A0\uC9DC\uC758 \uADFC\uBB34\xB7\uBC18\uCC28\xB7\uD734\uBB34 \uB4F1\uB85D\uC744 \uD655\uC778\uD574\uC694. \uBBF8\uAE30\uC7AC\uB97C \uADFC\uBB34\uB85C \uC790\uB3D9 \uCC98\uB9AC\uD558\uC9C0 \uC54A\uC73C\uBA70 \uB20C\uB7EC\uC11C \uBA85\uB2E8\uC744 \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4."), step("admin-schedule-picker", "\uC9C1\uC6D0\xB7\uB0A0\uC9DC \uC120\uD0DD", "\uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D\uC5D0\uC11C \uC9C1\uC6D0\uACFC \uC6D4\uC744 \uC120\uD0DD\uD558\uACE0 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC\uC694."), step("admin-schedule-form", "\uD734\uBB34 \uC885\uB958 \uB4F1\uB85D", "\uD734\uBB34\xB7\uC5F0\uCC28\xB7\uBC18\uCC28 \uB4F1 \uC885\uB958\uC640 \uBA54\uBAA8\uB97C \uD655\uC778\uD558\uACE0 \uB4F1\uB85D\uD558\uAE30\uB97C \uB204\uB974\uC138\uC694. \uC120\uD0DD\uD55C \uC9C1\uC6D0\uC758 \uADFC\uBB34\uD45C\uC5D0\uB3C4 \uBC18\uC601\uB429\uB2C8\uB2E4.")] },
+    schedule: { title: "\uC9C1\uC6D0 \uD734\uBB34\xB7\uB2F4\uB2F9\uC790 \uC124\uC815", steps: [step("team-permission", "\uD300 \uC77C\uC815 \uB2F4\uB2F9\uC790 \uC9C0\uC815", "\uD300 \uC77C\uC815 \uB610\uB294 \uC9C1\uC6D0\uBCC4 \uADFC\uBB34\uD45C\uC758 \uD300\uC6D0 \uD734\uBB34 \uB4F1\uB85D \uAD8C\uD55C\uC744 \uD3BC\uCCD0\uC694. \uC2DC\uD2B8 \uC9C1\uCC45 \uAE30\uC900\uC73C\uB85C \uC801\uC6A9\uB41C \uC9C1\uC6D0\uACFC \uC9C1\uCC45\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC120\uD0DD\uC744 \uBC14\uAFB8\uACE0 \uC800\uC7A5\uD558\uAC70\uB098 \uC9C1\uCC45 \uAE30\uC900\uC73C\uB85C \uB2E4\uC2DC \uC801\uC6A9\uD560 \uC218 \uC788\uC5B4\uC694."), step("duty-workers", "\uB0A0\uC9DC\uBCC4 \uADFC\uBB34\uC790 \uD655\uC778", "\uC870\uD68C \uB0A0\uC9DC\uC758 \uADFC\uBB34\xB7\uBC18\uCC28\xB7\uD734\uBB34 \uB4F1\uB85D\uC744 \uD655\uC778\uD574\uC694. \uBBF8\uAE30\uC7AC\uB97C \uADFC\uBB34\uB85C \uC790\uB3D9 \uCC98\uB9AC\uD558\uC9C0 \uC54A\uC73C\uBA70 \uB20C\uB7EC\uC11C \uBA85\uB2E8\uC744 \uBCFC \uC218 \uC788\uC2B5\uB2C8\uB2E4."), step("admin-schedule-picker", "\uC9C1\uC6D0\xB7\uB0A0\uC9DC \uC120\uD0DD", "\uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D\uC5D0\uC11C \uC9C1\uC6D0\uACFC \uC6D4\uC744 \uC120\uD0DD\uD558\uACE0 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC\uC694."), step("admin-schedule-form", "\uD734\uBB34 \uC885\uB958 \uB4F1\uB85D", "\uD734\uBB34\xB7\uC5F0\uCC28\xB7\uBC18\uCC28 \uB4F1 \uC885\uB958\uC640 \uBA54\uBAA8\uB97C \uD655\uC778\uD558\uACE0 \uB4F1\uB85D\uD558\uAE30\uB97C \uB204\uB974\uC138\uC694. \uC120\uD0DD\uD55C \uC9C1\uC6D0\uC758 \uADFC\uBB34\uD45C\uC5D0\uB3C4 \uBC18\uC601\uB429\uB2C8\uB2E4.")] },
     receipt: { title: "\uC2DD\uB300 \uCDE8\uD569\xB7\uB2E4\uC6B4\uB85C\uB4DC", steps: [step("admin-receipts", "\uC6D4\xB7\uD300\xB7\uC9C1\uC6D0\uC73C\uB85C \uCC3E\uAE30", "\uB300\uC2DC\uBCF4\uB4DC\uC758 \uC2DD\uB300 \uC81C\uCD9C \uAE30\uB85D\uC5D0\uC11C \uD300\xB7\uC9C1\uC6D0\uC744 \uC120\uD0DD\uD574\uC694. \uC2DD\uB300 \uBAA8\uC544\uBCF4\uAE30\uB85C \uB2EC\uB825\uC744 \uD3BC\uCE58\uACE0 \uB0A0\uC9DC\uBCC4 \uC0AC\uC9C4\uC744 \uD655\uC778\uD558\uC138\uC694."), step("admin-receipt-calendar", "\uB0A0\uC9DC\uBCC4 \uB4F1\uB85D \uD655\uC778", "\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uD574\uB2F9 \uB0A0\uC9DC\uC758 \uB0B4\uC5ED\uC774 \uC544\uB798\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4. \uC0AC\uC9C4 \uBCF4\uAE30\uB97C \uB204\uB974\uBA74 \uD06C\uAC8C \uBCFC \uC218 \uC788\uC5B4\uC694."), step("admin-receipt-download", "\uC870\uD68C \uC870\uAC74\uC73C\uB85C \uB2E4\uC6B4\uB85C\uB4DC", "\uC870\uD68C \uC601\uC218\uC99D ZIP \uB2E4\uC6B4\uB85C\uB4DC\uB97C \uB204\uB974\uBA74 \uC120\uD0DD\uD55C \uC6D4\xB7\uD300\xB7\uC9C1\uC6D0\uC758 \uC0AC\uC9C4\uACFC \uC2DD\uB300 \uBAA9\uB85D\uC744 \uBC1B\uC2B5\uB2C8\uB2E4. \uAE08\uC561\uB9CC \uC800\uC7A5\uD55C \uB0B4\uC5ED\uB3C4 \uBAA9\uB85D\uC5D0 \uD3EC\uD568\uB429\uB2C8\uB2E4.")] },
     notes: { title: "\uC9C1\uC6D0 \uBA54\uBAA8 \uD55C\uACF3\uC5D0 \uBCF4\uAE30", steps: [step("admin-notes", "\uB300\uC2DC\uBCF4\uB4DC\uC5D0\uC11C \uBC14\uB85C \uBCF4\uAE30", "\uC9C1\uC6D0 \uC694\uCCAD\uC0AC\uD56D\xB7\uBA54\uBAA8\uCDE8\uD569\uC5D0 \uBAA8\uB4E0 \uD654\uBA74\xB7\uC804\uCCB4 \uAE30\uAC04\uC758 \uC758\uACAC\uC774 \uBAA8\uC785\uB2C8\uB2E4. \uC791\uC131\uC790\xB7\uC791\uC131 \uD654\uBA74\xB7\uB0B4\uC6A9\uC73C\uB85C \uCC3E\uC544\uBCF4\uC138\uC694."), step("admin-notes-import", "\uB2E4\uB978 \uAE30\uAE30 \uBA54\uBAA8 \uAC00\uC838\uC624\uAE30", "\uD604\uC7AC\uB294 \uBE0C\uB77C\uC6B0\uC800\uBCC4\uB85C \uC800\uC7A5\uB429\uB2C8\uB2E4. \uC9C1\uC6D0\uC5D0\uAC8C \uBC1B\uC740 \uBA54\uBAA8 \uD30C\uC77C\uC744 \uAC00\uC838\uC624\uBA74 \uAC19\uC740 \uBAA9\uB85D\uC5D0 \uCDE8\uD569\uB418\uACE0, \uC870\uD68C\uD55C \uBA54\uBAA8\uB97C \uB0B4\uB824\uBC1B\uC744 \uC218 \uC788\uC5B4\uC694.")] },
     snacks: { title: "\uD300 \uAC04\uC2DD\uBE44 \uBCF4\uAE30", steps: [step("snack-form", "\uAC04\uC2DD\uBE44 \uB4F1\uB85D", "\uC0AC\uC6A9 \uD300\xB7\uC0AC\uC6A9\uC77C\xB7\uAE08\uC561\uC744 \uAE30\uB85D\uD569\uB2C8\uB2E4. \uC601\uC218\uC99D \uC5C6\uC774 \uC800\uC7A5\uD560 \uC218 \uC788\uC5B4\uC694."), step("snack-list", "\uC6D4\xB7\uD300\uBCC4 \uB0B4\uC5ED \uD655\uC778", "\uC870\uD68C \uC6D4\xB7\uD300\xB7\uAC80\uC0C9 \uC870\uAC74\uC5D0 \uB9DE\uB294 \uD569\uACC4\uC640 \uB0B4\uC5ED\uC744 \uD655\uC778\uD558\uACE0 \uB2E4\uC6B4\uB85C\uB4DC\uD558\uC138\uC694.")] },
@@ -13445,9 +13445,13 @@ function mountFeedbackCollection(root, { people, toast: toast2, dashboard = fals
 
 // review-share/src/team-settings.js
 var TEAM_SETTINGS_KEY = "bb-staff:public-preview:team-schedule-editors:v1";
-function readTeamEditors(storage) {
+var editorTitles = /* @__PURE__ */ new Set(["\uC8FC\uC784", "\uD300\uC7A5", "\uD30C\uD2B8\uC7A5", "\uC2E4\uC7A5", "\uCD1D\uAD04\uC2E4\uC7A5", "\uB300\uD45C\uC774\uC0AC"]);
+function defaultTeamEditors(people = []) {
+  return [...new Set(people.filter((p3) => typeof p3.personId === "string" && p3.personId && editorTitles.has(p3.jobTitle)).map((p3) => p3.personId))];
+}
+function readTeamEditors(storage, people = []) {
   const raw = storage.getItem(TEAM_SETTINGS_KEY);
-  if (raw === null) return [];
+  if (raw === null) return defaultTeamEditors(people);
   const value = JSON.parse(raw);
   if (!Array.isArray(value) || value.some((id) => typeof id !== "string" || !id)) throw new Error("\uD300 \uC77C\uC815 \uB2F4\uB2F9\uC790 \uC124\uC815\uC744 \uD655\uC778\uD574 \uC8FC\uC138\uC694. \uAE30\uC874 \uC124\uC815\uC740 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4.");
   return [...new Set(value)];
@@ -13473,7 +13477,7 @@ var esc9 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&
 function mountSchedulePanel({ root, people, roster, records, month: month2, session, employees: employees2, person, toast: toast2, viewState }) {
   const prefix = `20${month2.slice(0, 2)}-${month2.slice(2)}`, today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(/* @__PURE__ */ new Date());
   let date = viewState[month2] || (today.startsWith(prefix) ? today : prefix + "-01");
-  root.innerHTML = `<section class="panel duty-panel"><div class="panel-heading"><div><h2>\uB0A0\uC9DC\uBCC4 \uADFC\uBB34\uC790</h2><p>\uADFC\uBB34\xB7\uBC18\uCC28 \uB4F1\uB85D\uC744 \uAE30\uC900\uC73C\uB85C \uD45C\uC2DC\uD569\uB2C8\uB2E4. \uBE48 \uC77C\uC815\uC740 \uBBF8\uAE30\uC7AC\uB85C \uAD6C\uBD84\uD569\uB2C8\uB2E4.</p></div><label>\uD655\uC778\uD560 \uB0A0\uC9DC<input data-duty-date type="date" min="${prefix}-01" max="${prefix}-${new Date(2e3 + Number(month2.slice(0, 2)), Number(month2.slice(2)), 0).getDate()}" value="${date}"></label></div><div class="duty-groups"></div></section>${session.role === "admin" ? `<details class="panel team-editor-panel"><summary>\uD300\uC6D0 \uD734\uBB34 \uB4F1\uB85D \uAD8C\uD55C \xB7 \uC8FC\uC784 \uC774\uC0C1 \uB2F4\uB2F9\uC790 \uC9C0\uC815</summary><p>\uC9C0\uC815\uD55C \uC9C1\uC6D0\uC740 \uBCF8\uC778\uC774 \uC18D\uD55C \uD300\uC758 \uD734\uBB34\xB7\uC5F0\uCC28\xB7\uBC18\uCC28\uB97C \uB4F1\uB85D\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uC77C\uBC18 \uC9C1\uC6D0\uC740 \uBCF8\uC778 \uC77C\uC815\uB9CC \uB4F1\uB85D\uD569\uB2C8\uB2E4.</p><form data-team-editor-form><div class="team-editor-list">${employees2.map((p3) => `<label><input type="checkbox" name="editor" value="${esc9(p3.personId)}"><span><strong>${esc9(p3.name)}</strong><small>${esc9(p3.rawTeam)}</small></span></label>`).join("")}</div><div class="form-actions"><button type="submit" class="primary">\uB2F4\uB2F9\uC790 \uC124\uC815 \uC800\uC7A5</button></div><p class="form-error" role="alert"></p></form></details>` : ""}`;
+  root.innerHTML = `<section class="panel duty-panel"><div class="panel-heading"><div><h2>\uB0A0\uC9DC\uBCC4 \uADFC\uBB34\uC790</h2><p>\uADFC\uBB34\xB7\uBC18\uCC28 \uB4F1\uB85D\uC744 \uAE30\uC900\uC73C\uB85C \uD45C\uC2DC\uD569\uB2C8\uB2E4. \uBE48 \uC77C\uC815\uC740 \uBBF8\uAE30\uC7AC\uB85C \uAD6C\uBD84\uD569\uB2C8\uB2E4.</p></div><label>\uD655\uC778\uD560 \uB0A0\uC9DC<input data-duty-date type="date" min="${prefix}-01" max="${prefix}-${new Date(2e3 + Number(month2.slice(0, 2)), Number(month2.slice(2)), 0).getDate()}" value="${date}"></label></div><div class="duty-groups"></div></section>${session.role === "admin" ? `<details class="panel team-editor-panel"><summary>\uD300\uC6D0 \uD734\uBB34 \uB4F1\uB85D \uAD8C\uD55C \xB7 \uC8FC\uC784 \uC774\uC0C1 \uB2F4\uB2F9\uC790 \uC9C0\uC815</summary><p>2026\uB144 10\uC6D4 \uBA85\uBD80\uC758 \uC8FC\uC784\xB7\uD300\uC7A5\xB7\uD30C\uD2B8\uC7A5\xB7\uC2E4\uC7A5\xB7\uCD1D\uAD04\uC2E4\uC7A5\xB7\uB300\uD45C\uC774\uC0AC\uC5D0\uAC8C \uBCF8\uC778 \uD300\uC6D0\uC758 \uD734\uBB34\xB7\uC5F0\uCC28\xB7\uBC18\uCC28 \uB4F1\uB85D \uAD8C\uD55C\uC744 \uAE30\uBCF8 \uC801\uC6A9\uD588\uC2B5\uB2C8\uB2E4. \uC77C\uBC18 \uD300\uC6D0\uC740 \uBCF8\uC778 \uC77C\uC815\uB9CC \uB4F1\uB85D\uD569\uB2C8\uB2E4.</p><p data-editor-status role="status"></p><form data-team-editor-form><div class="team-editor-list">${employees2.map((p3) => `<label><input type="checkbox" name="editor" value="${esc9(p3.personId)}"><span><strong>${esc9(p3.name)}</strong><small>${esc9(p3.rawTeam)} \xB7 ${esc9(p3.jobTitle || "\uC9C1\uCC45 \uBBF8\uB4F1\uB85D")}</small></span></label>`).join("")}</div><div class="form-actions"><button type="button" data-editor-defaults>\uC9C1\uCC45 \uAE30\uC900\uC73C\uB85C \uB2E4\uC2DC \uC801\uC6A9</button><button type="submit" class="primary">\uB2F4\uB2F9\uC790 \uC124\uC815 \uC800\uC7A5</button></div><p class="form-error" role="alert"></p></form></details>` : ""}`;
   function paint() {
     viewState[month2] = date;
     const entries = people.map((p3) => {
@@ -13495,23 +13499,27 @@ function mountSchedulePanel({ root, people, roster, records, month: month2, sess
   const form = root.querySelector("[data-team-editor-form]");
   let expectedSettings, saving = false;
   if (form) {
+    let showSettings = function(ids) {
+      for (const checkbox of form.querySelectorAll("input")) checkbox.checked = ids.includes(checkbox.value);
+      const count = employees2.filter((p3) => ids.includes(p3.personId)).length;
+      root.querySelector("[data-editor-status]").textContent = `${expectedSettings === null ? "\uC2DC\uD2B8 \uC9C1\uCC45 \uAE30\uC900 \uC801\uC6A9 \uC911" : "\uAD00\uB9AC\uC790\uAC00 \uC800\uC7A5\uD55C \uC124\uC815 \uC801\uC6A9 \uC911"} \xB7 ${count}\uBA85 \xB7 \uC9C1\uCC45 \uAE30\uC900 ${baseline.length}\uBA85`;
+    };
+    const controls = [...form.querySelectorAll("button")], baseline = defaultTeamEditors(employees2);
     try {
       expectedSettings = localStorage.getItem(TEAM_SETTINGS_KEY);
-      const ids = readTeamEditors(localStorage);
-      for (const checkbox of form.querySelectorAll("input")) checkbox.checked = ids.includes(checkbox.value);
+      showSettings(readTeamEditors(localStorage, employees2));
     } catch (e3) {
       form.querySelector(".form-error").textContent = e3.message;
-      form.querySelector("[type=submit]").disabled = true;
+      controls.forEach((button) => button.disabled = true);
     }
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+    async function save(ids) {
       if (saving) return;
       saving = true;
-      const button = form.querySelector("[type=submit]");
-      button.disabled = true;
+      controls.forEach((button) => button.disabled = true);
       try {
-        expectedSettings = await saveTeamEditors(localStorage, new FormData(form).getAll("editor"), employees2, expectedSettings);
+        expectedSettings = await saveTeamEditors(localStorage, ids, employees2, expectedSettings);
         if (root.isConnected) {
+          showSettings(ids);
           form.querySelector(".form-error").textContent = "";
           toast2("\uD300 \uC77C\uC815 \uB2F4\uB2F9\uC790\uB97C \uC800\uC7A5\uD588\uC2B5\uB2C8\uB2E4.");
         }
@@ -13519,9 +13527,14 @@ function mountSchedulePanel({ root, people, roster, records, month: month2, sess
         if (root.isConnected) form.querySelector(".form-error").textContent = e3.message;
       } finally {
         saving = false;
-        button.disabled = false;
+        controls.forEach((button) => button.disabled = false);
       }
+    }
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      save(new FormData(form).getAll("editor"));
     });
+    form.querySelector("[data-editor-defaults]").addEventListener("click", () => save(baseline));
   }
   paint();
 }
@@ -13806,7 +13819,7 @@ function allDrafts() {
 function scheduleCandidates(targetMonth) {
   let editors = [];
   try {
-    editors = readTeamEditors(localStorage);
+    editors = readTeamEditors(localStorage, employees);
   } catch (error) {
     toast(error.message);
   }

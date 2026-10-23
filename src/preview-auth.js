@@ -4,7 +4,7 @@ const normalize=value=>typeof value==='string'?value.normalize('NFC').trim().rep
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function employeeDirectory(roster,rosterMonth='2610'){
  const people=new Map();
- for(const row of roster){if(row.month!==rosterMonth||!row.personId||!row.name)continue;if(!people.has(row.personId))people.set(row.personId,{personId:row.personId,name:row.name,rawTeam:row.rawTeam||'',teams:[...(row.teams||[])]});}
+ for(const row of roster){if(row.month!==rosterMonth||!row.personId||!row.name)continue;if(!people.has(row.personId))people.set(row.personId,{personId:row.personId,name:row.name,rawTeam:row.rawTeam||'',teams:[...(row.teams||[])],jobTitle:typeof row.role==='string'?row.role.trim():''});}
  return [...people.values()];
 }
 export function authenticatePreview(people,{role,name,password,personId=''}){

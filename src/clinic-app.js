@@ -86,7 +86,7 @@ function render(){
 function calendarRows(){const visibleIds=new Set(rosterRows().map(r=>r.personId));const imported=data.scheduleEvents.filter(e=>monthOf(e.date)===month&&(!e.personId||visibleIds.has(e.personId)));return [...imported,...localRows('schedule')];}
 function allDrafts(){try{return readDraft();}catch(error){toast(error.message);return[];}}
 function scheduleCandidates(targetMonth){
- let editors=[];try{editors=readTeamEditors(localStorage);}catch(error){toast(error.message);}
+ let editors=[];try{editors=readTeamEditors(localStorage,employees);}catch(error){toast(error.message);}
  return allowedSchedulePeople({session:authSession,person:signedInPerson,people:schedulePeople(targetMonth),editors});
 }
 function attachDutyPanel(content,people){
