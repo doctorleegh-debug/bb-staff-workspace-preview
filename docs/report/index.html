@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>직원 업무 변경 보고 · 2026-10-28</title>
+<style>
+:root{--ink:#172b4d;--muted:#596b86;--line:#d5dfed;--panel:#fff;--bg:#f4f7fc;--blue:#2563eb;--soft:#eaf2ff}
+@media(prefers-color-scheme:dark){:root{--ink:#e8eef8;--muted:#b8c7e6;--line:#34445e;--panel:#1d2b43;--bg:#111b2e;--soft:#233e65}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all}
+main{max-width:1040px;margin:0 auto;padding:40px 16px 80px}
+h1{font-size:30px;letter-spacing:-.8px;margin:0 0 10px}
+.lead{color:var(--muted);margin:0 0 8px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:15px;margin:0 0 28px}
+.meta a{color:var(--blue)}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 36px}
+.links a{display:inline-flex;align-items:center;min-height:46px;padding:10px 18px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-weight:600}
+.links a.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+nav.toc{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:0 0 36px}
+nav.toc ol{margin:8px 0 0;padding-left:22px;columns:2;column-gap:28px}
+nav.toc li{margin:4px 0;break-inside:avoid}
+nav.toc a{color:var(--ink);text-decoration:none}
+nav.toc a:hover{color:var(--blue)}
+section{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px 26px 22px;margin:0 0 22px}
+section h2{font-size:21px;margin:0 0 6px;letter-spacing:-.4px}
+section h2 small{display:inline-block;margin-left:10px;padding:2px 9px;border-radius:999px;background:var(--soft);color:var(--blue);font-size:13px;font-weight:600;vertical-align:middle}
+section>p{margin:0 0 14px;color:var(--muted)}
+ul.what{margin:0 0 16px;padding-left:20px}
+ul.what li{margin:4px 0}
+figure{margin:0}
+.shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:6px}
+.shots.one{grid-template-columns:1fr}
+.shots.narrow{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));max-width:800px}
+.shots.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.shots.fit{display:flex;flex-wrap:wrap;gap:14px}.shots.fit figure{max-width:100%}.shots.fit img{width:auto;max-width:100%}
+@media(max-width:700px){.shots.two{grid-template-columns:1fr}}
+figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:#fff}
+figcaption{margin:8px 2px 0;font-size:14px;color:var(--muted)}
+.before{position:relative}
+.before::before{content:"전";position:absolute;top:10px;left:10px;z-index:1;padding:2px 9px;border-radius:999px;background:#596b86;color:#fff;font-size:13px;font-weight:700}
+.after{position:relative}
+.after::before{content:"후";position:absolute;top:10px;left:10px;z-index:1;padding:2px 9px;border-radius:999px;background:var(--blue);color:#fff;font-size:13px;font-weight:700}
+.note{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:14px 18px;margin:0 0 22px}
+kbd{display:inline-block;padding:1px 7px;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;background:var(--panel);font:600 14px/1.5 inherit}
+table{width:100%;border-collapse:collapse;font-size:15px;margin-top:8px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600}
+footer{color:var(--muted);font-size:14px;margin-top:40px}
+@media(max-width:700px){main{padding:24px 12px 60px}h1{font-size:24px}section{padding:18px 16px 16px}nav.toc ol{columns:1}}
+</style>
+</head>
+<body>
+<main>
+<h1>직원 업무 화면 변경 보고</h1>
+<p class="lead">2026년 10월 28일 · 직원 피드백 반영분. 아래 캡처는 모두 공개 검수용 예시 데이터 화면입니다(일정·식대·지출은 실제 기록이 아님).</p>
+<p class="meta"><span>공개판 이전 버전: <code>d02a5f4</code></span><span>이번 버전: <code>20261028b</code></span><span>테스트 로그인: 본인 이름 + 1111</span></p>
+<div class="links"><a class="primary" href="../?v=20261028b#/login">검수 화면 열기</a><a href="https://github.com/doctorleegh-debug/bb-staff-workspace-preview">GitHub 저장소</a></div>
+
+<nav class="toc"><strong>바뀐 것 10가지</strong>
+<ol>
+<li><a href="#tabs">팀 일정을 휴무 / 상태 캘린더로 분리</a></li>
+<li><a href="#range">휴무를 시작일~종료일로 등록</a></li>
+<li><a href="#edit">등록한 일정 편집·삭제</a></li>
+<li><a href="#meal">식사 시작 / 중단 / 종료 토글</a></li>
+<li><a href="#drag">모든 달력에서 끌어서 옮기기</a></li>
+<li><a href="#undo">잘못 옮기면 Ctrl+Z</a></li>
+<li><a href="#scroll">옮겨도 화면이 위로 튀지 않음</a></li>
+<li><a href="#peek">"N건 더 보기" 마우스 올리면 미리보기</a></li>
+<li><a href="#plus">식대 달력 날짜 칸 + 버튼</a></li>
+<li><a href="#launcher">사용설명서 버튼 위치</a></li>
+</ol></nav>
+
+<section id="tabs"><h2>1. 팀 일정을 휴무 / 상태 캘린더로 분리<small>팀 일정</small></h2>
+<p>캘린더 위에 탭이 생겼습니다. 상태 캘린더는 식사 버튼을 누른 직원을 오늘 칸에 <b>이름 · 식사중 · 시작 시각</b>으로만 표시하고, 종료하면 사라집니다. 다른 직원에게는 시작 시간만 보입니다.</p>
+<div class="shots"><figure><img src="img/calendar-tabs.png" alt="휴무 캘린더와 상태 캘린더 탭"><figcaption>탭 두 개. 기본은 휴무 캘린더.</figcaption></figure><figure><img src="img/status-calendar.png" alt="상태 캘린더의 오늘 칸에 식사중 표시"><figcaption>상태 캘린더: 오늘 칸에 식사 시작 시각만.</figcaption></figure></div>
+</section>
+
+<section id="range"><h2>2. 휴무를 시작일~종료일로 등록<small>일정 등록</small></h2>
+<p>등록 폼에 종료일이 추가됐습니다. 비워 두면 하루, 채우면 그 기간 전체가 등록되고 캘린더에는 한 막대로 보입니다(최대 62일).</p>
+<div class="shots"><figure><img src="img/schedule-range-form.png" alt="시작일과 종료일이 있는 일정 등록 폼"><figcaption>등록 폼: 시작일 · 종료일.</figcaption></figure><figure><img src="img/schedule-range-bar.png" alt="3일 연차가 캘린더에 한 막대로 표시"><figcaption>3일 연차가 한 막대로.</figcaption></figure></div>
+</section>
+
+<section id="edit"><h2>3. 등록한 일정 편집·삭제<small>일정 상세</small></h2>
+<p>앱에서 등록한 일정은 상세 창에서 바로 고치거나 지울 수 있습니다. 권한은 등록 권한과 같습니다(본인, 주임 이상은 팀원, 관리자는 전부). 시트에서 가져온 원본 일정은 수정하지 않습니다.</p>
+<div class="shots narrow"><figure><img src="img/schedule-edit-delete.png" alt="일정 상세 창의 편집·삭제 버튼"><figcaption>상세 창 아래 편집 · 삭제. 삭제는 한 번 더 확인.</figcaption></figure></div>
+</section>
+
+<section id="meal"><h2>4. 식사 시작 / 중단 / 종료 토글<small>내 하루</small></h2>
+<p>버튼 하나가 <b>식사중 ↔ 식사종료</b>로 부드럽게 바뀝니다. 식사 중에는 옆에 <b>식사 중단</b>, 중단 중에는 <b>식사 재개</b>가 붙습니다. 중단한 시간은 식사 시간에서 뺍니다. 버튼 폭은 카드를 꽉 채우지 않고 내용 길이에 맞췄습니다.</p>
+<div class="shots"><figure><img src="img/meal-off.png" alt="식사 전: 식사중 버튼"><figcaption>근무 중: 누르면 식사 시작.</figcaption></figure><figure><img src="img/meal-on.png" alt="식사 중: 식사종료 토글과 식사 중단 버튼"><figcaption>식사 중: 식사종료 + 식사 중단.</figcaption></figure><figure><img src="img/meal-paused.png" alt="중단 중: 식사 재개 버튼"><figcaption>중단 중: 식사 재개 + 식사종료.</figcaption></figure><figure><img src="img/meal-mobile.png" alt="폰 화면의 식사 토글"><figcaption>폰(390px)에서도 같은 길이.</figcaption></figure></div>
+</section>
+
+<section id="drag"><h2>5. 모든 달력에서 끌어서 옮기기<small>내 근무표 · 팀 일정 · 내 식대</small></h2>
+<p>일정을 누른 채 다른 날짜 칸으로 끌어 놓으면 옮겨집니다. 앱에서 등록한 일정은 기간째 이동하고, 시트 원본 일정은 <b>화면에서만</b> 옮겨지며 시트는 그대로입니다. 원래 날짜로 다시 끌면 되돌아갑니다. 같은 직원의 칸에만 놓을 수 있고, 공통 일정과 권한 없는 일정은 움직이지 않습니다. 폰에서는 길게 누른 뒤 끌면 됩니다.</p>
+<div class="shots two"><figure class="before"><img src="img/drag-mid.png" alt="근무표에서 일정을 끄는 중"><figcaption>끄는 중: 놓을 칸이 파란 점선으로 표시.</figcaption></figure><figure class="after"><img src="img/drag-after.png" alt="옮긴 뒤 근무표"><figcaption>놓은 뒤: 새 날짜에 원래 색으로 표시.</figcaption></figure></div>
+<div class="shots fit"><figure><img src="img/drag-toast.png" alt="옮겼다는 알림"><figcaption>알림에 되돌리기 안내.</figcaption></figure></div>
+</section>
+
+<section id="undo"><h2>6. 잘못 옮기면 Ctrl+Z<small>새 기능</small></h2>
+<p>끌어서 옮긴 직후 <kbd>Ctrl</kbd> + <kbd>Z</kbd>(맥은 <kbd>⌘</kbd> + <kbd>Z</kbd>)를 누르면 마지막 이동이 되돌아갑니다. 연속으로 누르면 그 전 이동까지(최대 20번). 글자 입력란 안에서는 평소 되돌리기로 동작합니다.</p>
+<div class="shots fit"><figure><img src="img/undo-toast.png" alt="되돌렸다는 알림"><figcaption>Ctrl+Z 뒤 알림.</figcaption></figure></div>
+</section>
+
+<section id="scroll"><h2>7. 옮겨도 화면이 위로 튀지 않음<small>수정</small></h2>
+<p>일정을 옮기거나 고치거나 지운 뒤, 식사 상태를 바꾼 뒤에도 보던 위치 그대로 있습니다. 팀 일정 캘린더에서 특히 위로 튀던 문제를 이번에 잡았습니다. 메뉴를 바꿀 때만 예전처럼 맨 위에서 시작합니다.</p>
+</section>
+
+<section id="peek"><h2>8. "N건 더 보기" 마우스 올리면 미리보기<small>팀 일정</small></h2>
+<p>더 보기 글자에 마우스를 올리면 그날 전체 목록이 반투명 유리 패널로 바로 보입니다. 누르면 기존 목록 창이 그대로 열립니다. 폰에서는 누르는 방식 그대로입니다.</p>
+<div class="shots one"><figure><img src="img/more-peek.png" alt="더 보기 위에 마우스를 올려 그날 전체 목록이 보이는 패널"><figcaption>마우스만 올려도 그날 전체가 보입니다.</figcaption></figure></div>
+</section>
+
+<section id="plus"><h2>9. 식대 달력 날짜 칸 + 버튼<small>내 식대</small></h2>
+<p>날짜 칸 오른쪽 위 <b>+</b>를 누르면 그 날짜로 식대 입력 폼이 열리고 금액 칸에 바로 커서가 갑니다. 폰에서는 선택한 날짜 제목 옆 "+ 식대 입력" 버튼이 같은 일을 합니다.</p>
+<div class="shots"><figure><img src="img/meals-plus.png" alt="식대 달력의 날짜 칸마다 + 버튼"><figcaption>칸마다 +.</figcaption></figure><figure><img src="img/meals-plus-form.png" alt="+를 누르면 그 날짜로 열린 식대 입력 폼"><figcaption>+를 누른 뒤: 날짜가 채워지고 금액에 커서.</figcaption></figure><figure><img src="img/meals-mobile.png" alt="폰 화면의 식대 달력과 + 식대 입력 버튼"><figcaption>폰: 제목 옆 "+ 식대 입력".</figcaption></figure></div>
+</section>
+
+<section id="launcher"><h2>10. 사용설명서 버튼 위치<small>상단바</small></h2>
+<p>오른쪽 아래 떠 있던 사용설명서 버튼을 상단바 로그아웃 옆 보조 버튼으로 옮겼습니다.</p>
+<div class="shots one"><figure><img src="img/topbar-launcher.png" alt="상단바의 사용설명서 버튼과 로그아웃 버튼"><figcaption>로그아웃 옆 사용설명서.</figcaption></figure></div>
+</section>
+
+<section><h2>확인한 것</h2>
+<table><tr><th>항목</th><th>결과</th></tr>
+<tr><td>단위 테스트</td><td>71 / 71 통과</td></tr>
+<tr><td>옮긴 뒤 스크롤 위치</td><td>근무표 · 팀 일정 · 식대 달력 모두 전후 동일</td></tr>
+<tr><td>Ctrl+Z</td><td>세 달력 모두 마지막 이동 복원, 입력란 안에서는 기본 동작</td></tr>
+<tr><td>식사 중단</td><td>중단 시간 제외한 식사 시간 저장, 상태 캘린더 표시 전환</td></tr>
+<tr><td>폰 390px</td><td>가로 넘침 없음, 칸 +는 숨기고 제목 옆 버튼 표시</td></tr>
+<tr><td>공개판 번들</td><td>로컬 빌드와 해시 일치</td></tr></table>
+</section>
+
+<div class="note">아직 서버가 없어 모든 기록은 그 브라우저에만 저장됩니다. 다른 기기와 공유는 운영 서버 연결 단계에서 적용됩니다.</div>
+<footer>뷰티블라썸 직원 업무 · 공개 검수용 보고 페이지. 실제 업무 자료를 공개 화면에 입력하지 마세요.</footer>
+</main>
+</body>
+</html>

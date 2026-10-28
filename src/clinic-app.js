@@ -49,7 +49,7 @@ const LOCAL_KEY='bb-staff:public-preview:v1';
 let authSession=null,employees=[],helpController,feedbackController,sessionRevision=0,renderedView='';
 let previewMode='employee',mealDemo=false,showAllMealHistory=false,activityKind='meal',signedInPerson,receiptController,snackController,expenseController,mealTransitionFrom='';
 function changeSession(session){
- sessionRevision++;clearTimeout(searchTimeout);composing=false;dialogVersion++;
+ sessionRevision++;clearTimeout(searchTimeout);composing=false;dialogVersion++;undoStack.length=0;
  clearTimeout(toastTimeout);document.querySelector('#toast').classList.remove('visible');document.querySelector('#toast').textContent='';
  document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());
  authSession=session;previewMode=session?.role||'employee';signedInPerson=employees.find(p=>p.personId===session?.personId);renderedView='';
@@ -85,6 +85,8 @@ function shell(){
 
 function render(){
  hideMorePeek();
+ // Captured before anything is torn down: destroying the calendar shrinks the page and would clamp scrollY first.
+ const scrollTop=scrollY,pageHeight=document.documentElement.scrollHeight;
  if(!data)return;
  const retainedFeedback=authSession?.role==='admin'&&view==='admin-dashboard'&&location.hash.split('?')[0]==='#/admin-dashboard'&&document.querySelector('#dashboard-feedback')?{node:document.querySelector('#dashboard-feedback'),controller:feedbackController}:null;
  renderVersion++;receiptController?.dispose();receiptController=null;snackController?.dispose();snackController=null;expenseController?.dispose();expenseController=null;helpController?.dispose();helpController=null;if(!retainedFeedback)feedbackController?.dispose();feedbackController=null;calendar?.destroy();calendar=null;
@@ -92,7 +94,7 @@ function render(){
  const requested=location.hash.slice(2).split('?')[0];view=allowedRoute(authSession,requested);
  if(view!==requested)history.replaceState(null,'','#/'+view);
  // Re-rendering the same screen (after a save, move or status change) must not jump back to the top: hold the page height while async views (IndexedDB-backed 식대 등) redraw, then restore the scroll.
- const keepScroll=renderedView===view,scrollTop=scrollY;renderedView=view;if(keepScroll)document.body.style.minHeight=document.documentElement.scrollHeight+'px';
+ const keepScroll=renderedView===view;renderedView=view;if(keepScroll)document.body.style.minHeight=pageHeight+'px';
  shell();document.querySelector('main').insertAdjacentHTML('afterbegin','<div class="notice" role="note"><strong>공개 초안 검수용</strong> · 미리 채워진 일정·식대·OT·지출은 예시입니다. 직접 입력한 기록과 검수 메모는 이 브라우저에 저장됩니다.</div>');const content=document.querySelector('#content');
  helpController=mountWorkspaceHelp(document.querySelector('#workspace-help'),{session:authSession,view,people:employees,toast,guideState:guideViewState,onSaved:()=>feedbackController?.refresh()});
  try{({ feedback:root=>{feedbackController=mountFeedbackCollection(root,{people:employees,toast,viewState:feedbackViewState});},'admin-dashboard':root=>renderMealManager(root,retainedFeedback),'team-calendar':renderCalendar,roster:renderRoster,'meal-timer':renderTimers,meals:renderMeals,'team-snacks':renderSnacks,expenses:renderExpenses,attendance:renderAttendance,sources:renderSources }[view])(content);labelMobileTables(content);}catch(error){retainedFeedback?.controller?.dispose();content.innerHTML=empty('화면을 불러오지 못했습니다. 새로고침 후 다시 확인해 주세요.');toast(error.message);console.error(error);}
@@ -146,17 +148,32 @@ async function onCalendarDrop(info){
   if(record.local){
    const group=scheduleGroups(allDrafts()).find(g=>g.groupId===groupOf(record));if(!group||!canEditSchedule(group))throw new Error('옮길 수 있는 일정이 아닙니다.');
    const target=shiftDate(group.start,days),revert=group.override&&target===group.from;
-   if(revert)await removeDraftGroup(group.groupId,guard);else await moveDraftGroup(group.groupId,target,guard);
-   if(revision!==sessionRevision)return;render();toast(revert?'원래 날짜로 되돌렸습니다.':`${group.label} 일정을 ${target}${group.days>1?' 시작':''}으로 옮겼습니다.`);return;
+   if(revert){await removeDraftGroup(group.groupId,guard);recordMove(group.label,g=>moveOriginalDraft(overrideEntry(group),group.start,g));}else{await moveDraftGroup(group.groupId,target,guard);recordMove(group.label,g=>moveDraftGroup(group.groupId,group.start,g));}
+   if(revision!==sessionRevision)return;render();toast(revert?'원래 날짜로 되돌렸습니다.':`${group.label} 일정을 ${target}${group.days>1?' 시작':''}으로 옮겼습니다. ${UNDO_HINT}`);return;
   }
   const person=data.roster.find(r=>r.personId===record.personId&&r.month===monthOf(record.date))||employees.find(p=>p.personId===record.personId);
   if(!person||!scheduleCandidates(monthOf(record.date)).some(p=>p.personId===record.personId))throw new Error('옮길 수 있는 일정이 아닙니다.');
   const target=shiftDate(record.date,days);
-  await moveOriginalDraft({sourceId:record.id,from:record.date,label:record.label,color:findDayColor(record)||'',note:record.note||'',personId:record.personId,name:person.name,teams:person.teams,rawTeam:person.rawTeam},target,guard);
-  if(revision!==sessionRevision)return;render();toast(`${record.label} 일정을 ${target}으로 옮겼습니다. 시트는 그대로예요.`);
+  const entry={sourceId:record.id,from:record.date,label:record.label,color:findDayColor(record)||'',note:record.note||'',personId:record.personId,name:person.name,teams:person.teams,rawTeam:person.rawTeam};
+  await moveOriginalDraft(entry,target,guard);recordMove(record.label,g=>moveOriginalDraft(entry,record.date,g));
+  if(revision!==sessionRevision)return;render();toast(`${record.label} 일정을 ${target}으로 옮겼습니다. 시트는 그대로예요. ${UNDO_HINT}`);
  }catch(e){info.revert();if(revision===sessionRevision)toast(e.message);}
 }
 function findDayColor(event){if(!event.source)return'';const r=data.roster.find(r=>r.personId===event.personId&&r.month===monthOf(event.date));return r?.days[Number(event.date.slice(-2))]?.color||'';}
+// Ctrl+Z undoes the last drag move in any calendar. Each move records its own inverse; the stack clears on logout.
+const undoStack=[],UNDO_HINT='Ctrl+Z로 되돌릴 수 있어요.';
+const overrideEntry=g=>({sourceId:g.sourceId,from:g.from,label:g.label,color:g.color||'',note:g.note||'',personId:g.personId,name:g.name,teams:g.teams,rawTeam:g.rawTeam});
+function recordMove(label,undo){undoStack.push({label,undo});if(undoStack.length>20)undoStack.shift();}
+async function undoLastMove(){
+ const entry=undoStack.pop();if(!entry)return;const revision=sessionRevision;
+ const guard=()=>{if(revision!==sessionRevision||!authSession)throw new Error('로그인 상태가 변경됐습니다. 다시 로그인해 주세요.');};
+ try{await entry.undo(guard);if(revision!==sessionRevision)return;render();toast(`${entry.label} 일정 이동을 되돌렸습니다.`);}catch(e){if(revision===sessionRevision)toast(e.message);}
+}
+document.addEventListener('keydown',event=>{
+ if(!(event.ctrlKey||event.metaKey)||event.shiftKey||event.altKey||event.repeat||event.key.toLowerCase()!=='z')return;
+ if(!authSession||!undoStack.length||event.target.closest?.('input,textarea,select,[contenteditable]')||document.querySelector('dialog[open]'))return;
+ event.preventDefault();undoLastMove();
+});
 // Hovering "N건 더 보기" lists that whole day in a glass panel. Click keeps FullCalendar's own popover; touch has no hover, so it keeps the click path.
 let morePeek=null;
 function hideMorePeek(){morePeek?.remove();morePeek=null;}
@@ -354,13 +371,14 @@ async function finishDrag(event){
   if(d.source){
    const person=data.roster.find(r=>r.personId===d.personId&&r.month===monthOf(d.source.from))||employees.find(p=>p.personId===d.personId);
    if(!person||!scheduleCandidates(monthOf(d.source.from)).some(p=>p.personId===d.personId))throw new Error('옮길 수 있는 일정이 아닙니다.');
-   await moveOriginalDraft({...d.source,personId:d.personId,name:person.name,teams:person.teams,rawTeam:person.rawTeam},newStart,guard);
-   if(revision!==sessionRevision)return;render();toast(newStart===d.source.from?'원래 날짜로 되돌렸습니다.':`${d.source.label} 일정을 ${newStart}으로 옮겼습니다. 시트는 그대로예요.`);return;
+   const entry={...d.source,personId:d.personId,name:person.name,teams:person.teams,rawTeam:person.rawTeam};
+   await moveOriginalDraft(entry,newStart,guard);if(newStart!==d.source.from)recordMove(d.source.label,g=>moveOriginalDraft(entry,d.source.from,g));
+   if(revision!==sessionRevision)return;render();toast(newStart===d.source.from?'원래 날짜로 되돌렸습니다.':`${d.source.label} 일정을 ${newStart}으로 옮겼습니다. 시트는 그대로예요. ${UNDO_HINT}`);return;
   }
   const group=scheduleGroups(allDrafts()).find(g=>g.groupId===d.groupId);if(!group||!canEditSchedule(group))throw new Error('옮길 수 있는 일정이 아닙니다.');
-  if(group.override&&newStart===group.from){await removeDraftGroup(group.groupId,guard);if(revision!==sessionRevision)return;render();toast('원래 날짜로 되돌렸습니다.');return;}
-  const moved=await moveDraftGroup(d.groupId,newStart,guard);
-  if(revision!==sessionRevision)return;if(moved){render();toast(`${group.label} 일정을 ${newStart}${group.days>1?' 시작':''}으로 옮겼습니다.`);}
+  if(group.override&&newStart===group.from){await removeDraftGroup(group.groupId,guard);recordMove(group.label,g=>moveOriginalDraft(overrideEntry(group),group.start,g));if(revision!==sessionRevision)return;render();toast('원래 날짜로 되돌렸습니다.');return;}
+  const moved=await moveDraftGroup(d.groupId,newStart,guard);if(moved)recordMove(group.label,g=>moveDraftGroup(d.groupId,group.start,g));
+  if(revision!==sessionRevision)return;if(moved){render();toast(`${group.label} 일정을 ${newStart}${group.days>1?' 시작':''}으로 옮겼습니다. ${UNDO_HINT}`);}
  }catch(e){if(revision===sessionRevision)toast(e.message);}
 }
 document.addEventListener('pointerup',finishDrag);document.addEventListener('pointercancel',finishDrag);

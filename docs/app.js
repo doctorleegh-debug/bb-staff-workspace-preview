@@ -14270,6 +14270,7 @@ function changeSession(session) {
   clearTimeout(searchTimeout);
   composing = false;
   dialogVersion++;
+  undoStack.length = 0;
   clearTimeout(toastTimeout);
   document.querySelector("#toast").classList.remove("visible");
   document.querySelector("#toast").textContent = "";
@@ -14390,6 +14391,7 @@ function shell() {
 }
 function render() {
   hideMorePeek();
+  const scrollTop = scrollY, pageHeight = document.documentElement.scrollHeight;
   if (!data) return;
   const retainedFeedback = authSession?.role === "admin" && view === "admin-dashboard" && location.hash.split("?")[0] === "#/admin-dashboard" && document.querySelector("#dashboard-feedback") ? { node: document.querySelector("#dashboard-feedback"), controller: feedbackController } : null;
   renderVersion++;
@@ -14412,9 +14414,9 @@ function render() {
   const requested = location.hash.slice(2).split("?")[0];
   view = allowedRoute(authSession, requested);
   if (view !== requested) history.replaceState(null, "", "#/" + view);
-  const keepScroll = renderedView === view, scrollTop = scrollY;
+  const keepScroll = renderedView === view;
   renderedView = view;
-  if (keepScroll) document.body.style.minHeight = document.documentElement.scrollHeight + "px";
+  if (keepScroll) document.body.style.minHeight = pageHeight + "px";
   shell();
   document.querySelector("main").insertAdjacentHTML("afterbegin", '<div class="notice" role="note"><strong>\uACF5\uAC1C \uCD08\uC548 \uAC80\uC218\uC6A9</strong> \xB7 \uBBF8\uB9AC \uCC44\uC6CC\uC9C4 \uC77C\uC815\xB7\uC2DD\uB300\xB7OT\xB7\uC9C0\uCD9C\uC740 \uC608\uC2DC\uC785\uB2C8\uB2E4. \uC9C1\uC811 \uC785\uB825\uD55C \uAE30\uB85D\uACFC \uAC80\uC218 \uBA54\uBAA8\uB294 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</div>');
   const content = document.querySelector("#content");
@@ -14587,20 +14589,27 @@ async function onCalendarDrop(info) {
       const group = scheduleGroups(allDrafts()).find((g4) => g4.groupId === groupOf(record));
       if (!group || !canEditSchedule(group)) throw new Error("\uC62E\uAE38 \uC218 \uC788\uB294 \uC77C\uC815\uC774 \uC544\uB2D9\uB2C8\uB2E4.");
       const target2 = shiftDate(group.start, days), revert = group.override && target2 === group.from;
-      if (revert) await removeDraftGroup(group.groupId, guard);
-      else await moveDraftGroup(group.groupId, target2, guard);
+      if (revert) {
+        await removeDraftGroup(group.groupId, guard);
+        recordMove(group.label, (g4) => moveOriginalDraft(overrideEntry(group), group.start, g4));
+      } else {
+        await moveDraftGroup(group.groupId, target2, guard);
+        recordMove(group.label, (g4) => moveDraftGroup(group.groupId, group.start, g4));
+      }
       if (revision !== sessionRevision) return;
       render();
-      toast(revert ? "\uC6D0\uB798 \uB0A0\uC9DC\uB85C \uB418\uB3CC\uB838\uC2B5\uB2C8\uB2E4." : `${group.label} \uC77C\uC815\uC744 ${target2}${group.days > 1 ? " \uC2DC\uC791" : ""}\uC73C\uB85C \uC62E\uACBC\uC2B5\uB2C8\uB2E4.`);
+      toast(revert ? "\uC6D0\uB798 \uB0A0\uC9DC\uB85C \uB418\uB3CC\uB838\uC2B5\uB2C8\uB2E4." : `${group.label} \uC77C\uC815\uC744 ${target2}${group.days > 1 ? " \uC2DC\uC791" : ""}\uC73C\uB85C \uC62E\uACBC\uC2B5\uB2C8\uB2E4. ${UNDO_HINT}`);
       return;
     }
     const person = data.roster.find((r3) => r3.personId === record.personId && r3.month === monthOf2(record.date)) || employees.find((p3) => p3.personId === record.personId);
     if (!person || !scheduleCandidates(monthOf2(record.date)).some((p3) => p3.personId === record.personId)) throw new Error("\uC62E\uAE38 \uC218 \uC788\uB294 \uC77C\uC815\uC774 \uC544\uB2D9\uB2C8\uB2E4.");
     const target = shiftDate(record.date, days);
-    await moveOriginalDraft({ sourceId: record.id, from: record.date, label: record.label, color: findDayColor(record) || "", note: record.note || "", personId: record.personId, name: person.name, teams: person.teams, rawTeam: person.rawTeam }, target, guard);
+    const entry = { sourceId: record.id, from: record.date, label: record.label, color: findDayColor(record) || "", note: record.note || "", personId: record.personId, name: person.name, teams: person.teams, rawTeam: person.rawTeam };
+    await moveOriginalDraft(entry, target, guard);
+    recordMove(record.label, (g4) => moveOriginalDraft(entry, record.date, g4));
     if (revision !== sessionRevision) return;
     render();
-    toast(`${record.label} \uC77C\uC815\uC744 ${target}\uC73C\uB85C \uC62E\uACBC\uC2B5\uB2C8\uB2E4. \uC2DC\uD2B8\uB294 \uADF8\uB300\uB85C\uC608\uC694.`);
+    toast(`${record.label} \uC77C\uC815\uC744 ${target}\uC73C\uB85C \uC62E\uACBC\uC2B5\uB2C8\uB2E4. \uC2DC\uD2B8\uB294 \uADF8\uB300\uB85C\uC608\uC694. ${UNDO_HINT}`);
   } catch (e3) {
     info.revert();
     if (revision === sessionRevision) toast(e3.message);
@@ -14611,6 +14620,35 @@ function findDayColor(event) {
   const r3 = data.roster.find((r4) => r4.personId === event.personId && r4.month === monthOf2(event.date));
   return r3?.days[Number(event.date.slice(-2))]?.color || "";
 }
+var undoStack = [];
+var UNDO_HINT = "Ctrl+Z\uB85C \uB418\uB3CC\uB9B4 \uC218 \uC788\uC5B4\uC694.";
+var overrideEntry = (g4) => ({ sourceId: g4.sourceId, from: g4.from, label: g4.label, color: g4.color || "", note: g4.note || "", personId: g4.personId, name: g4.name, teams: g4.teams, rawTeam: g4.rawTeam });
+function recordMove(label, undo) {
+  undoStack.push({ label, undo });
+  if (undoStack.length > 20) undoStack.shift();
+}
+async function undoLastMove() {
+  const entry = undoStack.pop();
+  if (!entry) return;
+  const revision = sessionRevision;
+  const guard = () => {
+    if (revision !== sessionRevision || !authSession) throw new Error("\uB85C\uADF8\uC778 \uC0C1\uD0DC\uAC00 \uBCC0\uACBD\uB410\uC2B5\uB2C8\uB2E4. \uB2E4\uC2DC \uB85C\uADF8\uC778\uD574 \uC8FC\uC138\uC694.");
+  };
+  try {
+    await entry.undo(guard);
+    if (revision !== sessionRevision) return;
+    render();
+    toast(`${entry.label} \uC77C\uC815 \uC774\uB3D9\uC744 \uB418\uB3CC\uB838\uC2B5\uB2C8\uB2E4.`);
+  } catch (e3) {
+    if (revision === sessionRevision) toast(e3.message);
+  }
+}
+document.addEventListener("keydown", (event) => {
+  if (!(event.ctrlKey || event.metaKey) || event.shiftKey || event.altKey || event.repeat || event.key.toLowerCase() !== "z") return;
+  if (!authSession || !undoStack.length || event.target.closest?.("input,textarea,select,[contenteditable]") || document.querySelector("dialog[open]")) return;
+  event.preventDefault();
+  undoLastMove();
+});
 var morePeek = null;
 function hideMorePeek() {
   morePeek?.remove();
@@ -15202,26 +15240,30 @@ async function finishDrag(event) {
     if (d2.source) {
       const person = data.roster.find((r3) => r3.personId === d2.personId && r3.month === monthOf2(d2.source.from)) || employees.find((p3) => p3.personId === d2.personId);
       if (!person || !scheduleCandidates(monthOf2(d2.source.from)).some((p3) => p3.personId === d2.personId)) throw new Error("\uC62E\uAE38 \uC218 \uC788\uB294 \uC77C\uC815\uC774 \uC544\uB2D9\uB2C8\uB2E4.");
-      await moveOriginalDraft({ ...d2.source, personId: d2.personId, name: person.name, teams: person.teams, rawTeam: person.rawTeam }, newStart, guard);
+      const entry = { ...d2.source, personId: d2.personId, name: person.name, teams: person.teams, rawTeam: person.rawTeam };
+      await moveOriginalDraft(entry, newStart, guard);
+      if (newStart !== d2.source.from) recordMove(d2.source.label, (g4) => moveOriginalDraft(entry, d2.source.from, g4));
       if (revision !== sessionRevision) return;
       render();
-      toast(newStart === d2.source.from ? "\uC6D0\uB798 \uB0A0\uC9DC\uB85C \uB418\uB3CC\uB838\uC2B5\uB2C8\uB2E4." : `${d2.source.label} \uC77C\uC815\uC744 ${newStart}\uC73C\uB85C \uC62E\uACBC\uC2B5\uB2C8\uB2E4. \uC2DC\uD2B8\uB294 \uADF8\uB300\uB85C\uC608\uC694.`);
+      toast(newStart === d2.source.from ? "\uC6D0\uB798 \uB0A0\uC9DC\uB85C \uB418\uB3CC\uB838\uC2B5\uB2C8\uB2E4." : `${d2.source.label} \uC77C\uC815\uC744 ${newStart}\uC73C\uB85C \uC62E\uACBC\uC2B5\uB2C8\uB2E4. \uC2DC\uD2B8\uB294 \uADF8\uB300\uB85C\uC608\uC694. ${UNDO_HINT}`);
       return;
     }
     const group = scheduleGroups(allDrafts()).find((g4) => g4.groupId === d2.groupId);
     if (!group || !canEditSchedule(group)) throw new Error("\uC62E\uAE38 \uC218 \uC788\uB294 \uC77C\uC815\uC774 \uC544\uB2D9\uB2C8\uB2E4.");
     if (group.override && newStart === group.from) {
       await removeDraftGroup(group.groupId, guard);
+      recordMove(group.label, (g4) => moveOriginalDraft(overrideEntry(group), group.start, g4));
       if (revision !== sessionRevision) return;
       render();
       toast("\uC6D0\uB798 \uB0A0\uC9DC\uB85C \uB418\uB3CC\uB838\uC2B5\uB2C8\uB2E4.");
       return;
     }
     const moved = await moveDraftGroup(d2.groupId, newStart, guard);
+    if (moved) recordMove(group.label, (g4) => moveDraftGroup(d2.groupId, group.start, g4));
     if (revision !== sessionRevision) return;
     if (moved) {
       render();
-      toast(`${group.label} \uC77C\uC815\uC744 ${newStart}${group.days > 1 ? " \uC2DC\uC791" : ""}\uC73C\uB85C \uC62E\uACBC\uC2B5\uB2C8\uB2E4.`);
+      toast(`${group.label} \uC77C\uC815\uC744 ${newStart}${group.days > 1 ? " \uC2DC\uC791" : ""}\uC73C\uB85C \uC62E\uACBC\uC2B5\uB2C8\uB2E4. ${UNDO_HINT}`);
     }
   } catch (e3) {
     if (revision === sessionRevision) toast(e3.message);
