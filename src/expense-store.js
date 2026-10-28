@@ -3,6 +3,8 @@ export const EXPENSE_KEY='bb-staff:public-preview:expenses:v1';
 export const EXPENSE_CONFIG_KEY='bb-staff:public-preview:expense-approvers:v1';
 export const STAGES=['팀장','총괄실장','대표이사','대표원장'];
 export const EXPENSE_CATEGORIES=['쿠팡','유니폼','무전기','명찰','우체국','기타'];
+// Ledger start. Requests before this date or more than a year ahead are rejected.
+export const EXPENSE_START='2026-10-01';
 const fail=message=>{throw new Error(message);};
 const text=(v,max,required=false)=>typeof v==='string'&&v.length<=max&&(!required||v.trim().length>0);
 const numeric=v=>Number.isSafeInteger(v)&&v>=0&&v<=100000000;
@@ -14,13 +16,19 @@ export function firstApproverCandidates(people,team){
  return [];
 }
 export function defaultExpenseConfig(people){return{teams:Object.fromEntries(teamsOf(people).map(t=>[t,one(firstApproverCandidates(people,t))])),general:one(people.filter(p=>p.jobTitle==='총괄실장')),ceo:one(people.filter(p=>p.jobTitle==='대표이사')),director:one(people.filter(p=>p.teams.includes('대표')&&p.jobTitle?.startsWith('Dr.')))};}
+const shape=config=>{if(!config||typeof config!=='object'||!config.teams||typeof config.teams!=='object'||Array.isArray(config.teams)||['general','ceo','director'].some(k=>typeof config[k]!=='string')||Object.values(config.teams).some(id=>typeof id!=='string'))fail('결재 담당자 설정 형식을 확인해 주세요. 기존 설정은 보존했습니다.');return config;};
 function validateConfig(config,people){
- if(!config||typeof config!=='object'||!config.teams||typeof config.teams!=='object'||Array.isArray(config.teams))fail('결재 담당자 설정 형식을 확인해 주세요. 기존 설정은 보존했습니다.');
- for(const key of ['general','ceo','director'])if(typeof config[key]!=='string'||(config[key]&&!people.some(p=>p.personId===config[key])))fail('결재 담당자를 확인해 주세요.');
- for(const [team,id]of Object.entries(config.teams))if(!teamsOf(people).includes(team)||typeof id!=='string'||(id&&!people.some(p=>p.personId===id&&p.teams.includes(team))))fail('팀별 결재 담당자를 확인해 주세요.');
+ shape(config);
+ for(const key of ['general','ceo','director'])if(config[key]&&!people.some(p=>p.personId===config[key]))fail('결재 담당자를 확인해 주세요.');
+ for(const [team,id]of Object.entries(config.teams))if(!teamsOf(people).includes(team)||(id&&!people.some(p=>p.personId===id&&p.teams.includes(team))))fail('팀별 결재 담당자를 확인해 주세요.');
  return config;
 }
-export function readExpenseConfig(storage,people){const raw=storage.getItem(EXPENSE_CONFIG_KEY);return raw===null?defaultExpenseConfig(people):validateConfig(JSON.parse(raw),people);}
+// Stored approvers who left the roster read back as unset so the settings screen stays reachable; storage is untouched until an admin saves.
+function currentConfig(config,people){
+ shape(config);const known=(id,team)=>people.some(p=>p.personId===id&&(!team||p.teams.includes(team)))?id:'';
+ return{teams:Object.fromEntries(teamsOf(people).map(t=>[t,known(config.teams[t]??'',t)])),general:known(config.general),ceo:known(config.ceo),director:known(config.director)};
+}
+export function readExpenseConfig(storage,people){const raw=storage.getItem(EXPENSE_CONFIG_KEY);return raw===null?defaultExpenseConfig(people):currentConfig(JSON.parse(raw),people);}
 const locked=(key,work,locks=globalThis.navigator?.locks)=>locks?locks.request(key,async()=>work()):Promise.resolve().then(work);
 export function saveExpenseConfig(storage,people,session,config,expected,{locks,guard=()=>{}}={}){
  return locked(EXPENSE_CONFIG_KEY,()=>{guard();if(session?.role!=='admin')fail('관리자만 결재선을 설정할 수 있습니다.');validateConfig(config,people);if(storage.getItem(EXPENSE_CONFIG_KEY)!==expected)fail('다른 탭에서 결재선이 변경됐습니다. 새로고침해 주세요.');const raw=JSON.stringify(config);storage.setItem(EXPENSE_CONFIG_KEY,raw);return raw;},locks);
@@ -41,11 +49,12 @@ export function submitExpense(storage,people,session,input,{locks,guard=()=>{},n
  return locked(EXPENSE_KEY,()=>{
   guard();const person=session?.role==='employee'&&people.find(p=>p.personId===session.personId);if(!person)fail('직원 계정으로 신청해 주세요.');
   if(!person.teams.includes(input.team))fail('본인이 소속된 팀으로 신청해 주세요.');
-  if(typeof input.date!=='string'||!/^2026-(10|11|12)-\d{2}$/.test(input.date)||(!Number.isFinite(Date.parse(input.date+'T12:00:00Z'))||new Date(input.date+'T12:00:00Z').toISOString().slice(0,10)!==input.date))fail('2026년 10월 이후의 올바른 사용일을 입력해 주세요.');
+  const at=now(),limit=new Date(at);limit.setUTCFullYear(limit.getUTCFullYear()+1);
+  if(typeof input.date!=='string'||!/^20\d{2}-\d{2}-\d{2}$/.test(input.date)||!Number.isFinite(Date.parse(input.date+'T12:00:00Z'))||new Date(input.date+'T12:00:00Z').toISOString().slice(0,10)!==input.date||input.date<EXPENSE_START||input.date>limit.toISOString().slice(0,10))fail('2026년 10월 이후, 1년 이내의 올바른 사용일을 입력해 주세요.');
   if(!text(input.item,200,true)||!text(input.note??'',2000)||!text(input.payment??'',60)||!EXPENSE_CATEGORIES.includes(input.category)||!numeric(input.unitPrice)||!Number.isSafeInteger(input.quantity)||input.quantity<1||input.quantity>10000||!numeric(input.unitPrice*input.quantity))fail('물품·사용 목적, 단가와 수량을 확인해 주세요.');
   const route=approvalRoute(people,readExpenseConfig(storage,people),input.team,input.firstId);
   if(route.some(s=>s.personId===person.personId))fail('신청자가 결재선에 포함되어 있습니다. 관리자에게 대체 결재자 지정을 요청해 주세요.');
-  const at=now(),row={id:crypto.randomUUID(),revision:1,applicantId:person.personId,name:person.name,team:input.team,date:input.date,item:input.item.trim(),category:input.category,unitPrice:input.unitPrice,quantity:input.quantity,amount:input.unitPrice*input.quantity,payment:(input.payment||'').trim(),note:(input.note||'').trim(),status:'pending',step:0,route,submittedAt:at,updatedAt:at,history:[{action:'submit',actorId:person.personId,step:0,at,note:''}]};validateRecord(row);
+  const row={id:crypto.randomUUID(),revision:1,applicantId:person.personId,name:person.name,team:input.team,date:input.date,item:input.item.trim(),category:input.category,unitPrice:input.unitPrice,quantity:input.quantity,amount:input.unitPrice*input.quantity,payment:(input.payment||'').trim(),note:(input.note||'').trim(),status:'pending',step:0,route,submittedAt:at,updatedAt:at,history:[{action:'submit',actorId:person.personId,step:0,at,note:''}]};validateRecord(row);
   const rows=readExpenses(storage);rows.push(row);storage.setItem(EXPENSE_KEY,JSON.stringify(rows));return row;
  },locks);
 }

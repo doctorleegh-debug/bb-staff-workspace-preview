@@ -42,9 +42,15 @@ export function mountPictureGuide({role,view,state={}}){
  let selected=sameView&&available[state.selected]?state.selected:available[initial]?initial:Object.keys(available)[0];
  let stepIndex=sameView?Math.min(state.stepIndex||0,available[selected].steps.length-1):0,viewer=null,disposed=false;
  Object.assign(state,{role,view,selected,stepIndex});if(!sameView)state.scrollTop=0;
+ const bookIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 5c-3-2-6-2-10-1v15c4-1 7-1 10 1 3-2 6-2 10-1V4c-4-1-7-1-10 1Z"/><path d="M12 5v15"/></svg>',chevron='<svg class="guide-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+ // In the top bar (slot) the launcher is a quiet secondary button; floating fallback keeps the pill with a chevron.
+ const launcher=slot=>`<button type="button" class="guide-launcher" data-guide-toggle aria-expanded="false" aria-controls="floating-guide-panel" aria-haspopup="dialog">${bookIcon}<span>사용설명서</span>${slot?'':chevron}</button>`;
+ const slot=document.querySelector('#help-launcher');
  const dock=document.createElement('section');dock.className='guide-dock';dock.setAttribute('aria-label','사용설명서 바로가기');
- dock.innerHTML=`<button type="button" class="guide-launcher" data-guide-toggle aria-expanded="false" aria-controls="floating-guide-panel" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 5c-3-2-6-2-10-1v15c4-1 7-1 10 1 3-2 6-2 10-1V4c-4-1-7-1-10 1Z"/><path d="M12 5v15"/></svg><span>사용설명서</span><span class="guide-chevron" aria-hidden="true">⌄</span></button><div id="floating-guide-panel" class="guide-popup" role="dialog" aria-modal="false" aria-label="${role==='admin'?'관리자':'직원'} 사용설명서"><header class="guide-popup-heading"><div><strong>${role==='admin'?'관리자':'직원'} 사용설명서</strong><span>설명을 보면서 화면을 사용해 보세요.</span></div><button type="button" data-guide-dismiss aria-label="사용설명서 접기">접기 ✕</button></header><div class="guide-popup-body"><div class="picture-guide"><label class="guide-topic-label">사용 방법 선택<select data-guide-topic>${Object.entries(available).map(([id,t])=>`<option value="${id}" ${id===selected?'selected':''}>${t.title}</option>`).join('')}</select></label><p class="guide-caption">사진을 누르면 크게 볼 수 있어요. 설명용 예시 화면입니다.</p><ol class="picture-guide-steps"></ol><nav class="guide-step-navigation" aria-label="사용설명서 단계"><button type="button" data-guide-prev>← 이전</button><span data-guide-progress aria-live="polite"></span><button type="button" data-guide-next>다음 →</button></nav></div></div></div>`;
- const button=dock.querySelector('[data-guide-toggle]'),panel=dock.querySelector('.guide-popup'),body=dock.querySelector('.guide-popup-body'),select=dock.querySelector('select');
+ dock.innerHTML=`${slot?'':launcher(false)}<div id="floating-guide-panel" class="guide-popup" role="dialog" aria-modal="false" aria-label="${role==='admin'?'관리자':'직원'} 사용설명서"><header class="guide-popup-heading"><div><strong>${role==='admin'?'관리자':'직원'} 사용설명서</strong><span>설명을 보면서 화면을 사용해 보세요.</span></div><button type="button" data-guide-dismiss aria-label="사용설명서 접기">접기 ✕</button></header><div class="guide-popup-body"><div class="picture-guide"><label class="guide-topic-label">사용 방법 선택<select data-guide-topic>${Object.entries(available).map(([id,t])=>`<option value="${id}" ${id===selected?'selected':''}>${t.title}</option>`).join('')}</select></label><p class="guide-caption">사진을 누르면 크게 볼 수 있어요. 설명용 예시 화면입니다.</p><ol class="picture-guide-steps"></ol><nav class="guide-step-navigation" aria-label="사용설명서 단계"><button type="button" data-guide-prev>← 이전</button><span data-guide-progress aria-live="polite"></span><button type="button" data-guide-next>다음 →</button></nav></div></div></div>`;
+ if(slot)slot.innerHTML=launcher(true);
+ const launcherHost=slot||dock,buttons=()=>[...launcherHost.querySelectorAll('[data-guide-toggle]')],visibleButton=()=>buttons().find(b=>b.offsetParent!==null)||buttons()[0];
+ const panel=dock.querySelector('.guide-popup'),body=dock.querySelector('.guide-popup-body'),select=dock.querySelector('select');
  const nativePopover=typeof panel.showPopover==='function';if(nativePopover)panel.setAttribute('popover','manual');else panel.hidden=true;
  function paint(){
   const steps=available[selected].steps,s=steps[stepIndex];Object.assign(state,{selected,stepIndex});
@@ -52,9 +58,10 @@ export function mountPictureGuide({role,view,state={}}){
   dock.querySelector('[data-guide-prev]').disabled=stepIndex===0;dock.querySelector('[data-guide-next]').disabled=stepIndex===steps.length-1;dock.querySelector('[data-guide-progress]').textContent=`${stepIndex+1} / ${steps.length}`;
  }
  function setOpen(open,focus=false){
-  if(disposed)return;state.open=open;button.setAttribute('aria-expanded',String(open));dock.classList.toggle('is-open',open);
+  if(disposed)return;state.open=open;buttons().forEach(b=>b.setAttribute('aria-expanded',String(open)));dock.classList.toggle('is-open',open);launcherHost.classList.toggle('is-open',open);
+  if(open&&slot){const r=visibleButton().getBoundingClientRect();panel.style.top=Math.round(r.bottom+10)+'px';panel.style.right=Math.max(12,Math.round(innerWidth-r.right))+'px';}
   if(nativePopover){if(open&&!panel.matches(':popover-open'))panel.showPopover();if(!open&&panel.matches(':popover-open'))panel.hidePopover();}else panel.hidden=!open;
-  if(focus)(open?select:button).focus({preventScroll:true});
+  if(focus)(open?select:visibleButton()).focus({preventScroll:true});
  }
  function syncHost(){
   if(disposed)return;const modal=[...document.querySelectorAll('dialog[open]')].filter(d=>d!==viewer&&!d.classList.contains('guide-viewer')).at(-1),host=modal||document.body;
@@ -65,12 +72,12 @@ export function mountPictureGuide({role,view,state={}}){
   dialog.innerHTML=`<div class="dialog-heading"><h2>${esc(s.title)}</h2><button type="button" data-guide-close>닫기 ✕</button></div><img src="./assets/guide/${s.image}.png" alt="${esc(s.title)} 실제 화면"><p>${esc(s.text)}</p>`;
   dialog.querySelector('button').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{dialog.remove();if(viewer===dialog)viewer=null;});document.body.append(dialog);viewer=dialog;dialog.showModal();
  }
- button.addEventListener('click',()=>setOpen(!state.open,true));dock.querySelector('[data-guide-dismiss]').addEventListener('click',()=>setOpen(false,true));
+ launcherHost.addEventListener('click',event=>{if(event.target.closest('[data-guide-toggle]'))setOpen(!state.open,true);});dock.querySelector('[data-guide-dismiss]').addEventListener('click',()=>setOpen(false,true));
  select.addEventListener('change',()=>{selected=select.value;stepIndex=0;state.scrollTop=0;paint();body.scrollTop=0;});
  dock.addEventListener('click',event=>{if(event.target.closest('[data-guide-image]'))showPhoto();const prev=event.target.closest('[data-guide-prev]'),next=event.target.closest('[data-guide-next]');if((prev&&stepIndex>0)||(next&&stepIndex<available[selected].steps.length-1)){stepIndex+=next?1:-1;paint();state.scrollTop=0;body.scrollTop=0;}});
- const keydown=event=>{if(event.key==='Escape'&&state.open&&!viewer){event.preventDefault();event.stopPropagation();setOpen(false,dock.contains(document.activeElement));}};
+ const keydown=event=>{if(event.key==='Escape'&&state.open&&!viewer){event.preventDefault();event.stopPropagation();setOpen(false,dock.contains(document.activeElement)||launcherHost.contains(document.activeElement));}};
  document.addEventListener('keydown',keydown,true);body.addEventListener('scroll',()=>{if(!disposed)state.scrollTop=body.scrollTop;},{passive:true});
  document.body.append(dock);paint();syncHost();setOpen(!!state.open);body.scrollTop=state.scrollTop||0;
  const observer=new MutationObserver(syncHost);observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['open']});
- return{dispose(){disposed=true;observer.disconnect();document.removeEventListener('keydown',keydown,true);viewer?.close();if(nativePopover&&panel.matches(':popover-open'))panel.hidePopover();dock.remove();}};
+ return{dispose(){disposed=true;observer.disconnect();document.removeEventListener('keydown',keydown,true);viewer?.close();if(nativePopover&&panel.matches(':popover-open'))panel.hidePopover();dock.remove();if(slot)slot.replaceChildren();}};
 }

@@ -17,7 +17,7 @@ export async function saveSnack(storage,{session,person,teams,months,date,team,a
  const work=()=>{const rows=readSnacks(storage);storage.setItem(SNACK_KEY,JSON.stringify([...rows,row]));return row;};
  return locks?locks.request(SNACK_KEY,work):work();
 }
-export function snackRows(rows,month,team,search=''){return rows.filter(r=>r.date.slice(2,4)+r.date.slice(5,7)===month&&(team==='전체'||r.team===team)&&(!search||[r.name,r.team,r.note].some(v=>v.includes(search)))).toSorted((a,b)=>b.date.localeCompare(a.date)||b.createdAt.localeCompare(a.createdAt));}
+export function snackRows(rows,month,team,search=''){return rows.filter(r=>r.date.slice(2,4)+r.date.slice(5,7)===month&&(team==='전체'||r.team===team)&&(!search||[r.name,r.team,r.note].some(v=>v.includes(search)))).sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt.localeCompare(a.createdAt));}
 const csvCell=value=>'"'+String(value??'').replace(/^[\s]*[=+@-]/,m=>"'"+m).replaceAll('"','""')+'"';
 export function snackCSV(rows){return '\uFEFF'+[['사용일','팀','작성자','금액','내용'],...rows.map(r=>[r.date,r.team,r.name,r.amount,r.note])].map(r=>r.map(csvCell).join(',')).join('\r\n');}
 export function mountSnacks({root,session,person,teams,months,month,team,search='',toast}){

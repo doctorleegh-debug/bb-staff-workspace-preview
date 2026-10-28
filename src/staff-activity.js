@@ -1,11 +1,7 @@
 import {MEAL_PREFIX,readMeal,transitionMeal} from './meal-timer.js';
 export const ACTIVITY_PREFIX='bb-staff:public-preview:activity:v1:';
-export const ACTIVITY_TYPES={meal:{label:'식사',status:'식사중'},rest:{label:'휴식',status:'휴식중'},outing:{label:'외출',status:'외출중'},offsite:{label:'외근',status:'외근중'}};
-export function previewPerson(roster){
- const rows=roster.filter(p=>p.name==='유병호'),ids=[...new Set(rows.map(p=>p.personId))];
- if(ids.length!==1)throw new Error('유병호의 직원 연결을 확인해야 합니다.');
- return [...rows].sort((a,b)=>b.month.localeCompare(a.month))[0];
-}
+export const ACTIVITY_TYPES={meal:{label:'식사',status:'식사중',pausedStatus:'식사 중단'},rest:{label:'휴식',status:'휴식중'},outing:{label:'외출',status:'외출중'},offsite:{label:'외근',status:'외근중'}};
+export const activityStatus=active=>active.kind==='meal'&&Number.isFinite(active.pausedAt)?ACTIVITY_TYPES.meal.pausedStatus:ACTIVITY_TYPES[active.kind].status;
 export function readActivity(storage,id){
  const raw=storage.getItem(ACTIVITY_PREFIX+id);if(raw===null)return{active:null,history:[]};
  const record=JSON.parse(raw),valid=r=>r&&['rest','outing','offsite'].includes(r.kind)&&typeof r.id==='string'&&Number.isFinite(r.startedAt)&&r.startedAt>=0&&r.startedAt<=8640000000000000;
@@ -19,16 +15,20 @@ export function readStaffState(storage,id){
  return result;
 }
 export async function updateStaffActivity(storage,id,kind,action,locks=globalThis.navigator?.locks,now=()=>Date.now(),expectedActiveId){
- if(!ACTIVITY_TYPES[kind]||!['start','end'].includes(action))throw new Error('상태 변경 요청을 확인해 주세요.');
+ if(!ACTIVITY_TYPES[kind]||!['start','end','pause','resume'].includes(action)||(kind!=='meal'&&['pause','resume'].includes(action)))throw new Error('상태 변경 요청을 확인해 주세요.');
  const work=()=>{
   const time=now();if(!Number.isFinite(time)||time<0||time>8640000000000000)throw new Error('기기 시간을 확인해 주세요.');
   if(action==='start'){
    const state=readStaffState(storage,id);if(state.errors.length)throw new Error(state.errors.join(' '));
    if(state.active.some(r=>r.kind!==kind))throw new Error('진행 중인 상태를 먼저 종료해 주세요.');
+   if(state.active.some(r=>r.kind===kind))throw new Error('이미 '+ACTIVITY_TYPES[kind].status+'입니다. 화면을 새로고침해 다시 확인해 주세요.');
   }
   if(kind==='meal'){
    const record=readMeal(storage,id);
-   if(action==='end'&&expectedActiveId!==undefined&&record.active?.id!==expectedActiveId)throw new Error('현재 상태가 변경됐습니다. 화면을 새로고침해 다시 확인해 주세요.');
+   if(action!=='start'&&expectedActiveId!==undefined&&record.active?.id!==expectedActiveId)throw new Error('현재 상태가 변경됐습니다. 화면을 새로고침해 다시 확인해 주세요.');
+   if(['pause','resume'].includes(action)&&!record.active)throw new Error('진행 중인 식사가 없습니다.');
+   if(action==='pause'&&Number.isFinite(record.active?.pausedAt))throw new Error('이미 식사를 중단한 상태입니다.');
+   if(action==='resume'&&!Number.isFinite(record.active?.pausedAt))throw new Error('중단 중인 식사가 없습니다.');
    const next=transitionMeal(record,action,time,crypto.randomUUID());
    if(next!==record)storage.setItem(MEAL_PREFIX+id,JSON.stringify(next));return next;
   }

@@ -2,7 +2,9 @@
 export const SESSION_KEY='bb-staff:public-preview:test-session:v1';
 const normalize=value=>typeof value==='string'?value.normalize('NFC').trim().replace(/\s+/g,''):'';
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function employeeDirectory(roster,rosterMonth='2610'){
+// Roster month in effect today (Asia/Seoul): the latest imported month that has already started, so later months' sheets apply once they begin.
+const currentRosterMonth=roster=>{const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul'}).format(new Date()),months=[...new Set(roster.map(r=>r.month))].sort();return months.filter(m=>m<=today.slice(2,4)+today.slice(5,7)).at(-1)||months[0]||'';};
+export function employeeDirectory(roster,rosterMonth=currentRosterMonth(roster)){
  const people=new Map();
  for(const row of roster){if(row.month!==rosterMonth||!row.personId||!row.name)continue;if(!people.has(row.personId))people.set(row.personId,{personId:row.personId,name:row.name,rawTeam:row.rawTeam||'',teams:[...(row.teams||[])],jobTitle:typeof row.role==='string'?row.role.trim():''});}
  return [...people.values()];

@@ -9,7 +9,7 @@ export function validateExpenseArchive(data){
 export function expenseOverview(requests,sourceRows,{month,team='',search=''}={}){
  const query=search.trim(),selected=expenseTeam(team);
  const matches=(r,source)=>((source?r.month:r.date.slice(2,4)+r.date.slice(5,7))===month)&&(!selected||expenseTeam(source?r.rawTeam:r.team)===selected)&&(!query||[r.name,r.item,r.note,r.team,r.rawTeam,r.category,...Object.values(r.notes||{})].some(v=>String(v??'').includes(query)));
- const fresh=requests.filter(r=>matches(r,false)).toSorted((a,b)=>b.submittedAt.localeCompare(a.submittedAt)).map(row=>({kind:'request',row}));
+ const fresh=requests.filter(r=>matches(r,false)).sort((a,b)=>b.submittedAt.localeCompare(a.submittedAt)).map(row=>({kind:'request',row}));
  const imported=sourceRows.filter(r=>matches(r,true)).map(row=>({kind:'source',row}));
  const items=[...fresh,...imported];
  return{items,count:items.length,amount:items.reduce((sum,item)=>sum+item.row.amount,0),pending:fresh.filter(({row})=>row.status==='pending').length,requestCount:fresh.length,sourceCount:imported.length};

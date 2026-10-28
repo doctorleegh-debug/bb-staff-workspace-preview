@@ -1,12 +1,14 @@
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+import {overrideMap,sourceIdOf,groupOf} from './schedule-drafts.js';
 const COLORS={'휴무':'4285F4','연차':'FF9900','오전 반차':'FCE5CD','오후 반차':'D9D2E9','근무':'D9EAD3'};
 export function schedulesOn(roster,records,personId,date){
- const month=date.slice(2,4)+date.slice(5,7),day=Number(date.slice(-2));
- const original=roster.filter(r=>r.personId===personId&&r.month===month).flatMap(r=>{const c=r.days?.[day];return c?[{label:String(c.value??'').trim()||String(c.colorMeaning??'').trim()||String(c.label??'').trim()||'색상 표시',color:c.color||'',original:true}]:[];});
- const added=records.filter(r=>r.kind==='schedule'&&r.personId===personId&&r.date===date).map(r=>({label:r.label,color:COLORS[r.label]||'CBD5E1',original:false}));
+ const month=date.slice(2,4)+date.slice(5,7),day=Number(date.slice(-2)),overrides=overrideMap(records);
+ const original=roster.filter(r=>r.personId===personId&&r.month===month).flatMap(r=>{const c=r.days?.[day];if(!c||overrides.has(sourceIdOf(c.source)))return[];return[{label:String(c.value??'').trim()||String(c.colorMeaning??'').trim()||String(c.label??'').trim()||'색상 표시',color:c.color||'',original:true,sourceId:sourceIdOf(c.source),from:date,note:c.note||''}];});
+ const added=records.filter(r=>r.kind==='schedule'&&r.personId===personId&&r.date===date).map(r=>r.override?{label:r.label,color:r.color||'',original:true,moved:true,groupId:r.id,from:r.from}:{label:r.label,color:COLORS[r.label]||'CBD5E1',original:false,groupId:groupOf(r)});
  return [...original,...added];
 }
-export function scheduleChips(items){return items.map(s=>`<span class="meal-schedule-chip"><i class="swatch" style="--source-color:#${/^[\da-f]{6}$/i.test(s.color)?s.color:'CBD5E1'}" aria-hidden="true"></i><span>${esc(s.label)}</span></span>`).join('');}
+// drag={personId}: chips become drag sources (app rows by group, sheet entries by source) for calendars that have data-drop-date cells.
+export function scheduleChips(items,drag=null){return items.map(s=>`<span class="meal-schedule-chip"${drag&&s.groupId?` data-drag-group="${esc(s.groupId)}" data-drag-person="${esc(drag.personId)}"`:drag&&s.sourceId?` data-drag-source="${esc(JSON.stringify({sourceId:s.sourceId,from:s.from,label:s.label,color:s.color,note:s.note||''}))}" data-drag-person="${esc(drag.personId)}"`:''}><i class="swatch" style="--source-color:#${/^[\da-f]{6}$/i.test(s.color)?s.color:'CBD5E1'}" aria-hidden="true"></i><span>${esc(s.label)}</span></span>`).join('');}
 export function dayAssignment(items){
  const labels=items.map(s=>s.label.trim());
  const off=labels.some(l=>['휴무','연차','무급','휴가(출산)'].includes(l));

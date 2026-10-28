@@ -11,14 +11,6 @@ export function mealPeople(roster,month){
  return [...groups.values()].map(rows=>rows.find(r=>r.month===month)||rows.filter(r=>r.month<=month).sort((a,b)=>b.month.localeCompare(a.month))[0]||rows[0]);
 }
 const freshSummary=()=>({count:0,total:0,average:0,longest:0,overCount:0,overTotal:0});
-export function employeeMealPeople(roster,records,month){
- const latest=[...new Set(roster.map(r=>r.month))].sort().at(-1);
- const rosterMonth=roster.some(r=>r.month===month)?month:latest;
- const current=mealPeople(roster.filter(r=>r.month===rosterMonth),rosterMonth),ids=new Set(current.map(r=>r.personId));
- // Preserve an explicit way to finish an older identity; never merge names.
- const recovery=mealPeople(roster,month).filter(r=>!ids.has(r.personId)&&records[r.personId]?.active&&!records[r.personId]?.error).map(r=>({...r,recoveryOnly:true}));
- return [...current,...recovery];
-}
 function accumulate(summary,record){
  summary.count++;summary.total+=record.elapsed;summary.average=summary.total/summary.count;
  summary.longest=Math.max(summary.longest,record.elapsed);
