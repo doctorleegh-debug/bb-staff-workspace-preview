@@ -10,28 +10,34 @@ const colorOf=(i,n)=>{const p=palette(n);return p[i%p.length];};
 const GAP_X=84,GAP_Y=40,PAD=42,TOP=18,TOKEN_R=16,SPEED=380,SVG='http://www.w3.org/2000/svg';
 const shortLabel=name=>name.length>10?name.slice(0,9)+'…':name;
 export const defaultOutcomes=count=>['당첨',...Array(Math.max(0,count-1)).fill('통과')].join('\n');
+const MERGED=['대표','원장'];
 export function mountPicker({root,session,person,teams,people,viewState,toast}){
  let disposed=false,wheel=null,spinning=false,epoch=0;
  const roster=people.filter(p=>p.personId&&p.name);
- const teamList=[...new Set([...teams,...roster.flatMap(p=>p.teams||[])])],members=team=>roster.filter(p=>p.teams?.includes(team));
+ const teamList=[...new Set([...teams,...roster.flatMap(p=>p.teams||[])])];
+ // 대표·원장은 인원이 적어 한 묶음으로 보여 준다.
+ const groups=[];for(const t of teamList){if(MERGED.includes(t)){if(!groups.some(g=>g.teams===MERGED))groups.push({id:MERGED.join('·'),title:MERGED.join('·')+'팀',teams:MERGED});}else groups.push({id:t,title:t+'팀',teams:[t]});}
+ const members=group=>roster.filter(p=>p.teams?.some(t=>group.teams.includes(t)));
  if(viewState.selected===undefined){
   const home=session.role==='admin'?teamList[0]||'':person?.teams?.[0]||person?.rawTeam||teamList[0]||'';
-  const mine=members(home).map(p=>p.personId).slice(0,MAX_PLAYERS);
-  Object.assign(viewState,{selected:mine,custom:[],teamTab:teamList.includes(home)?home:'all',tab:'wheel',outcomes:defaultOutcomes(mine.length),ladder:null,revealed:[]});
+  const homeGroup=groups.find(g=>g.teams.includes(home));
+  const mine=(homeGroup?members(homeGroup):[]).map(p=>p.personId).slice(0,MAX_PLAYERS);
+  Object.assign(viewState,{selected:mine,custom:[],teamTab:homeGroup?homeGroup.id:'all',tab:'wheel',outcomes:defaultOutcomes(mine.length),ladder:null,revealed:[]});
  }
  viewState.custom??=[];
+ if(viewState.teamTab!=='all'&&!groups.some(g=>g.id===viewState.teamTab))viewState.teamTab='all';
  // 명부 직원 + 직접 추가한 이름. 동명이인은 순서대로 (2), (3)을 붙인다.
  const entries=()=>[...roster.map(p=>({id:p.personId,name:p.name})),...viewState.custom];
  const labelsOf=()=>{const list=entries();return new Map(uniqueLabels(list.map(e=>e.name)).map((label,i)=>[list[i].id,label]));};
  const selectedIds=()=>entries().filter(e=>viewState.selected.includes(e.id)).map(e=>e.id).slice(0,MAX_PLAYERS);
  const names=()=>{const labels=labelsOf();return selectedIds().map(id=>labels.get(id));};
- root.innerHTML=`<section class="panel picker-panel clay-scene"><div class="panel-heading"><div><h2>뽑기</h2><p>참가할 직원을 누르고 룰렛을 돌리거나 사다리를 타요. 결과는 저장하지 않아요.</p></div></div><nav class="picker-tabs" aria-label="뽑기 방식">${[['wheel','룰렛'],['ladder','사다리타기']].map(([id,title])=>`<button type="button" data-picker-tab="${id}" aria-pressed="${viewState.tab===id}">${title}</button>`).join('')}</nav><div class="picker-body"><div class="picker-people clay-card"><div class="pick-teams" role="group" aria-label="팀 보기">${[['all','전체보기'],...teamList.map(t=>[t,t+'팀'])].map(([id,title])=>`<button type="button" class="clay-pill" data-pick-team="${esc(id)}" aria-pressed="${viewState.teamTab===id}">${esc(title)}</button>`).join('')}</div><div class="pick-groups"></div><form class="pick-add"><input name="custom" maxlength="20" placeholder="명부에 없는 이름 직접 추가" aria-label="이름 직접 추가" autocomplete="off"><button type="submit" class="clay-pill small">추가</button></form><div class="pick-tools"><p class="picker-count"></p><span><button type="button" class="clay-pill small" data-pick-all>보이는 직원 모두</button><button type="button" class="clay-pill small" data-pick-none>모두 해제</button></span></div><label class="picker-outcomes clay-field" ${viewState.tab==='ladder'?'':'hidden'}><span>결과 <small>한 줄에 하나, 모자라면 통과</small></span><textarea name="outcomes" rows="5" maxlength="2000" spellcheck="false">${esc(viewState.outcomes)}</textarea></label></div><div class="picker-stage"></div></div></section>`;
+ root.innerHTML=`<section class="panel picker-panel clay-scene"><div class="panel-heading"><div><h2>뽑기</h2><p>참가할 직원을 누르고 룰렛을 돌리거나 사다리를 타요. 결과는 저장하지 않아요.</p></div></div><nav class="picker-tabs" aria-label="뽑기 방식">${[['wheel','룰렛'],['ladder','사다리타기']].map(([id,title])=>`<button type="button" data-picker-tab="${id}" aria-pressed="${viewState.tab===id}">${title}</button>`).join('')}</nav><div class="picker-body"><div class="picker-people clay-card"><div class="pick-teams" role="group" aria-label="팀 보기">${[['all','전체보기'],...groups.map(g=>[g.id,g.title])].map(([id,title])=>`<button type="button" class="clay-pill" data-pick-team="${esc(id)}" aria-pressed="${viewState.teamTab===id}">${esc(title)}</button>`).join('')}</div><div class="pick-groups"></div><form class="pick-add"><input name="custom" maxlength="20" placeholder="명부에 없는 이름 직접 추가" aria-label="이름 직접 추가" autocomplete="off"><button type="submit" class="clay-pill small">추가</button></form><div class="pick-tools"><p class="picker-count"></p><span><button type="button" class="clay-pill small" data-pick-all>보이는 직원 모두</button><button type="button" class="clay-pill small" data-pick-none>모두 해제</button></span></div><label class="picker-outcomes clay-field" ${viewState.tab==='ladder'?'':'hidden'}><span>결과 <small>한 줄에 하나, 모자라면 통과</small></span><textarea name="outcomes" rows="5" maxlength="2000" spellcheck="false">${esc(viewState.outcomes)}</textarea></label></div><div class="picker-stage"></div></div></section>`;
  const groupsEl=root.querySelector('.pick-groups'),outcomesEl=root.querySelector('[name=outcomes]'),countEl=root.querySelector('.picker-count'),stage=root.querySelector('.picker-stage');
- const visibleGroups=()=>viewState.teamTab==='all'?teamList.map(t=>[t,members(t)]):[[viewState.teamTab,members(viewState.teamTab)]];
+ const visibleGroups=()=>groups.filter(g=>viewState.teamTab==='all'||g.id===viewState.teamTab).map(g=>[g.title,members(g)]);
  function drawPeople(){
   const ids=selectedIds(),n=ids.length,labels=labelsOf(),color=id=>ids.includes(id)?colorOf(ids.indexOf(id),n):'#cfd9ec';
   const toggle=id=>`<button type="button" class="pick-toggle" data-pick-person="${esc(id)}" aria-pressed="${ids.includes(id)}" style="--c:${color(id)}"><span>${esc(labels.get(id))}</span></button>`;
-  const groups=visibleGroups().map(([team,list])=>`<section class="pick-group"><h3>${esc(team)}팀 <small>${list.filter(p=>ids.includes(p.personId)).length}/${list.length}명</small></h3><div class="pick-grid">${list.map(p=>toggle(p.personId)).join('')}</div></section>`).join('')||'<p class="empty">명부에 직원이 없습니다.</p>';
+  const groups=visibleGroups().map(([team,list])=>`<section class="pick-group"><h3>${esc(team)} <small>${list.filter(p=>ids.includes(p.personId)).length}/${list.length}명</small></h3><div class="pick-grid">${list.map(p=>toggle(p.personId)).join('')}</div></section>`).join('')||'<p class="empty">명부에 직원이 없습니다.</p>';
   const custom=viewState.custom.length?`<section class="pick-group pick-custom"><h3>직접 추가 <small>${viewState.custom.filter(e=>ids.includes(e.id)).length}/${viewState.custom.length}명</small></h3><div class="pick-grid">${viewState.custom.map(e=>`<span class="pick-item">${toggle(e.id)}<button type="button" class="pick-remove" data-pick-remove="${esc(e.id)}" aria-label="${esc(e.name)} 삭제">×</button></span>`).join('')}</div></section>`:'';
   groupsEl.innerHTML=groups+custom;
   groupsEl.querySelectorAll('[data-pick-person]').forEach(button=>button.addEventListener('click',()=>togglePerson(button.dataset.pickPerson)));
