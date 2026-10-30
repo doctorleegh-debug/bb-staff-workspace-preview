@@ -2,6 +2,8 @@
 export const EXPENSE_KEY='bb-staff:public-preview:expenses:v1';
 export const EXPENSE_CONFIG_KEY='bb-staff:public-preview:expense-approvers:v1';
 export const STAGES=['팀장','총괄실장','대표이사','대표원장'];
+// 팀 구분 없이 쓰는 공용 물품(직원 음료·원내 비치 물품·소모품). 결재는 신청자 소속 팀의 1차 담당자부터 진행한다.
+export const COMMON_TEAM='공통';
 export const EXPENSE_CATEGORIES=['쿠팡','유니폼','무전기','명찰','우체국','기타'];
 // Ledger start. Requests before this date or more than a year ahead are rejected.
 export const EXPENSE_START='2026-10-01';
@@ -48,12 +50,13 @@ export function approvalRoute(people,config,team,firstId){
 export function submitExpense(storage,people,session,input,{locks,guard=()=>{},now=()=>new Date().toISOString()}={}){
  return locked(EXPENSE_KEY,()=>{
   guard();const person=session?.role==='employee'&&people.find(p=>p.personId===session.personId);if(!person)fail('직원 계정으로 신청해 주세요.');
-  if(!person.teams.includes(input.team))fail('본인이 소속된 팀으로 신청해 주세요.');
+  if(input.team!==COMMON_TEAM&&!person.teams.includes(input.team))fail('본인이 소속된 팀 또는 공통으로 신청해 주세요.');
   const at=now(),limit=new Date(at);limit.setUTCFullYear(limit.getUTCFullYear()+1);
   if(typeof input.date!=='string'||!/^20\d{2}-\d{2}-\d{2}$/.test(input.date)||!Number.isFinite(Date.parse(input.date+'T12:00:00Z'))||new Date(input.date+'T12:00:00Z').toISOString().slice(0,10)!==input.date||input.date<EXPENSE_START||input.date>limit.toISOString().slice(0,10))fail('2026년 10월 이후, 1년 이내의 올바른 사용일을 입력해 주세요.');
   if(!text(input.item,200,true)||!text(input.note??'',2000)||!text(input.payment??'',60)||!EXPENSE_CATEGORIES.includes(input.category)||!numeric(input.unitPrice)||!Number.isSafeInteger(input.quantity)||input.quantity<1||input.quantity>10000||!numeric(input.unitPrice*input.quantity))fail('물품·사용 목적, 단가와 수량을 확인해 주세요.');
-  const route=approvalRoute(people,readExpenseConfig(storage,people),input.team,input.firstId);
-  if(route.some(s=>s.personId===person.personId))fail('신청자가 결재선에 포함되어 있습니다. 관리자에게 대체 결재자 지정을 요청해 주세요.');
+  const route=approvalRoute(people,readExpenseConfig(storage,people),input.team===COMMON_TEAM?person.teams[0]:input.team,input.firstId);
+  const selfStage=route.findIndex(s=>s.personId===person.personId);
+  if(selfStage>=0)fail(`${STAGES[selfStage]} 결재 담당자가 신청자 본인이라 신청할 수 없습니다. ${selfStage===0?'1차 결재 담당자를 다른 분으로 선택해 주세요. 고를 분이 없으면 관리자에게 결재선 설정에서 이 팀의 1차 담당자 변경을 요청해 주세요.':'관리자에게 결재선 설정에서 대체 담당자 지정을 요청해 주세요.'}`);
   const row={id:crypto.randomUUID(),revision:1,applicantId:person.personId,name:person.name,team:input.team,date:input.date,item:input.item.trim(),category:input.category,unitPrice:input.unitPrice,quantity:input.quantity,amount:input.unitPrice*input.quantity,payment:(input.payment||'').trim(),note:(input.note||'').trim(),status:'pending',step:0,route,submittedAt:at,updatedAt:at,history:[{action:'submit',actorId:person.personId,step:0,at,note:''}]};validateRecord(row);
   const rows=readExpenses(storage);rows.push(row);storage.setItem(EXPENSE_KEY,JSON.stringify(rows));return row;
  },locks);

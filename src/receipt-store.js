@@ -1,8 +1,11 @@
 export const RECEIPT_DB='bb-staff:public-preview:receipts:v1';
+import {expandDates} from './schedule-drafts.js';
 export const RECEIPT_SIGNAL='bb-staff:public-preview:receipts:changed:v1';
 export const RETENTION_KEY='bb-staff:public-preview:receipt-retention:v1';
 const TYPES=['image/jpeg','image/png','image/webp'];
 export function validReceiptDate(date){if(!/^20\d{2}-\d{2}-\d{2}$/.test(date))return false;const value=new Date(date+'T12:00:00Z');return Number.isFinite(value.getTime())&&value.toISOString().slice(0,10)===date;}
+// 종료일을 넣으면 사용일부터 종료일까지 매일 한 건씩, 한 번에 최대 31일.
+export function receiptDates(date,end=''){if(!end||end===date)return[date];const dates=expandDates(date,end);if(dates.length>31)throw new Error('한 번에 31일까지 등록할 수 있어요. 종료일을 줄여 주세요.');return dates;}
 export function validateReceipt({personId,date,amount,note='',files=[],allowedMonths}){
  if(!personId||!validReceiptDate(date))throw new Error('직원과 사용일을 확인해 주세요.');
  if(allowedMonths&&!allowedMonths.includes(date.slice(2,4)+date.slice(5,7)))throw new Error('현재 조회 가능한 월의 사용일로 등록해 주세요.');

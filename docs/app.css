@@ -13556,6 +13556,15 @@ body.is-dragging-schedule * {
 :root[data-theme=dark] .nav-card.selected .nav-icon {
   box-shadow: inset 2px 2px 4px rgba(0, 0, 0, .2), 0 0 0 3px rgba(255, 255, 255, .35);
 }
+.nav-card-link {
+  margin-top: 10px;
+  border-style: dashed;
+}
+.nav-icon-guide {
+  --tile-a:#d6ecff;
+  --tile-b:#9fd0ff;
+  --tile-ink:#0f3f73;
+}
 
 /* src/expense.css */
 .expense-intro {
@@ -13871,6 +13880,25 @@ body.is-dragging-schedule * {
 }
 :root[data-theme=dark] .expense-action-hint {
   color: #a6c7ff;
+}
+.expense-route li.is-self {
+  border: 2px solid #ff6b8b;
+  padding: 15px 11px;
+  background: #fff1f4;
+}
+.expense-self-warning {
+  margin: 0 0 18px;
+  border-color: #ffc2d1;
+  background: #fff5f8;
+}
+:root[data-theme=dark] .expense-route li.is-self {
+  background: #4a2a3a;
+  border-color: #ff8aa5;
+}
+:root[data-theme=dark] .expense-self-warning {
+  background: #3a2433;
+  border-color: #6b3a4d;
+  color: var(--ink);
 }
 @media (max-width: 1200px) {
   .expense-filters {
