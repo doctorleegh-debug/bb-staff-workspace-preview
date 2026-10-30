@@ -384,3 +384,90 @@ body.is-dragging-schedule,body.is-dragging-schedule *{user-select:none;cursor:gr
 @media(prefers-reduced-motion:reduce){.more-peek{animation:none}}
 /* 식대 달력 칩도 근무표처럼 끌어서 옮긴다(같은 직원의 다른 날짜 칸으로). */
 .meal-schedule-chip[data-drag-group],.meal-schedule-chip[data-drag-source]{cursor:grab;touch-action:none;user-select:none}.meal-schedule-chip.is-dragging{opacity:.35}.receipt-day.is-drop-target{outline:2px dashed #2563eb;outline-offset:-2px;background:#eaf2ff}
+/* 뽑기: 클레이모피즘(말랑한 입체) 화풍. 참가자는 토글 스위치로 고르고, 휠 조각·토큰·자취가 같은 캔디 색을 쓴다. 결과는 저장하지 않는다. */
+.picker-panel.clay-scene{background:linear-gradient(160deg,#f6f9ff,#eaf0fb);border-color:#dfe7f5}.picker-panel .panel-heading h2{color:#1f2a44}
+.picker-tabs{display:flex;gap:12px;margin:0 26px 20px;flex-wrap:wrap}
+.picker-tabs button,.clay-pill{min-height:46px;padding:10px 22px;border:0;border-radius:999px;background:linear-gradient(145deg,#ffffff,#e7edf9);color:#3b4a6b;font-weight:700;box-shadow:6px 6px 14px rgba(63,84,140,.16),-5px -5px 12px #fff,inset 1px 1px 2px #fff}
+.picker-tabs button:hover,.clay-pill:hover{background:linear-gradient(145deg,#ffffff,#eef3fc)}
+.picker-tabs button[aria-pressed=true],.clay-pill[aria-pressed=true]{background:linear-gradient(145deg,#8fc1ff,#5b93ff);color:#fff;box-shadow:inset 4px 4px 8px rgba(23,43,77,.25),inset -3px -3px 8px rgba(255,255,255,.35),4px 6px 14px rgba(91,147,255,.35)}
+.picker-tabs button[aria-pressed=true]:hover,.clay-pill[aria-pressed=true]:hover{background:linear-gradient(145deg,#9ccaff,#6a9eff)}
+.clay-pill.small{min-height:40px;padding:6px 16px;font-size:15px}
+.picker-body{display:grid;grid-template-columns:minmax(300px,440px) minmax(0,1fr);gap:26px;padding:0 26px 30px}
+.clay-card{border-radius:26px;padding:18px;background:linear-gradient(150deg,#ffffff,#edf2fc);box-shadow:10px 10px 26px rgba(63,84,140,.18),-8px -8px 20px #fff,inset 2px 2px 4px #fff}
+.picker-people{display:flex;flex-direction:column;gap:16px;min-width:0}
+.pick-teams{display:flex;flex-wrap:wrap;gap:10px}
+.pick-group h3{margin:0 0 10px;font-size:16px;color:#3b4a6b}.pick-group h3 small{color:#7b89a6;font-weight:600;margin-left:6px}.pick-group+.pick-group{margin-top:16px}
+.pick-grid{display:flex;flex-wrap:wrap;gap:10px}
+.pick-add{display:flex;gap:8px;align-items:center}.pick-add input{flex:1;min-width:0;border:0;border-radius:999px;background:#f4f7fd;box-shadow:inset 4px 4px 10px rgba(63,84,140,.14),inset -4px -4px 10px #fff;padding:10px 18px;min-height:46px;font-size:15px}
+.pick-item{display:inline-flex;align-items:center;gap:4px}.pick-remove{width:30px;min-width:30px;min-height:30px;padding:0;border:0;border-radius:50%;background:#fff;color:#7b89a6;font-size:18px;line-height:1;box-shadow:3px 3px 8px rgba(63,84,140,.18),-2px -2px 6px #fff}.pick-remove:hover{background:#ffe3ea;color:#ff5c7f}
+/* 토글: 왼쪽 흰 고리 손잡이가 켜면 오른쪽으로 미끄러지고 알약이 그 사람의 색으로 바뀜다. */
+.pick-toggle{position:relative;display:inline-flex;align-items:center;justify-content:center;min-width:140px;min-height:48px;padding:6px 50px;border:0;border-radius:999px;background:#dde5f3;color:#4a5b7a;font-weight:700;font-size:15px;box-shadow:inset 4px 4px 8px rgba(63,84,140,.18),inset -4px -4px 8px #fff,0 5px 12px rgba(63,84,140,.08);transition:background .25s,color .25s,box-shadow .25s;cursor:pointer}
+.pick-toggle:hover{background:#d3dcee}
+.pick-toggle::before{content:"";position:absolute;top:5px;left:5px;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 50% 45%,#e9eef7 0 50%,#ffffff 53%);box-shadow:0 4px 9px rgba(63,84,140,.3),0 1px 0 #fff;transition:left .3s cubic-bezier(.4,1.5,.6,1)}
+.pick-toggle[aria-pressed=true],.pick-toggle[aria-pressed=true]:hover{background:var(--c);color:#1f2a44;box-shadow:inset 4px 4px 8px rgba(0,0,0,.12),inset -4px -4px 8px rgba(255,255,255,.45),0 8px 16px color-mix(in srgb,var(--c) 50%,transparent)}
+.pick-toggle[aria-pressed=true]::before{left:calc(100% - 43px)}
+.pick-toggle span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
+.pick-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.pick-tools>span{display:flex;gap:8px;flex-wrap:wrap}
+.picker-count{margin:0;color:#3b4a6b;font-weight:700}
+.clay-field span small{font-weight:400;color:#7b89a6;margin-left:6px}
+.clay-field textarea{border:0;border-radius:18px;background:#f4f7fd;box-shadow:inset 4px 4px 10px rgba(63,84,140,.14),inset -4px -4px 10px #fff;resize:vertical;line-height:1.6;font-size:16px;padding:12px 16px}
+.picker-stage{display:flex;flex-direction:column;align-items:center;gap:20px;min-width:0}
+.picker-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.picker-actions button{min-height:48px;padding:10px 24px;border:0;border-radius:999px;background:linear-gradient(145deg,#ffffff,#e7edf9);color:#3b4a6b;font-weight:800;box-shadow:6px 6px 14px rgba(63,84,140,.16),-5px -5px 12px #fff}
+.picker-actions button:hover{background:linear-gradient(145deg,#ffffff,#eef3fc)}
+.picker-actions button.primary,.picker-actions button.primary:hover{background:linear-gradient(145deg,#ff9fb4,#ff6b8b);color:#fff;box-shadow:inset 3px 3px 6px rgba(255,255,255,.35),inset -3px -3px 6px rgba(0,0,0,.08),6px 8px 18px rgba(255,107,139,.4)}
+.picker-actions button:disabled{opacity:.5}
+.picker-result{margin:0;font-size:22px;min-height:34px;text-align:center;color:#3b4a6b}.picker-result strong{font-size:30px;color:#ff5c7f;letter-spacing:-.5px}
+/* 룰렛: 캔버스 휠 바깥에 흰 클레이 림·허브·물방울 포인터를 CSS로 얹는다. */
+.wheel-stage{position:relative;width:min(100%,440px);aspect-ratio:1;padding:4%;margin-top:16px}
+.wheel-ring{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffffff,#e4ebf8);box-shadow:12px 12px 30px rgba(63,84,140,.22),-10px -10px 24px #fff,inset 0 0 0 10px #fff,inset 0 0 0 13px #dfe7f5}
+.wheel-box{position:relative;width:100%;height:100%;border-radius:50%;box-shadow:inset 0 0 0 4px #fff}
+.wheel-hub{position:absolute;left:50%;top:50%;width:23%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 40% 35%,#ffffff,#e6ecf8);box-shadow:6px 6px 14px rgba(63,84,140,.3),-4px -4px 10px #fff,inset 0 0 0 5px #fff,inset 0 0 0 7px #e4ebf8;display:grid;place-items:center;font-weight:900;color:#ff5c7f;font-size:clamp(14px,2vw,22px);letter-spacing:-.5px}
+.wheel-pointer{position:absolute;top:-14px;left:50%;width:40px;height:40px;transform:translateX(-50%) rotate(45deg);border-radius:50% 50% 50% 8px;background:linear-gradient(145deg,#ffb3c3,#ff6b8b);box-shadow:4px 4px 10px rgba(255,107,139,.45),inset 2px 2px 4px rgba(255,255,255,.6);z-index:2}
+.wheel-stage.is-spinning .wheel-pointer{animation:pointer-tick .14s ease-in-out infinite alternate}
+@keyframes pointer-tick{from{transform:translateX(-50%) rotate(38deg)}to{transform:translateX(-50%) rotate(52deg)}}
+/* 사다리: 통통한 레일(밑선+하이라이트) 위로 참가자 토큰이 경로를 따라 내려가며 자취를 남긴다. */
+.ladder-scroll{width:100%;overflow-x:auto;padding:6px 0}
+.ladder-board{margin:0 auto;padding:16px 0 18px;border-radius:26px;background:linear-gradient(160deg,#ffffff,#eaf0fb);box-shadow:10px 10px 26px rgba(63,84,140,.18),-8px -8px 20px #fff,inset 2px 2px 4px #fff}
+.ladder-tokens,.ladder-prizes{display:grid}
+.ladder-token{display:flex;flex-direction:column;align-items:center;gap:5px;min-height:0;padding:4px 2px 6px;margin:0 3px;border:0;border-radius:18px;background:transparent;font-size:13px;line-height:1.2;min-width:0;color:#3b4a6b;box-shadow:none}
+.ladder-token:hover{background:rgba(255,255,255,.6)}.ladder-token[aria-pressed=true]{background:#fff;box-shadow:inset 3px 3px 6px rgba(63,84,140,.14),inset -3px -3px 6px #fff}
+.ladder-token i{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.75),transparent 45%),var(--c);color:#1f2a44;font-style:normal;font-weight:900;font-size:16px;box-shadow:4px 4px 10px rgba(63,84,140,.28),-2px -2px 6px #fff}
+.ladder-token span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.ladder-svg{display:block;width:100%;height:auto}
+.ladder-rails line,.ladder-rungs line{stroke:#d3dced;stroke-width:11;stroke-linecap:round}.ladder-rails-hi line,.ladder-rungs-hi line{stroke:#ffffff;stroke-width:3;stroke-linecap:round;opacity:.9}
+.ladder-trail{fill:none;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;opacity:.95}
+.ladder-runner circle.body{stroke:#fff;stroke-width:3;transform-box:fill-box;transform-origin:center}.ladder-runner text{fill:#1f2a44;font-size:13px;font-weight:900;text-anchor:middle;font-family:inherit}
+.ladder-runner.is-done circle.body{animation:runner-land .45s ease-out}
+@keyframes runner-land{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+.ladder-prize{display:grid;place-items:center;min-height:46px;margin:0 3px;padding:6px 6px;border-radius:999px;background:linear-gradient(145deg,#ffffff,#e7edf9);font-weight:800;font-size:14px;color:#6b7a99;box-shadow:5px 5px 12px rgba(63,84,140,.16),-4px -4px 10px #fff;overflow-wrap:anywhere;text-align:center}
+.ladder-prize.is-win{background:linear-gradient(145deg,#fff3a6,#ffd43b);color:#7a5200;box-shadow:5px 5px 14px rgba(255,212,59,.5),-4px -4px 10px #fff}
+.ladder-prize.is-hit{box-shadow:0 0 0 4px var(--hit),6px 6px 14px color-mix(in srgb,var(--hit) 45%,transparent);animation:prize-pop .5s ease-out}
+@keyframes prize-pop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+.ladder-results{list-style:none;padding:0;margin:0;width:100%;max-width:520px;display:grid;gap:10px}
+.ladder-results li{display:flex;justify-content:space-between;gap:12px;border-radius:999px;padding:10px 18px;font-size:16px;background:linear-gradient(145deg,#ffffff,#eef3fc);box-shadow:5px 5px 12px rgba(63,84,140,.12),-4px -4px 10px #fff;color:#3b4a6b}.ladder-results li span{display:flex;align-items:center;gap:8px}.ladder-results li strong{color:#ff5c7f}
+.ladder-dot{width:14px;height:14px;border-radius:50%;background:var(--c);box-shadow:1px 1px 3px rgba(63,84,140,.3);flex-shrink:0}
+@media(max-width:1100px){.picker-body{grid-template-columns:1fr}}
+:root[data-theme=dark] .picker-panel.clay-scene{background:linear-gradient(160deg,#1a2540,#121a2c);border-color:#2b3a58}
+:root[data-theme=dark] :is(.clay-card,.ladder-board,.ladder-results li,.ladder-prize,.picker-tabs button,.clay-pill,.picker-actions button){background:linear-gradient(150deg,#263654,#1b2740);color:#dce6f8;box-shadow:8px 8px 20px rgba(0,0,0,.45),-5px -5px 14px rgba(255,255,255,.05)}
+:root[data-theme=dark] :is(.picker-tabs button[aria-pressed=true],.clay-pill[aria-pressed=true]){background:linear-gradient(145deg,#5b93ff,#3b6fe0);color:#fff}
+:root[data-theme=dark] .picker-actions button.primary{background:linear-gradient(145deg,#ff8aa5,#e8456d);color:#fff}
+:root[data-theme=dark] .pick-toggle{background:#2a3a58;color:#b8c7e6;box-shadow:inset 4px 4px 8px rgba(0,0,0,.4),inset -3px -3px 8px rgba(255,255,255,.06)}:root[data-theme=dark] .pick-toggle:hover{background:#33456a}:root[data-theme=dark] .pick-toggle[aria-pressed=true],:root[data-theme=dark] .pick-toggle[aria-pressed=true]:hover{background:var(--c);color:#1f2a44}
+:root[data-theme=dark] .clay-field textarea{background:#1b2740;color:#dce6f8;box-shadow:inset 4px 4px 10px rgba(0,0,0,.4)}
+:root[data-theme=dark] .pick-add input{background:#1b2740;color:#dce6f8;box-shadow:inset 4px 4px 10px rgba(0,0,0,.4)}:root[data-theme=dark] .pick-remove{background:#263654;color:#b8c7e6;box-shadow:3px 3px 8px rgba(0,0,0,.4)}:root[data-theme=dark] .pick-remove:hover{background:#4a2a3a;color:#ff8aa5}
+:root[data-theme=dark] :is(.picker-count,.pick-group h3,.picker-result,.ladder-token,.picker-panel .panel-heading h2){color:#dce6f8}
+:root[data-theme=dark] :is(.wheel-ring,.wheel-hub){background:radial-gradient(circle at 35% 30%,#2f405f,#1b2740);box-shadow:10px 10px 26px rgba(0,0,0,.5),inset 0 0 0 10px #263654,inset 0 0 0 13px #1b2740}:root[data-theme=dark] .wheel-hub{color:#ff8aa5}:root[data-theme=dark] .wheel-box{box-shadow:inset 0 0 0 4px #263654}
+:root[data-theme=dark] :is(.ladder-rails,.ladder-rungs) line{stroke:#3a4c6e}:root[data-theme=dark] :is(.ladder-rails-hi,.ladder-rungs-hi) line{stroke:#56709a;opacity:.6}
+:root[data-theme=dark] .ladder-token[aria-pressed=true]{background:#1b2740}:root[data-theme=dark] .ladder-prize.is-win{background:linear-gradient(145deg,#ffe27a,#f0b429);color:#5a3b00}
+@media(prefers-reduced-motion:reduce){.wheel-stage.is-spinning .wheel-pointer,.ladder-runner.is-done circle.body,.ladder-prize.is-hit{animation:none}.pick-toggle::before{transition:none}}
+/* 사이드바 맨 아래 뽑기 카드: 업무 메뉴와 구분되는 캔디 색. */
+.nav-card-fun{margin-top:18px;background:linear-gradient(135deg,#fff1f5,#eef4ff);border-color:#ffc2d1;color:#1f2a44}.nav-card-fun .nav-icon{box-shadow:4px 4px 12px rgba(255,107,139,.35),-3px -3px 8px #fff,inset 2px 2px 3px rgba(255,255,255,.6)}.nav-card-fun small{color:#7b5a68}.nav-card-fun:hover{background:linear-gradient(135deg,#ffe4ec,#e4edff)}
+.nav-card-fun.selected,.nav-card-fun.selected:hover{background:linear-gradient(135deg,#ff6b8b,#ff9fb4);border-color:#ff6b8b;color:#fff;box-shadow:0 6px 16px rgba(255,107,139,.35)}.nav-card-fun.selected small{color:#ffe6ec}
+:root[data-theme=dark] .nav-card-fun{background:linear-gradient(135deg,#3a2433,#1d2b43);border-color:#6b3a4d;color:var(--ink)}:root[data-theme=dark] .nav-card-fun small{color:#d8b3c0}:root[data-theme=dark] .nav-card-fun:hover{background:linear-gradient(135deg,#4a2a3f,#263a58)}
+:root[data-theme=dark] .nav-card-fun.selected,:root[data-theme=dark] .nav-card-fun.selected:hover{background:linear-gradient(135deg,#e8456d,#ff8aa5);border-color:#ff8aa5;color:#fff}:root[data-theme=dark] .nav-card-fun.selected small{color:#ffe6ec}
+/* 사이드바 아이콘: 메뉴마다 다른 파스텔 클레이 타일 위에 같은 계열의 진한 선 아이콘. */
+.nav-icon{display:grid;place-items:center;width:46px;height:46px;flex-shrink:0;border-radius:15px;background:linear-gradient(145deg,var(--tile-a),var(--tile-b));color:var(--tile-ink);box-shadow:4px 4px 10px rgba(63,84,140,.18),-3px -3px 8px #fff,inset 2px 2px 3px rgba(255,255,255,.6),inset -2px -2px 4px rgba(0,0,0,.07)}
+.nav-icon svg{width:24px;height:24px;stroke-width:1.9}
+.nav-icon-meal-timer{--tile-a:#ffd9bf;--tile-b:#ffb07c;--tile-ink:#7a3a12}.nav-icon-roster{--tile-a:#c9f3d6;--tile-b:#86dfa8;--tile-ink:#1f5a36}.nav-icon-team-calendar{--tile-a:#cfe4ff;--tile-b:#8dc0ff;--tile-ink:#163c7a}.nav-icon-meals{--tile-a:#fff3b8;--tile-b:#ffd966;--tile-ink:#6b4b00}.nav-icon-team-snacks{--tile-a:#e4daff;--tile-b:#bfa8ff;--tile-ink:#3e2a7a}.nav-icon-expenses{--tile-a:#ffd2df;--tile-b:#ff9fbc;--tile-ink:#7a1f3d}.nav-icon-attendance{--tile-a:#c7f3f8;--tile-b:#7fe0ec;--tile-ink:#0d4a56}.nav-icon-picker{--tile-a:#ffb3c6;--tile-b:#ff6b8b;--tile-ink:#ffffff}.nav-icon-feedback{--tile-a:#e8ddff;--tile-b:#c4abff;--tile-ink:#3a2a6b}.nav-icon-admin-dashboard{--tile-a:#cdf3dc;--tile-b:#8fe0b2;--tile-ink:#1f5a36}.nav-icon-sources{--tile-a:#dde6f5;--tile-b:#aebfdc;--tile-ink:#2b3f66}
+.nav-card.selected .nav-icon{box-shadow:inset 2px 2px 4px rgba(0,0,0,.12),0 0 0 3px rgba(255,255,255,.6)}
+:root[data-theme=dark] .nav-icon{box-shadow:4px 4px 10px rgba(0,0,0,.45),inset 2px 2px 3px rgba(255,255,255,.4)}:root[data-theme=dark] .nav-card.selected .nav-icon{box-shadow:inset 2px 2px 4px rgba(0,0,0,.2),0 0 0 3px rgba(255,255,255,.35)}

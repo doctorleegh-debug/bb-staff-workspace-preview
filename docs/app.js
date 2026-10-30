@@ -2676,12 +2676,12 @@ var ContentInjector = class extends BaseComponent {
       if (customGeneratorRes === true) {
         useDefault = true;
       } else {
-        const isObject = customGeneratorRes && typeof customGeneratorRes === "object";
-        if (isObject && "html" in customGeneratorRes) {
+        const isObject2 = customGeneratorRes && typeof customGeneratorRes === "object";
+        if (isObject2 && "html" in customGeneratorRes) {
           attrs.dangerouslySetInnerHTML = { __html: customGeneratorRes.html };
-        } else if (isObject && "domNodes" in customGeneratorRes) {
+        } else if (isObject2 && "domNodes" in customGeneratorRes) {
           queuedDomNodes = Array.prototype.slice.call(customGeneratorRes.domNodes);
-        } else if (isObject ? i(customGeneratorRes) : typeof customGeneratorRes !== "function") {
+        } else if (isObject2 ? i(customGeneratorRes) : typeof customGeneratorRes !== "function") {
           innerContent = customGeneratorRes;
         } else {
           currentGeneratorMeta = customGeneratorRes;
@@ -13162,8 +13162,8 @@ function restorePreviewSession(storage, people) {
 }
 function allowedRoute(session, route) {
   if (!session) return "login";
-  const employee = ["meal-timer", "roster", "team-calendar", "meals", "team-snacks", "expenses", "attendance"];
-  const admin = ["admin-dashboard", "roster", "team-calendar", "meals", "team-snacks", "expenses", "attendance", "sources", "feedback"];
+  const employee = ["meal-timer", "roster", "team-calendar", "meals", "team-snacks", "picker", "expenses", "attendance"];
+  const admin = ["admin-dashboard", "roster", "team-calendar", "meals", "team-snacks", "picker", "expenses", "attendance", "sources", "feedback"];
   const routes = session.role === "admin" ? admin : employee;
   return routes.includes(route) ? route : routes[0];
 }
@@ -13417,7 +13417,7 @@ function feedbackFile(notes) {
 
 // src/workspace-help.js
 var esc8 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
-var titles = { expenses: "\uC9C0\uCD9C\uACB0\uC758\uC11C", "meal-timer": "\uB0B4 \uD558\uB8E8", roster: "\uADFC\uBB34\uD45C", "team-calendar": "\uD300 \uC77C\uC815", meals: "\uC2DD\uB300", "team-snacks": "\uD300 \uAC04\uC2DD\uBE44", attendance: "OT\xB7\uC9C0\uAC01", "admin-dashboard": "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", sources: "\uAC80\uC218 \uC790\uB8CC", feedback: "\uBA54\uBAA8\uCDE8\uD569" };
+var titles = { expenses: "\uC9C0\uCD9C\uACB0\uC758\uC11C", "meal-timer": "\uB0B4 \uD558\uB8E8", roster: "\uADFC\uBB34\uD45C", "team-calendar": "\uD300 \uC77C\uC815", meals: "\uC2DD\uB300", "team-snacks": "\uD300 \uAC04\uC2DD\uBE44", picker: "\uBF51\uAE30", attendance: "OT\xB7\uC9C0\uAC01", "admin-dashboard": "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", sources: "\uAC80\uC218 \uC790\uB8CC", feedback: "\uBA54\uBAA8\uCDE8\uD569" };
 var drafts = /* @__PURE__ */ new Map();
 var mine = (note, session) => note.role === session.role && (session.role === "admin" || note.personId === session.personId);
 function download(notes) {
@@ -14210,10 +14210,1995 @@ function mealStatusEvents(people, storage) {
   }).sort((a3, b3) => a3.startedAt - b3.startedAt);
 }
 
+// node_modules/spin-wheel/src/util.js
+function getRandomFloat(min = 0, max = 0, round = 14) {
+  return parseFloat((Math.random() * (max - min) + min).toFixed(round));
+}
+function degRad(degrees = 0) {
+  return degrees * Math.PI / 180;
+}
+function isAngleBetween(angle, arcStart, arcEnd) {
+  if (arcStart < arcEnd) return arcStart <= angle && angle < arcEnd;
+  return arcStart <= angle || angle < arcEnd;
+}
+function getFontSizeToFit(text2, fontFamily, maxWidth, canvasContext) {
+  canvasContext.save();
+  canvasContext.font = `1px ${fontFamily}`;
+  const w4 = canvasContext.measureText(text2).width;
+  canvasContext.restore();
+  return maxWidth / w4;
+}
+function isPointInCircle(point = { x: 0, y: 0 }, cx, cy, radius) {
+  const distanceSquared = (point.x - cx) ** 2 + (point.y - cy) ** 2;
+  return distanceSquared <= radius ** 2;
+}
+function translateXYToElement(point = { x: 0, y: 0 }, element = {}, devicePixelRatio = 1) {
+  const rect = element.getBoundingClientRect();
+  return {
+    x: (point.x - rect.left) * devicePixelRatio,
+    y: (point.y - rect.top) * devicePixelRatio
+  };
+}
+function getAngle(originX, originY, targetX, targetY) {
+  const dx = originX - targetX;
+  const dy = originY - targetY;
+  let theta = Math.atan2(-dy, -dx);
+  theta *= 180 / Math.PI;
+  if (theta < 0) theta += 360;
+  return theta;
+}
+function addAngle(a3 = 0, b3 = 0) {
+  const sum = a3 + b3;
+  let result;
+  if (sum > 0) {
+    result = sum % 360;
+  } else {
+    result = 360 + sum % 360;
+  }
+  if (result === 360) result = 0;
+  return result;
+}
+function diffAngle(a3 = 0, b3 = 0) {
+  const offsetFrom180 = 180 - b3;
+  const aWithOffset = addAngle(a3, offsetFrom180);
+  return 180 - aWithOffset;
+}
+function calcWheelRotationForTargetAngle(currentRotation = 0, targetAngle = 0, direction = 1) {
+  let angle = (currentRotation % 360 + targetAngle) % 360;
+  angle = fixFloat(angle);
+  angle = (direction === 1 ? 360 - angle : 360 + angle) % 360;
+  angle *= direction;
+  return currentRotation + angle;
+}
+function isObject(v3) {
+  return typeof v3 === "object" && !Array.isArray(v3) && v3 !== null;
+}
+function isNumber(n2) {
+  return typeof n2 === "number" && !Number.isNaN(n2);
+}
+function setProp({ val, isValid, errorMessage, defaultValue, action = null }) {
+  if (isValid) {
+    return action ? action() : val;
+  } else if (val === void 0) {
+    return defaultValue;
+  }
+  throw new Error(errorMessage);
+}
+function fixFloat(f3 = 0) {
+  return Number(f3.toFixed(9));
+}
+function easeSinOut(n2) {
+  return Math.sin(n2 * Math.PI / 2);
+}
+function getResizeObserver(element = {}, callBack = {}) {
+  if (window.ResizeObserver) {
+    const observer = new ResizeObserver(() => {
+      callBack({ redraw: true });
+    });
+    observer.observe(element);
+    return {
+      stop: () => {
+        observer.unobserve(element);
+        observer.disconnect();
+      }
+    };
+  }
+  window.addEventListener("resize", callBack);
+  return {
+    stop: () => {
+      window.removeEventListener("resize", callBack);
+    }
+  };
+}
+
+// node_modules/spin-wheel/src/constants.js
+var arcAdjust = -90;
+var baseCanvasSize = 500;
+var dragCapturePeriod = 250;
+var AlignText = Object.freeze({
+  left: "left",
+  right: "right",
+  center: "center"
+});
+var Defaults = Object.freeze({
+  wheel: {
+    borderColor: "#000",
+    borderWidth: 1,
+    debug: false,
+    image: null,
+    isInteractive: true,
+    itemBackgroundColors: ["#fff"],
+    itemLabelAlign: AlignText.right,
+    itemLabelBaselineOffset: 0,
+    itemLabelColors: ["#000"],
+    itemLabelFont: "sans-serif",
+    itemLabelFontSizeMax: baseCanvasSize,
+    itemLabelRadius: 0.85,
+    itemLabelRadiusMax: 0.2,
+    itemLabelRotation: 0,
+    itemLabelStrokeColor: "#fff",
+    itemLabelStrokeWidth: 0,
+    items: [],
+    lineColor: "#000",
+    lineWidth: 1,
+    pixelRatio: 0,
+    radius: 0.95,
+    rotation: 0,
+    rotationResistance: -35,
+    rotationSpeedMax: 300,
+    offset: { x: 0, y: 0 },
+    onCurrentIndexChange: null,
+    onRest: null,
+    onSpin: null,
+    overlayImage: null,
+    pointerAngle: 0
+  },
+  item: {
+    backgroundColor: null,
+    image: null,
+    imageOpacity: 1,
+    imageRadius: 0.5,
+    imageRotation: 0,
+    imageScale: 1,
+    label: "",
+    labelColor: null,
+    value: null,
+    weight: 1
+  }
+});
+var Debugging = Object.freeze({
+  pointerLineColor: "#ff00ff",
+  labelBoundingBoxColor: "#ff00ff",
+  labelRadiusColor: "#00ff00",
+  dragPointHue: 300
+});
+
+// node_modules/spin-wheel/src/events.js
+function register(wheel = {}) {
+  registerPointerEvents(wheel);
+  wheel._handler_onResize = getResizeObserver(wheel._canvasContainer, ({ redraw = true }) => {
+    wheel.resize();
+    if (redraw) wheel.draw(performance.now());
+  });
+  const listenForDevicePixelRatioChange = () => {
+    wheel._mediaQueryList = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`);
+    wheel._mediaQueryList.addEventListener("change", wheel._handler_onDevicePixelRatioChange, { once: true });
+  };
+  wheel._handler_onDevicePixelRatioChange = () => {
+    wheel.resize();
+    listenForDevicePixelRatioChange();
+  };
+  listenForDevicePixelRatioChange();
+}
+function unregister(wheel = {}) {
+  const canvas = wheel.canvas;
+  if ("PointerEvent" in window) {
+    canvas.removeEventListener("pointerdown", wheel._handler_onPointerDown);
+    canvas.removeEventListener("pointermove", wheel._handler_onPointerMoveRefreshCursor);
+  } else {
+    canvas.removeEventListener("touchstart", wheel._handler_onTouchStart);
+    canvas.removeEventListener("mousedown", wheel._handler_onMouseDown);
+    canvas.removeEventListener("mousemove", wheel._handler_onMouseMoveRefreshCursor);
+  }
+  wheel._handler_onResize.stop();
+  wheel._mediaQueryList.removeEventListener("change", wheel._handler_onDevicePixelRatioChange);
+}
+function registerPointerEvents(wheel = {}) {
+  const canvas = wheel.canvas;
+  wheel._handler_onPointerMoveRefreshCursor = (e3 = {}) => {
+    const point = {
+      x: e3.clientX,
+      y: e3.clientY
+    };
+    wheel._isCursorOverWheel = wheel.wheelHitTest(point);
+    wheel.refreshCursor();
+  };
+  wheel._handler_onMouseMoveRefreshCursor = (e3 = {}) => {
+    const point = {
+      x: e3.clientX,
+      y: e3.clientY
+    };
+    wheel._isCursorOverWheel = wheel.wheelHitTest(point);
+    wheel.refreshCursor();
+  };
+  wheel._handler_onPointerDown = (e3 = {}) => {
+    const point = {
+      x: e3.clientX,
+      y: e3.clientY
+    };
+    if (!wheel.isInteractive) return;
+    if (!wheel.wheelHitTest(point)) return;
+    e3.preventDefault();
+    wheel.dragStart(point);
+    canvas.setPointerCapture(e3.pointerId);
+    canvas.addEventListener("pointermove", onPointerMove);
+    canvas.addEventListener("pointerup", onPointerUp);
+    canvas.addEventListener("pointercancel", onPointerUp);
+    canvas.addEventListener("pointerout", onPointerUp);
+    function onPointerMove(e4 = {}) {
+      e4.preventDefault();
+      wheel.dragMove({
+        x: e4.clientX,
+        y: e4.clientY
+      });
+    }
+    function onPointerUp(e4 = {}) {
+      e4.preventDefault();
+      canvas.releasePointerCapture(e4.pointerId);
+      canvas.removeEventListener("pointermove", onPointerMove);
+      canvas.removeEventListener("pointerup", onPointerUp);
+      canvas.removeEventListener("pointercancel", onPointerUp);
+      canvas.removeEventListener("pointerout", onPointerUp);
+      wheel.dragEnd();
+    }
+  };
+  wheel._handler_onMouseDown = (e3 = {}) => {
+    const point = {
+      x: e3.clientX,
+      y: e3.clientY
+    };
+    if (!wheel.isInteractive) return;
+    if (!wheel.wheelHitTest(point)) return;
+    wheel.dragStart(point);
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+    function onMouseMove(e4 = {}) {
+      e4.preventDefault();
+      wheel.dragMove({
+        x: e4.clientX,
+        y: e4.clientY
+      });
+    }
+    function onMouseUp(e4 = {}) {
+      e4.preventDefault();
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+      wheel.dragEnd();
+    }
+  };
+  wheel._handler_onTouchStart = (e3 = {}) => {
+    const point = {
+      x: e3.targetTouches[0].clientX,
+      y: e3.targetTouches[0].clientY
+    };
+    if (!wheel.isInteractive) return;
+    if (!wheel.wheelHitTest(point)) return;
+    e3.preventDefault();
+    wheel.dragStart(point);
+    canvas.addEventListener("touchmove", onTouchMove);
+    canvas.addEventListener("touchend", onTouchEnd);
+    canvas.addEventListener("touchcancel", onTouchEnd);
+    function onTouchMove(e4 = {}) {
+      e4.preventDefault();
+      wheel.dragMove({
+        x: e4.targetTouches[0].clientX,
+        y: e4.targetTouches[0].clientY
+      });
+    }
+    function onTouchEnd(e4 = {}) {
+      e4.preventDefault();
+      canvas.removeEventListener("touchmove", onTouchMove);
+      canvas.removeEventListener("touchend", onTouchEnd);
+      canvas.removeEventListener("touchcancel", onTouchEnd);
+      wheel.dragEnd();
+    }
+  };
+  if ("PointerEvent" in window) {
+    canvas.addEventListener("pointerdown", wheel._handler_onPointerDown);
+    canvas.addEventListener("pointermove", wheel._handler_onPointerMoveRefreshCursor);
+  } else {
+    canvas.addEventListener("touchstart", wheel._handler_onTouchStart);
+    canvas.addEventListener("mousedown", wheel._handler_onMouseDown);
+    canvas.addEventListener("mousemove", wheel._handler_onMouseMoveRefreshCursor);
+  }
+}
+
+// node_modules/spin-wheel/src/item.js
+var Item = class {
+  constructor(wheel, props = {}) {
+    if (!isObject(wheel)) throw new Error("wheel must be an instance of Wheel");
+    if (!isObject(props) && props !== null) throw new Error("props must be an Object or null");
+    this._wheel = wheel;
+    for (const i3 of Object.keys(Defaults.item)) {
+      this["_" + i3] = Defaults.item[i3];
+    }
+    if (props) {
+      this.init(props);
+    } else {
+      this.init(Defaults.item);
+    }
+  }
+  /**
+   * Initialise all properties.
+   */
+  init(props = {}) {
+    this.backgroundColor = props.backgroundColor;
+    this.image = props.image;
+    this.imageOpacity = props.imageOpacity;
+    this.imageRadius = props.imageRadius;
+    this.imageRotation = props.imageRotation;
+    this.imageScale = props.imageScale;
+    this.label = props.label;
+    this.labelColor = props.labelColor;
+    this.value = props.value;
+    this.weight = props.weight;
+  }
+  /**
+   * The [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value) of the item's background.
+   * When `null`, the color will fall back to `Wheel.itemBackgroundColors`.
+   * Example: `'#fff'`.
+   */
+  get backgroundColor() {
+    return this._backgroundColor;
+  }
+  set backgroundColor(val) {
+    if (typeof val === "string") {
+      this._backgroundColor = val;
+    } else {
+      this._backgroundColor = Defaults.item.backgroundColor;
+    }
+    this._wheel.refresh();
+  }
+  /**
+   * The image (HTMLImageElement) to draw on the item.
+   * Any part of the image that extends outside the item will be clipped.
+   * The image will be drawn over the top of `Item.backgroundColor`.
+   */
+  get image() {
+    return this._image;
+  }
+  set image(val) {
+    if (val instanceof HTMLImageElement) {
+      this._image = val;
+    } else {
+      this._image = Defaults.item.image;
+    }
+    this._wheel.refresh();
+  }
+  /**
+   * The opacity (as a percent) of `Item.image`.
+   * Useful if you want to fade the image to make the item's label stand out.
+   */
+  get imageOpacity() {
+    return this._imageOpacity;
+  }
+  set imageOpacity(val) {
+    if (typeof val === "number") {
+      this._imageOpacity = val;
+    } else {
+      this._imageOpacity = Defaults.item.imageOpacity;
+    }
+    this._wheel.refresh();
+  }
+  /**
+   * The point along the wheel's radius (as a percent, starting from the center) to draw the center of `Item.image`.
+   */
+  get imageRadius() {
+    return this._imageRadius;
+  }
+  set imageRadius(val) {
+    if (typeof val === "number") {
+      this._imageRadius = val;
+    } else {
+      this._imageRadius = Defaults.item.imageRadius;
+    }
+    this._wheel.refresh();
+  }
+  /**
+   * The rotation (angle in degrees) of `Item.image`.
+   */
+  get imageRotation() {
+    return this._imageRotation;
+  }
+  set imageRotation(val) {
+    if (typeof val === "number") {
+      this._imageRotation = val;
+    } else {
+      this._imageRotation = Defaults.item.imageRotation;
+    }
+    this._wheel.refresh();
+  }
+  /**
+   * The scale (size as a percent) of `Item.image`.
+   */
+  get imageScale() {
+    return this._imageScale;
+  }
+  set imageScale(val) {
+    if (typeof val === "number") {
+      this._imageScale = val;
+    } else {
+      this._imageScale = Defaults.item.imageScale;
+    }
+    this._wheel.refresh();
+  }
+  /**
+   * The text that will be drawn on the item.
+   */
+  get label() {
+    return this._label;
+  }
+  set label(val) {
+    if (typeof val === "string") {
+      this._label = val;
+    } else {
+      this._label = Defaults.item.label;
+    }
+    this._wheel.refresh();
+  }
+  /**
+   * The [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value) of the item's label.
+   * When `null`, the color will fall back to `Wheel.itemLabelColors`.
+   * Example: `'#000'`.
+   */
+  get labelColor() {
+    return this._labelColor;
+  }
+  set labelColor(val) {
+    if (typeof val === "string") {
+      this._labelColor = val;
+    } else {
+      this._labelColor = Defaults.item.labelColor;
+    }
+    this._wheel.refresh();
+  }
+  /**
+   * Some value that has meaning to your application.
+   * For example, a reference to the object representing the item on the wheel, or a database id.
+   */
+  get value() {
+    return this._value;
+  }
+  set value(val) {
+    if (val !== void 0) {
+      this._value = val;
+    } else {
+      this._value = Defaults.item.value;
+    }
+  }
+  /**
+   * The proportional size of the item relative to other items on the wheel.
+   * For example, if you have 2 items where `item[0]` has a weight of `1` and `item[1]` has a weight of `2`,
+   * then `item[0]` will take up 1/3 of the space on the wheel.
+   */
+  get weight() {
+    return this._weight;
+  }
+  set weight(val) {
+    if (typeof val === "number") {
+      this._weight = val;
+    } else {
+      this._weight = Defaults.item.weight;
+    }
+  }
+  /**
+   * Get the 0-based index of this item.
+   */
+  getIndex() {
+    const index4 = this._wheel.items.findIndex((i3) => i3 === this);
+    if (index4 === -1) throw new Error("Item not found in parent Wheel");
+    return index4;
+  }
+  /**
+   * Get the angle (in degrees) that this item ends at (exclusive), ignoring the current `rotation` of the wheel.
+   */
+  getCenterAngle() {
+    const angle = this._wheel.getItemAngles()[this.getIndex()];
+    return angle.start + (angle.end - angle.start) / 2;
+  }
+  /**
+   * Get the angle (in degrees) that this item starts at (inclusive), ignoring the current `rotation` of the wheel.
+   */
+  getStartAngle() {
+    return this._wheel.getItemAngles()[this.getIndex()].start;
+  }
+  /**
+   * Get the angle (in degrees) that this item ends at (inclusive), ignoring the current `rotation` of the wheel.
+   */
+  getEndAngle() {
+    return this._wheel.getItemAngles()[this.getIndex()].end;
+  }
+  /**
+   * Return a random angle (in degrees) between this item's start angle (inclusive) and end angle (inclusive).
+   */
+  getRandomAngle() {
+    return getRandomFloat(this.getStartAngle(), this.getEndAngle());
+  }
+};
+
+// node_modules/spin-wheel/src/wheel.js
+var Wheel = class {
+  /**
+   * Create the wheel inside a container Element and initialise it with props.
+   * `container` must be an Element.
+   * `props` must be an Object or null.
+   */
+  constructor(container, props = {}) {
+    if (!(container instanceof Element)) throw new Error("container must be an instance of Element");
+    if (!isObject(props) && props !== null) throw new Error("props must be an Object or null");
+    this._frameRequestId = null;
+    this._rotationSpeed = 0;
+    this._rotationDirection = 1;
+    this._spinToTimeEnd = null;
+    this._lastSpinFrameTime = null;
+    this._isCursorOverWheel = false;
+    this.add(container);
+    for (const i3 of Object.keys(Defaults.wheel)) {
+      this["_" + i3] = Defaults.wheel[i3];
+    }
+    if (props) {
+      this.init(props);
+    } else {
+      this.init(Defaults.wheel);
+    }
+  }
+  /**
+   * Initialise all properties.
+   */
+  init(props = {}) {
+    this._isInitialising = true;
+    this.borderColor = props.borderColor;
+    this.borderWidth = props.borderWidth;
+    this.debug = props.debug;
+    this.image = props.image;
+    this.isInteractive = props.isInteractive;
+    this.itemBackgroundColors = props.itemBackgroundColors;
+    this.itemLabelAlign = props.itemLabelAlign;
+    this.itemLabelBaselineOffset = props.itemLabelBaselineOffset;
+    this.itemLabelColors = props.itemLabelColors;
+    this.itemLabelFont = props.itemLabelFont;
+    this.itemLabelFontSizeMax = props.itemLabelFontSizeMax;
+    this.itemLabelRadius = props.itemLabelRadius;
+    this.itemLabelRadiusMax = props.itemLabelRadiusMax;
+    this.itemLabelRotation = props.itemLabelRotation;
+    this.itemLabelStrokeColor = props.itemLabelStrokeColor;
+    this.itemLabelStrokeWidth = props.itemLabelStrokeWidth;
+    this.items = props.items;
+    this.lineColor = props.lineColor;
+    this.lineWidth = props.lineWidth;
+    this.pixelRatio = props.pixelRatio;
+    this.rotationSpeedMax = props.rotationSpeedMax;
+    this.radius = props.radius;
+    this.rotation = props.rotation;
+    this.rotationResistance = props.rotationResistance;
+    this.offset = props.offset;
+    this.onCurrentIndexChange = props.onCurrentIndexChange;
+    this.onRest = props.onRest;
+    this.onSpin = props.onSpin;
+    this.overlayImage = props.overlayImage;
+    this.pointerAngle = props.pointerAngle;
+  }
+  /**
+   * Add the wheel to the DOM and register event handlers.
+   */
+  add(container) {
+    this._canvasContainer = container;
+    this.canvas = document.createElement("canvas");
+    this.canvas.style.display = "block";
+    this._context = this.canvas.getContext("2d");
+    this._canvasContainer.append(this.canvas);
+    register(this);
+    if (this._isInitialising === false) this.resize();
+  }
+  /**
+   * Remove the wheel from the DOM and unregister event handlers.
+   */
+  remove() {
+    if (this.canvas === null) return;
+    if (this._frameRequestId !== null) window.cancelAnimationFrame(this._frameRequestId);
+    unregister(this);
+    this._canvasContainer.removeChild(this.canvas);
+    this._canvasContainer = null;
+    this.canvas = null;
+    this._context = null;
+  }
+  /**
+   * Resize the wheel to fit inside it's container.
+   * Call this after changing any property of the wheel that relates to it's size or position.
+   */
+  resize() {
+    if (this.canvas === null) return;
+    this.canvas.style.width = this._canvasContainer.clientWidth + "px";
+    this.canvas.style.height = this._canvasContainer.clientHeight + "px";
+    const [w4, h3] = [
+      this._canvasContainer.clientWidth * this.getActualPixelRatio(),
+      this._canvasContainer.clientHeight * this.getActualPixelRatio()
+    ];
+    this.canvas.width = w4;
+    this.canvas.height = h3;
+    const min = Math.min(w4, h3);
+    const wheelSize = {
+      w: min - min * this._offset.x,
+      h: min - min * this._offset.y
+    };
+    const scale = Math.min(w4 / wheelSize.w, h3 / wheelSize.h);
+    this._size = Math.max(wheelSize.w * scale, wheelSize.h * scale);
+    this._center = {
+      x: w4 / 2 + w4 * this._offset.x,
+      y: h3 / 2 + h3 * this._offset.y
+    };
+    this._actualRadius = this._size / 2 * this.radius;
+    this._itemLabelFontSize = this.itemLabelFontSizeMax * (this._size / baseCanvasSize);
+    this._labelMaxWidth = this._actualRadius * (this.itemLabelRadius - this.itemLabelRadiusMax);
+    if (this.itemLabelAlign === "center") {
+      this._labelMaxWidth *= 2;
+    }
+    for (const item of this._items) {
+      this._itemLabelFontSize = Math.min(this._itemLabelFontSize, getFontSizeToFit(item.label, this.itemLabelFont, this._labelMaxWidth, this._context));
+    }
+    this.refresh();
+  }
+  /**
+   * Main animation loop.
+   */
+  draw(now = 0) {
+    this._frameRequestId = null;
+    if (this._context === null || this.canvas === null) return;
+    const ctx = this._context;
+    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.animateRotation(now);
+    const angles = this.getItemAngles(this._rotation);
+    const actualBorderWidth = this.getScaledNumber(this._borderWidth);
+    ctx.textBaseline = "middle";
+    ctx.textAlign = this.itemLabelAlign;
+    ctx.font = this._itemLabelFontSize + "px " + this.itemLabelFont;
+    for (const [i3, a3] of angles.entries()) {
+      const item = this._items[i3];
+      const path = new Path2D();
+      path.moveTo(this._center.x, this._center.y);
+      path.arc(
+        this._center.x,
+        this._center.y,
+        this._actualRadius - actualBorderWidth / 2,
+        degRad(a3.start + arcAdjust),
+        degRad(a3.end + arcAdjust)
+      );
+      item.path = path;
+    }
+    this.drawItemBackgrounds(ctx, angles);
+    this.drawItemImages(ctx, angles);
+    this.drawItemLines(ctx, angles);
+    this.drawItemLabels(ctx, angles);
+    this.drawBorder(ctx);
+    this.drawImage(ctx, this._image, false);
+    this.drawImage(ctx, this._overlayImage, true);
+    this.drawDebugPointerLine(ctx);
+    this._isInitialising = false;
+  }
+  drawItemBackgrounds(ctx, angles = []) {
+    for (const [i3, a3] of angles.entries()) {
+      const item = this._items[i3];
+      ctx.fillStyle = item.backgroundColor ?? // Fall back to a value from the repeating set:
+      this._itemBackgroundColors[i3 % this._itemBackgroundColors.length];
+      ctx.fill(item.path);
+    }
+  }
+  drawItemImages(ctx, angles = []) {
+    for (const [i3, a3] of angles.entries()) {
+      const item = this._items[i3];
+      if (item.image === null) continue;
+      ctx.save();
+      ctx.clip(item.path);
+      const angle = a3.start + (a3.end - a3.start) / 2;
+      ctx.translate(
+        this._center.x + Math.cos(degRad(angle + arcAdjust)) * (this._actualRadius * item.imageRadius),
+        this._center.y + Math.sin(degRad(angle + arcAdjust)) * (this._actualRadius * item.imageRadius)
+      );
+      ctx.rotate(degRad(angle + item.imageRotation));
+      ctx.globalAlpha = item.imageOpacity;
+      const width = this._size / 500 * item.image.width * item.imageScale;
+      const height = this._size / 500 * item.image.height * item.imageScale;
+      const widthHalf = -width / 2;
+      const heightHalf = -height / 2;
+      ctx.drawImage(
+        item.image,
+        widthHalf,
+        heightHalf,
+        width,
+        height
+      );
+      ctx.restore();
+    }
+  }
+  drawImage(ctx, image, isOverlay = false) {
+    if (image === null) return;
+    ctx.translate(
+      this._center.x,
+      this._center.y
+    );
+    if (!isOverlay) ctx.rotate(degRad(this._rotation));
+    const size = isOverlay ? this._size : this._size * this.radius;
+    const sizeHalf = -(size / 2);
+    ctx.drawImage(
+      image,
+      sizeHalf,
+      sizeHalf,
+      size,
+      size
+    );
+    ctx.resetTransform();
+  }
+  drawDebugPointerLine(ctx) {
+    if (!this.debug) return;
+    ctx.translate(
+      this._center.x,
+      this._center.y
+    );
+    ctx.rotate(degRad(this._pointerAngle + arcAdjust));
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(this._actualRadius * 2, 0);
+    ctx.strokeStyle = Debugging.pointerLineColor;
+    ctx.lineWidth = this.getScaledNumber(2);
+    ctx.stroke();
+    ctx.resetTransform();
+  }
+  drawBorder(ctx) {
+    if (this._borderWidth <= 0) return;
+    const actualBorderWidth = this.getScaledNumber(this._borderWidth);
+    const actualBorderColor = this._borderColor || "transparent";
+    ctx.beginPath();
+    ctx.strokeStyle = actualBorderColor;
+    ctx.lineWidth = actualBorderWidth;
+    ctx.arc(this._center.x, this._center.y, this._actualRadius - actualBorderWidth / 2, 0, 2 * Math.PI);
+    ctx.stroke();
+    if (this.debug) {
+      const actualDebugLineWidth = this.getScaledNumber(1);
+      ctx.beginPath();
+      ctx.strokeStyle = ctx.strokeStyle = Debugging.labelRadiusColor;
+      ctx.lineWidth = actualDebugLineWidth;
+      ctx.arc(this._center.x, this._center.y, this._actualRadius * this.itemLabelRadius, 0, 2 * Math.PI);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.strokeStyle = ctx.strokeStyle = Debugging.labelRadiusColor;
+      ctx.lineWidth = actualDebugLineWidth;
+      ctx.arc(this._center.x, this._center.y, this._actualRadius * this.itemLabelRadiusMax, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+  }
+  drawItemLines(ctx, angles = []) {
+    if (this._lineWidth <= 0) return;
+    const actualLineWidth = this.getScaledNumber(this._lineWidth);
+    const actualBorderWidth = this.getScaledNumber(this._borderWidth);
+    ctx.translate(
+      this._center.x,
+      this._center.y
+    );
+    for (const angle of angles) {
+      ctx.rotate(degRad(angle.start + arcAdjust));
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(this._actualRadius - actualBorderWidth, 0);
+      ctx.strokeStyle = this.lineColor;
+      ctx.lineWidth = actualLineWidth;
+      ctx.stroke();
+      ctx.rotate(-degRad(angle.start + arcAdjust));
+    }
+    ctx.resetTransform();
+  }
+  drawItemLabels(ctx, angles = []) {
+    const actualItemLabelBaselineOffset = this._itemLabelFontSize * -this.itemLabelBaselineOffset;
+    const actualDebugLineWidth = this.getScaledNumber(1);
+    const actualLabelStrokeWidth = this.getScaledNumber(this._itemLabelStrokeWidth * 2);
+    for (const [i3, a3] of angles.entries()) {
+      const item = this._items[i3];
+      const actualLabelColor = item.labelColor || (this._itemLabelColors[i3 % this._itemLabelColors.length] || "transparent");
+      if (item.label.trim() === "" || actualLabelColor === "transparent") continue;
+      ctx.save();
+      ctx.clip(item.path);
+      const angle = a3.start + (a3.end - a3.start) / 2;
+      ctx.translate(
+        this._center.x + Math.cos(degRad(angle + arcAdjust)) * (this._actualRadius * this.itemLabelRadius),
+        this._center.y + Math.sin(degRad(angle + arcAdjust)) * (this._actualRadius * this.itemLabelRadius)
+      );
+      ctx.rotate(degRad(angle + arcAdjust));
+      ctx.rotate(degRad(this.itemLabelRotation));
+      if (this.debug) {
+        ctx.save();
+        let alignAdjust = 0;
+        if (this.itemLabelAlign === "left") {
+          alignAdjust = this._labelMaxWidth;
+        } else if (this.itemLabelAlign === "center") {
+          alignAdjust = this._labelMaxWidth / 2;
+        }
+        ctx.beginPath();
+        ctx.moveTo(alignAdjust, 0);
+        ctx.lineTo(-this._labelMaxWidth + alignAdjust, 0);
+        ctx.strokeStyle = Debugging.labelBoundingBoxColor;
+        ctx.lineWidth = actualDebugLineWidth;
+        ctx.stroke();
+        ctx.strokeRect(alignAdjust, -this._itemLabelFontSize / 2, -this._labelMaxWidth, this._itemLabelFontSize);
+        ctx.restore();
+      }
+      if (this._itemLabelStrokeWidth > 0) {
+        ctx.lineWidth = actualLabelStrokeWidth;
+        ctx.strokeStyle = this._itemLabelStrokeColor;
+        ctx.lineJoin = "round";
+        ctx.strokeText(item.label, 0, actualItemLabelBaselineOffset);
+      }
+      ctx.fillStyle = actualLabelColor;
+      ctx.fillText(item.label, 0, actualItemLabelBaselineOffset);
+      if (this.debug) {
+        const circleDiameter = this.getScaledNumber(2);
+        ctx.beginPath();
+        ctx.arc(0, 0, circleDiameter, 0, 2 * Math.PI);
+        ctx.fillStyle = Debugging.labelRadiusColor;
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+  drawDebugDragPoints(ctx) {
+    if (!this.debug || !this._dragEvents?.length) return;
+    const dragEventsReversed = [...this._dragEvents].reverse();
+    const lineWidth = this.getScaledNumber(0.5);
+    const circleDiameter = this.getScaledNumber(4);
+    for (const [i3, event] of dragEventsReversed.entries()) {
+      const lightnessPercent = i3 / this._dragEvents.length * 100;
+      ctx.beginPath();
+      ctx.arc(event.x, event.y, circleDiameter, 0, 2 * Math.PI);
+      ctx.fillStyle = `hsl(${Debugging.dragPointHue},100%,${lightnessPercent}%)`;
+      ctx.strokeStyle = "#000";
+      ctx.lineWidth = lineWidth;
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+  animateRotation(now = 0) {
+    if (this._spinToTimeEnd !== null) {
+      if (now >= this._spinToTimeEnd) {
+        this.rotation = this._spinToEndRotation;
+        this._spinToTimeEnd = null;
+        this.raiseEvent_onRest();
+        return;
+      }
+      const duration2 = this._spinToTimeEnd - this._spinToTimeStart;
+      let delta = (now - this._spinToTimeStart) / duration2;
+      delta = delta < 0 ? 0 : delta;
+      const distance = this._spinToEndRotation - this._spinToStartRotation;
+      this.rotation = this._spinToStartRotation + distance * this._spinToEasingFunction(delta);
+      this.refresh();
+      return;
+    }
+    if (this._lastSpinFrameTime !== null) {
+      const delta = now - this._lastSpinFrameTime;
+      if (delta > 0) {
+        this.rotation += delta / 1e3 * this._rotationSpeed % 360;
+        this._rotationSpeed = this.getRotationSpeedPlusDrag(delta);
+        if (this._rotationSpeed === 0) {
+          this.raiseEvent_onRest();
+          this._lastSpinFrameTime = null;
+        } else {
+          this._lastSpinFrameTime = now;
+        }
+      }
+      this.refresh();
+      return;
+    }
+  }
+  getRotationSpeedPlusDrag(delta = 0) {
+    const newRotationSpeed = this._rotationSpeed + this.rotationResistance * (delta / 1e3) * this._rotationDirection;
+    if (this._rotationDirection === 1 && newRotationSpeed < 0 || this._rotationDirection === -1 && newRotationSpeed >= 0) {
+      return 0;
+    }
+    return newRotationSpeed;
+  }
+  /**
+   * Spin the wheel by setting `rotationSpeed`.
+   * The wheel will immediately start spinning, and slow down over time depending on the value of `rotationResistance`.
+   * A positive number will spin clockwise, a negative number will spin anti-clockwise.
+   */
+  spin(rotationSpeed = 0) {
+    if (!isNumber(rotationSpeed)) throw new Error("rotationSpeed must be a number");
+    this._dragEvents = [];
+    this.beginSpin(rotationSpeed, "spin");
+  }
+  /**
+   * Spin the wheel to a particular rotation.
+   * The animation will occur over the provided `duration` (milliseconds).
+   * The animation can be adjusted by providing an optional `easingFunction` which accepts a single parameter n, where n is between 0 and 1 inclusive.
+   * If no easing function is provided, the default easeSinOut will be used.
+   * For example easing functions see [easing-utils](https://github.com/AndrewRayCode/easing-utils).
+   */
+  spinTo(rotation = 0, duration2 = 0, easingFunction = null) {
+    if (!isNumber(rotation)) throw new Error("Error: rotation must be a number");
+    if (!isNumber(duration2)) throw new Error("Error: duration must be a number");
+    this.stop();
+    this._dragEvents = [];
+    this.animate(rotation, duration2, easingFunction);
+    this.raiseEvent_onSpin({ method: "spinto", targetRotation: rotation, duration: duration2 });
+  }
+  /**
+   * Spin the wheel to a particular item.
+   * The animation will occur over the provided `duration` (milliseconds).
+   * If `spinToCenter` is true, the wheel will spin to the center of the item, otherwise the wheel will spin to a random angle inside the item.
+   * `numberOfRevolutions` controls how many times the wheel will rotate a full 360 degrees before resting on the item.
+   * `direction` can be `1` (clockwise) or `-1` (anti-clockwise).
+   * The animation can be adjusted by providing an optional `easingFunction` which accepts a single parameter n, where n is between 0 and 1 inclusive.
+   * If no easing function is provided, the default easeSinOut will be used.
+   * For example easing functions see [easing-utils](https://github.com/AndrewRayCode/easing-utils).
+   */
+  spinToItem(itemIndex = 0, duration2 = 0, spinToCenter = true, numberOfRevolutions = 1, direction = 1, easingFunction = null) {
+    this.stop();
+    this._dragEvents = [];
+    const itemAngle = spinToCenter ? this.items[itemIndex].getCenterAngle() : this.items[itemIndex].getRandomAngle();
+    let newRotation = calcWheelRotationForTargetAngle(this.rotation, itemAngle - this._pointerAngle, direction);
+    newRotation += numberOfRevolutions * 360 * direction;
+    this.animate(newRotation, duration2, easingFunction);
+    this.raiseEvent_onSpin({ method: "spintoitem", targetItemIndex: itemIndex, targetRotation: newRotation, duration: duration2 });
+  }
+  animate(newRotation, duration2, easingFunction) {
+    this._spinToStartRotation = this.rotation;
+    this._spinToEndRotation = newRotation;
+    this._spinToTimeStart = performance.now();
+    this._spinToTimeEnd = this._spinToTimeStart + duration2;
+    this._spinToEasingFunction = easingFunction || easeSinOut;
+    this.refresh();
+  }
+  /**
+   * Immediately stop the wheel from spinning, regardless of which method was used to spin it.
+   */
+  stop() {
+    this._spinToTimeEnd = null;
+    this._rotationSpeed = 0;
+    this._lastSpinFrameTime = null;
+  }
+  /**
+   * Return n scaled to the size of the canvas.
+   */
+  getScaledNumber(n2) {
+    return n2 / baseCanvasSize * this._size;
+  }
+  getActualPixelRatio() {
+    return this._pixelRatio !== 0 ? this._pixelRatio : window.devicePixelRatio;
+  }
+  /**
+   * Return true if the given point is inside the wheel.
+   */
+  wheelHitTest(point = { x: 0, y: 0 }) {
+    if (this.canvas === null) return false;
+    const p3 = translateXYToElement(point, this.canvas, this.getActualPixelRatio());
+    return isPointInCircle(p3, this._center.x, this._center.y, this._actualRadius);
+  }
+  /**
+   * Refresh the cursor state.
+   * Call this after the pointer moves.
+   */
+  refreshCursor() {
+    if (this.canvas === null) return;
+    if (this.isInteractive) {
+      if (this.isDragging) {
+        this.canvas.style.cursor = "grabbing";
+        return;
+      }
+      if (this._isCursorOverWheel) {
+        this.canvas.style.cursor = "grab";
+        return;
+      }
+    }
+    this.canvas.style.cursor = "";
+  }
+  /**
+   * Get the angle (in degrees) of the given point from the center of the wheel.
+   * 0 is north.
+   */
+  getAngleFromCenter(point = { x: 0, y: 0 }) {
+    return (getAngle(this._center.x, this._center.y, point.x, point.y) + 90) % 360;
+  }
+  /**
+   * Get the index of the item that the Pointer is pointing at.
+   * An item is considered "current" if `pointerAngle` is between it's start angle (inclusive)
+   * and it's end angle (exclusive).
+   */
+  getCurrentIndex() {
+    return this._currentIndex;
+  }
+  /**
+   * Calculate and set `currentIndex`
+   */
+  refreshCurrentIndex(angles = []) {
+    if (this._items.length === 0) this._currentIndex = -1;
+    for (const [i3, a3] of angles.entries()) {
+      if (!isAngleBetween(this._pointerAngle, a3.start % 360, a3.end % 360)) continue;
+      if (this._currentIndex === i3) break;
+      this._currentIndex = i3;
+      if (!this._isInitialising) this.raiseEvent_onCurrentIndexChange();
+      break;
+    }
+  }
+  /**
+   * Return an array of objects containing the start angle (inclusive) and end angle (inclusive) of each item.
+   */
+  getItemAngles(initialRotation = 0) {
+    let weightSum = 0;
+    for (const i3 of this.items) {
+      weightSum += i3.weight;
+    }
+    const weightedItemAngle = 360 / weightSum;
+    let itemAngle;
+    let lastItemAngle = initialRotation;
+    const angles = [];
+    for (const item of this._items) {
+      itemAngle = item.weight * weightedItemAngle;
+      angles.push({
+        start: lastItemAngle,
+        end: lastItemAngle + itemAngle
+      });
+      lastItemAngle += itemAngle;
+    }
+    if (this._items.length > 1) {
+      angles[angles.length - 1].end = angles[0].start + 360;
+    }
+    return angles;
+  }
+  /**
+   * Schedule a redraw of the wheel on the canvas.
+   * Call this after changing any property of the wheel that relates to it's appearance.
+   */
+  refresh() {
+    if (this._frameRequestId === null) {
+      this._frameRequestId = window.requestAnimationFrame((t3) => this.draw(t3));
+    }
+  }
+  limitSpeed(speed = 0, max = 0) {
+    const newSpeed = Math.min(speed, max);
+    return Math.max(newSpeed, -max);
+  }
+  beginSpin(speed = 0, spinMethod = "") {
+    this.stop();
+    this._rotationSpeed = this.limitSpeed(speed, this._rotationSpeedMax);
+    this._lastSpinFrameTime = performance.now();
+    this._rotationDirection = this._rotationSpeed >= 0 ? 1 : -1;
+    if (this._rotationSpeed !== 0) {
+      this.raiseEvent_onSpin({
+        method: spinMethod,
+        rotationSpeed: this._rotationSpeed,
+        rotationResistance: this._rotationResistance
+      });
+    }
+    this.refresh();
+  }
+  refreshAriaLabel() {
+    if (this.canvas === null) return;
+    this.canvas.setAttribute("role", "img");
+    const wheelDescription = this.items.length >= 2 ? ` The wheel has ${this.items.length} slices.` : "";
+    this.canvas.setAttribute("aria-label", "An image of a spinning prize wheel." + wheelDescription);
+  }
+  /**
+   * The [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value) for the line around the circumference of the wheel.
+   */
+  get borderColor() {
+    return this._borderColor;
+  }
+  set borderColor(val) {
+    this._borderColor = setProp({
+      val,
+      isValid: typeof val === "string",
+      errorMessage: "Wheel.borderColor must be a string",
+      defaultValue: Defaults.wheel.borderColor
+    });
+    this.refresh();
+  }
+  /**
+   * The width (in pixels) of the line around the circumference of the wheel.
+   */
+  get borderWidth() {
+    return this._borderWidth;
+  }
+  set borderWidth(val) {
+    this._borderWidth = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.borderWidth must be a number",
+      defaultValue: Defaults.wheel.borderWidth
+    });
+    this.refresh();
+  }
+  /**
+   * If debugging info will be shown.
+   * This is helpful when positioning labels.
+   */
+  get debug() {
+    return this._debug;
+  }
+  set debug(val) {
+    this._debug = setProp({
+      val,
+      isValid: typeof val === "boolean",
+      errorMessage: "Wheel.debug must be a boolean",
+      defaultValue: Defaults.wheel.debug
+    });
+    this.refresh();
+  }
+  /**
+   * The image (HTMLImageElement) to draw on the wheel and rotate with the wheel.
+   * It will be centered and scaled to fit `Wheel.radius`.
+   */
+  get image() {
+    return this._image;
+  }
+  set image(val) {
+    this._image = setProp({
+      val,
+      isValid: val instanceof HTMLImageElement || val === null,
+      errorMessage: "Wheel.image must be a HTMLImageElement or null",
+      defaultValue: Defaults.wheel.image
+    });
+    this.refresh();
+  }
+  /**
+   * If the user will be allowed to spin the wheel using click-drag/touch-flick.
+   * User interaction will only be detected within the bounds of `Wheel.radius`.
+   */
+  get isInteractive() {
+    return this._isInteractive;
+  }
+  set isInteractive(val) {
+    this._isInteractive = setProp({
+      val,
+      isValid: typeof val === "boolean",
+      errorMessage: "Wheel.isInteractive must be a boolean",
+      defaultValue: Defaults.wheel.isInteractive
+    });
+    this.refreshCursor();
+  }
+  /**
+   * The [CSS colors](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value) to use as a repeating pattern for the background colors of all items.
+   * Overridden by `Item.backgroundColor`.
+   * Example: `['#fff','#000']`.
+   */
+  get itemBackgroundColors() {
+    return this._itemBackgroundColors;
+  }
+  set itemBackgroundColors(val) {
+    this._itemBackgroundColors = setProp({
+      val,
+      isValid: Array.isArray(val),
+      errorMessage: "Wheel.itemBackgroundColors must be an array",
+      defaultValue: Defaults.wheel.itemBackgroundColors
+    });
+    this.refresh();
+  }
+  /**
+   * The alignment of all item labels.
+   * Possible values: `'left'`,`'center'`,`'right'`.
+   */
+  get itemLabelAlign() {
+    return this._itemLabelAlign;
+  }
+  set itemLabelAlign(val) {
+    this._itemLabelAlign = setProp({
+      val,
+      isValid: typeof val === "string" && (val === AlignText.left || val === AlignText.right || val === AlignText.center),
+      errorMessage: "Wheel.itemLabelAlign must be one of Constants.AlignText",
+      defaultValue: Defaults.wheel.itemLabelAlign
+    });
+    this.resize();
+  }
+  /**
+   * The offset of the baseline (or line height) of all item labels (as a percent of the label's height).
+   */
+  get itemLabelBaselineOffset() {
+    return this._itemLabelBaselineOffset;
+  }
+  set itemLabelBaselineOffset(val) {
+    this._itemLabelBaselineOffset = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.itemLabelBaselineOffset must be a number",
+      defaultValue: Defaults.wheel.itemLabelBaselineOffset
+    });
+    this.resize();
+  }
+  /**
+   * The [CSS colors](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value) to use as a repeating pattern for the colors of all item labels.
+   * Overridden by `Item.labelColor`.
+   * Example: `['#fff','#000']`.
+   */
+  get itemLabelColors() {
+    return this._itemLabelColors;
+  }
+  set itemLabelColors(val) {
+    this._itemLabelColors = setProp({
+      val,
+      isValid: Array.isArray(val),
+      errorMessage: "Wheel.itemLabelColors must be an array",
+      defaultValue: Defaults.wheel.itemLabelColors
+    });
+    this.refresh();
+  }
+  /**
+   * The [font familiy](https://developer.mozilla.org/en-US/docs/Web/CSS/font-family) to use for all item labels.
+   * Example: `'Helvetica, sans-serif'`.
+   */
+  get itemLabelFont() {
+    return this._itemLabelFont;
+  }
+  set itemLabelFont(val) {
+    this._itemLabelFont = setProp({
+      val,
+      isValid: typeof val === "string",
+      errorMessage: "Wheel.itemLabelFont must be a string",
+      defaultValue: Defaults.wheel.itemLabelFont
+    });
+    this.resize();
+  }
+  /**
+   * The maximum font size (in pixels) for all item labels.
+   */
+  get itemLabelFontSizeMax() {
+    return this._itemLabelFontSizeMax;
+  }
+  set itemLabelFontSizeMax(val) {
+    this._itemLabelFontSizeMax = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.itemLabelFontSizeMax must be a number",
+      defaultValue: Defaults.wheel.itemLabelFontSizeMax
+    });
+    this.resize();
+  }
+  /**
+   * The point along the wheel's radius (as a percent, starting from the center)
+   * to start drawing all item labels.
+   */
+  get itemLabelRadius() {
+    return this._itemLabelRadius;
+  }
+  set itemLabelRadius(val) {
+    this._itemLabelRadius = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.itemLabelRadius must be a number",
+      defaultValue: Defaults.wheel.itemLabelRadius
+    });
+    this.resize();
+  }
+  /**
+   * The point along the wheel's radius (as a percent, starting from the center)
+   * to limit the maximum width of all item labels.
+   */
+  get itemLabelRadiusMax() {
+    return this._itemLabelRadiusMax;
+  }
+  set itemLabelRadiusMax(val) {
+    this._itemLabelRadiusMax = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.itemLabelRadiusMax must be a number",
+      defaultValue: Defaults.wheel.itemLabelRadiusMax
+    });
+    this.resize();
+  }
+  /**
+   * The rotation of all item labels.
+   * Use this in combination with `itemLabelAlign` to flip the labels `180°`.
+   */
+  get itemLabelRotation() {
+    return this._itemLabelRotation;
+  }
+  set itemLabelRotation(val) {
+    this._itemLabelRotation = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.itemLabelRotation must be a number",
+      defaultValue: Defaults.wheel.itemLabelRotation
+    });
+    this.refresh();
+  }
+  /**
+   * The [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value) of the stroke applied to the outside of the label text.
+   */
+  get itemLabelStrokeColor() {
+    return this._itemLabelStrokeColor;
+  }
+  set itemLabelStrokeColor(val) {
+    this._itemLabelStrokeColor = setProp({
+      val,
+      isValid: typeof val === "string",
+      errorMessage: "Wheel.itemLabelStrokeColor must be a string",
+      defaultValue: Defaults.wheel.itemLabelStrokeColor
+    });
+    this.refresh();
+  }
+  /**
+   * The width of the stroke applied to the outside of the label text.
+   */
+  get itemLabelStrokeWidth() {
+    return this._itemLabelStrokeWidth;
+  }
+  set itemLabelStrokeWidth(val) {
+    this._itemLabelStrokeWidth = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.itemLabelStrokeWidth must be a number",
+      defaultValue: Defaults.wheel.itemLabelStrokeWidth
+    });
+    this.refresh();
+  }
+  /**
+   * The items (or slices, wedges, segments) shown on the wheel.
+   * Setting this property will re-create all of the items on the wheel based on the objects provided.
+   * Accessing this property lets you change individual items. For example you could change the background color of an item.
+   */
+  get items() {
+    return this._items;
+  }
+  set items(val) {
+    this._items = setProp({
+      val,
+      isValid: Array.isArray(val),
+      errorMessage: "Wheel.items must be an array of Items",
+      defaultValue: Defaults.wheel.items,
+      action: () => {
+        const v3 = [];
+        for (const item of val) {
+          v3.push(new Item(this, item));
+        }
+        return v3;
+      }
+    });
+    this.refreshAriaLabel();
+    this.refreshCurrentIndex(this.getItemAngles(this._rotation));
+    this.resize();
+  }
+  /**
+   * The [CSS color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value) of the lines between the items.
+   */
+  get lineColor() {
+    return this._lineColor;
+  }
+  set lineColor(val) {
+    this._lineColor = setProp({
+      val,
+      isValid: typeof val === "string",
+      errorMessage: "Wheel.lineColor must be a string",
+      defaultValue: Defaults.wheel.lineColor
+    });
+    this.refresh();
+  }
+  /**
+   * The width (in pixels) of the lines between the items.
+   */
+  get lineWidth() {
+    return this._lineWidth;
+  }
+  set lineWidth(val) {
+    this._lineWidth = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.lineWidth must be a number",
+      defaultValue: Defaults.wheel.lineWidth
+    });
+    this.refresh();
+  }
+  /**
+   * The offset of the wheel from the center of it's container (as a percent of the wheel's diameter).
+   */
+  get offset() {
+    return this._offset;
+  }
+  set offset(val) {
+    this._offset = setProp({
+      val,
+      isValid: isObject(val),
+      errorMessage: "Wheel.offset must be an object",
+      defaultValue: Defaults.wheel.offset
+    });
+    this.resize();
+  }
+  /**
+   * The callback for the `onCurrentIndexChange` event.
+   */
+  get onCurrentIndexChange() {
+    return this._onCurrentIndexChange;
+  }
+  set onCurrentIndexChange(val) {
+    this._onCurrentIndexChange = setProp({
+      val,
+      isValid: typeof val === "function" || val === null,
+      errorMessage: "Wheel.onCurrentIndexChange must be a function or null",
+      defaultValue: Defaults.wheel.onCurrentIndexChange
+    });
+  }
+  /**
+   * The callback for the `onRest` event.
+   */
+  get onRest() {
+    return this._onRest;
+  }
+  set onRest(val) {
+    this._onRest = setProp({
+      val,
+      isValid: typeof val === "function" || val === null,
+      errorMessage: "Wheel.onRest must be a function or null",
+      defaultValue: Defaults.wheel.onRest
+    });
+  }
+  /**
+   * The callback for the `onSpin` event.
+   */
+  get onSpin() {
+    return this._onSpin;
+  }
+  set onSpin(val) {
+    this._onSpin = setProp({
+      val,
+      isValid: typeof val === "function" || val === null,
+      errorMessage: "Wheel.onSpin must be a function or null",
+      defaultValue: Defaults.wheel.onSpin
+    });
+  }
+  /**
+   * The image (HTMLImageElement) to draw over the top of the wheel.
+   * It will be centered and scaled to fit the container's smallest dimension.
+   * Use this to draw decorations around the wheel, such as a stand or pointer.
+   */
+  get overlayImage() {
+    return this._overlayImage;
+  }
+  set overlayImage(val) {
+    this._overlayImage = setProp({
+      val,
+      isValid: val instanceof HTMLImageElement || val === null,
+      errorMessage: "Wheel.overlayImage must be a HTMLImageElement or null",
+      defaultValue: Defaults.wheel.overlayImage
+    });
+    this.refresh();
+  }
+  /**
+   * The pixel ratio (as a percent) used to draw the wheel.
+   * Higher values will produce a sharper image at the cost of performance, but the sharpness depends on the current display device.
+   * A value of `0` will use the pixel ratio of the current display device (see [devicePixelRatio](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio)).
+   */
+  get pixelRatio() {
+    return this._pixelRatio;
+  }
+  set pixelRatio(val) {
+    this._pixelRatio = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.pixelRatio must be a number",
+      defaultValue: Defaults.wheel.pixelRatio
+    });
+    this._dragEvents = [];
+    this.resize();
+  }
+  /**
+   * The angle of the Pointer which will be used to determine the `currentIndex` (or the "winning" item).
+   */
+  get pointerAngle() {
+    return this._pointerAngle;
+  }
+  set pointerAngle(val) {
+    this._pointerAngle = setProp({
+      val,
+      isValid: isNumber(val) && val >= 0,
+      errorMessage: "Wheel.pointerAngle must be a number between 0 and 360",
+      defaultValue: Defaults.wheel.pointerAngle,
+      action: () => val % 360
+    });
+    if (this.debug) this.refresh();
+  }
+  /**
+   * The radius of the wheel (as a percent of the container's smallest dimension).
+   */
+  get radius() {
+    return this._radius;
+  }
+  set radius(val) {
+    this._radius = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.radius must be a number",
+      defaultValue: Defaults.wheel.radius
+    });
+    this.resize();
+  }
+  /**
+   * The rotation (angle in degrees) of the wheel.
+   * `0` is north.
+   * The first item will be drawn clockwise from this point.
+   */
+  get rotation() {
+    return this._rotation;
+  }
+  set rotation(val) {
+    this._rotation = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.rotation must be a number",
+      defaultValue: Defaults.wheel.rotation
+    });
+    this.refreshCurrentIndex(this.getItemAngles(this._rotation));
+    this.refresh();
+  }
+  /**
+   * The amount that `rotationSpeed` will be reduced by every second until the wheel stops spinning.
+   * Set to `0` to spin the wheel infinitely.
+   */
+  get rotationResistance() {
+    return this._rotationResistance;
+  }
+  set rotationResistance(val) {
+    this._rotationResistance = setProp({
+      val,
+      isValid: isNumber(val),
+      errorMessage: "Wheel.rotationResistance must be a number",
+      defaultValue: Defaults.wheel.rotationResistance
+    });
+  }
+  /**
+   * [Readonly] How fast (angle in degrees) the wheel is spinning every 1 second.
+   * A positive number means the wheel is spinning clockwise, a negative number means anti-clockwise, and `0` means the wheel is not spinning.
+   */
+  get rotationSpeed() {
+    return this._rotationSpeed;
+  }
+  /**
+   * The maximum absolute value for `rotationSpeed`.
+   * The wheel will not spin faster than this value in either direction.
+   */
+  get rotationSpeedMax() {
+    return this._rotationSpeedMax;
+  }
+  set rotationSpeedMax(val) {
+    this._rotationSpeedMax = setProp({
+      val,
+      isValid: isNumber(val) && val >= 0,
+      errorMessage: "Wheel.rotationSpeedMax must be a number >= 0",
+      defaultValue: Defaults.wheel.rotationSpeedMax
+    });
+  }
+  /**
+   * Enter the drag state.
+   */
+  dragStart(point = { x: 0, y: 0 }) {
+    if (this.canvas === null) return;
+    const p3 = translateXYToElement(point, this.canvas, this.getActualPixelRatio());
+    this.isDragging = true;
+    this.stop();
+    this._dragEvents = [{
+      distance: 0,
+      x: p3.x,
+      y: p3.y,
+      now: performance.now()
+    }];
+    this.refreshCursor();
+  }
+  dragMove(point = { x: 0, y: 0 }) {
+    if (this.canvas === null) return;
+    const p3 = translateXYToElement(point, this.canvas, this.getActualPixelRatio());
+    const a3 = this.getAngleFromCenter(p3);
+    const lastDragPoint = this._dragEvents[0];
+    const lastAngle = this.getAngleFromCenter(lastDragPoint);
+    const angleSinceLastMove = diffAngle(lastAngle, a3);
+    this._dragEvents.unshift({
+      distance: angleSinceLastMove,
+      x: p3.x,
+      y: p3.y,
+      now: performance.now()
+    });
+    if (this.debug && this._dragEvents.length >= 40) this._dragEvents.pop();
+    this.rotation += angleSinceLastMove;
+  }
+  /**
+   * Exit the drag state.
+   * Set the rotation speed so the wheel continues to spin in the same direction.
+   */
+  dragEnd() {
+    this.isDragging = false;
+    let dragDistance = 0;
+    const now = performance.now();
+    for (const [i3, event] of this._dragEvents.entries()) {
+      if (!this.isDragEventTooOld(now, event)) {
+        dragDistance += event.distance;
+        continue;
+      }
+      this._dragEvents.length = i3;
+      if (this.debug) this.refresh();
+      break;
+    }
+    this.refreshCursor();
+    if (dragDistance === 0) return;
+    this.beginSpin(dragDistance * (1e3 / dragCapturePeriod), "interact");
+  }
+  isDragEventTooOld(now = 0, event = {}) {
+    return now - event.now > dragCapturePeriod;
+  }
+  raiseEvent_onCurrentIndexChange(data2 = {}) {
+    this.onCurrentIndexChange?.({
+      type: "currentIndexChange",
+      currentIndex: this._currentIndex,
+      ...data2
+    });
+  }
+  raiseEvent_onRest(data2 = {}) {
+    this.onRest?.({
+      type: "rest",
+      currentIndex: this._currentIndex,
+      rotation: this._rotation,
+      ...data2
+    });
+  }
+  raiseEvent_onSpin(data2 = {}) {
+    this.onSpin?.({
+      type: "spin",
+      ...data2
+    });
+  }
+};
+
+// src/ladder-game.js
+var MAX_PLAYERS = 20;
+var MAX_NAME = 20;
+var secureRandom = () => crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32;
+function parseLines(text2, max = MAX_PLAYERS) {
+  return String(text2 ?? "").split(/\r?\n/).map((s3) => s3.trim()).filter(Boolean).slice(0, max).map((s3) => s3.slice(0, MAX_NAME));
+}
+function uniqueLabels(names) {
+  const seen = /* @__PURE__ */ new Map();
+  return names.map((n2) => {
+    const c3 = (seen.get(n2) || 0) + 1;
+    seen.set(n2, c3);
+    return c3 === 1 ? n2 : `${n2} (${c3})`;
+  });
+}
+function pickIndex(count, rng = secureRandom) {
+  if (!(count >= 1)) throw new Error("\uCC38\uAC00\uC790\uB97C \uC785\uB825\uD574 \uC8FC\uC138\uC694.");
+  return Math.min(count - 1, Math.floor(rng() * count));
+}
+function buildLadder(columns, rng = secureRandom, rows = Math.min(16, Math.max(8, 2 * columns))) {
+  if (!(columns >= 2)) throw new Error("2\uBA85 \uC774\uC0C1 \uC785\uB825\uD574 \uC8FC\uC138\uC694.");
+  const rungs = [], has = (row, left) => rungs.some((r3) => r3.row === row && r3.left === left);
+  for (let left = 0; left < columns - 1; left++) {
+    let row;
+    do {
+      row = Math.min(rows - 1, Math.floor(rng() * rows));
+    } while (has(row, left - 1));
+    rungs.push({ row, left });
+  }
+  for (let row = 0; row < rows; row++) for (let left = 0; left < columns - 1; left++) {
+    if (has(row, left) || has(row, left - 1) || has(row, left + 1)) continue;
+    if (rng() < 0.35) rungs.push({ row, left });
+  }
+  rungs.sort((a3, b3) => a3.row - b3.row || a3.left - b3.left);
+  return { columns, rows, rungs };
+}
+function tracePath(ladder, start2) {
+  const has = (row, left) => ladder.rungs.some((r3) => r3.row === row && r3.left === left);
+  let col = start2;
+  const points = [[-1, col]];
+  for (let row = 0; row < ladder.rows; row++) {
+    const step2 = has(row, col) ? 1 : has(row, col - 1) ? -1 : 0;
+    if (!step2) continue;
+    points.push([row, col]);
+    col += step2;
+    points.push([row, col]);
+  }
+  points.push([ladder.rows, col]);
+  return { end: col, points };
+}
+var ladderResults = (ladder) => Array.from({ length: ladder.columns }, (_3, i3) => tracePath(ladder, i3).end);
+
+// src/picker-view.js
+var esc12 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
+var reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+var PALETTE = ["#ff8fa3", "#ffb86b", "#ffe066", "#8ce99a", "#66d9ef", "#74a9ff", "#c3a6ff", "#ffa8a8"];
+var palette = (n2) => {
+  for (const k3 of [8, 7, 6, 5]) if (n2 <= k3 || n2 % k3 !== 1) return PALETTE.slice(0, k3);
+  return PALETTE;
+};
+var colorOf = (i3, n2) => {
+  const p3 = palette(n2);
+  return p3[i3 % p3.length];
+};
+var GAP_X = 84;
+var GAP_Y = 40;
+var PAD = 42;
+var TOP = 18;
+var TOKEN_R = 16;
+var SPEED = 380;
+var SVG = "http://www.w3.org/2000/svg";
+var shortLabel = (name) => name.length > 10 ? name.slice(0, 9) + "\u2026" : name;
+var defaultOutcomes = (count) => ["\uB2F9\uCCA8", ...Array(Math.max(0, count - 1)).fill("\uD1B5\uACFC")].join("\n");
+function mountPicker({ root, session, person, teams, people, viewState, toast: toast2 }) {
+  let disposed = false, wheel = null, spinning = false, epoch = 0;
+  const roster = people.filter((p3) => p3.personId && p3.name);
+  const teamList = [.../* @__PURE__ */ new Set([...teams, ...roster.flatMap((p3) => p3.teams || [])])], members = (team2) => roster.filter((p3) => p3.teams?.includes(team2));
+  if (viewState.selected === void 0) {
+    const home = session.role === "admin" ? teamList[0] || "" : person?.teams?.[0] || person?.rawTeam || teamList[0] || "";
+    const mine2 = members(home).map((p3) => p3.personId).slice(0, MAX_PLAYERS);
+    Object.assign(viewState, { selected: mine2, custom: [], teamTab: teamList.includes(home) ? home : "all", tab: "wheel", outcomes: defaultOutcomes(mine2.length), ladder: null, revealed: [] });
+  }
+  viewState.custom ??= [];
+  const entries = () => [...roster.map((p3) => ({ id: p3.personId, name: p3.name })), ...viewState.custom];
+  const labelsOf = () => {
+    const list = entries();
+    return new Map(uniqueLabels(list.map((e3) => e3.name)).map((label, i3) => [list[i3].id, label]));
+  };
+  const selectedIds = () => entries().filter((e3) => viewState.selected.includes(e3.id)).map((e3) => e3.id).slice(0, MAX_PLAYERS);
+  const names = () => {
+    const labels = labelsOf();
+    return selectedIds().map((id) => labels.get(id));
+  };
+  root.innerHTML = `<section class="panel picker-panel clay-scene"><div class="panel-heading"><div><h2>\uBF51\uAE30</h2><p>\uCC38\uAC00\uD560 \uC9C1\uC6D0\uC744 \uB204\uB974\uACE0 \uB8F0\uB81B\uC744 \uB3CC\uB9AC\uAC70\uB098 \uC0AC\uB2E4\uB9AC\uB97C \uD0C0\uC694. \uACB0\uACFC\uB294 \uC800\uC7A5\uD558\uC9C0 \uC54A\uC544\uC694.</p></div></div><nav class="picker-tabs" aria-label="\uBF51\uAE30 \uBC29\uC2DD">${[["wheel", "\uB8F0\uB81B"], ["ladder", "\uC0AC\uB2E4\uB9AC\uD0C0\uAE30"]].map(([id, title]) => `<button type="button" data-picker-tab="${id}" aria-pressed="${viewState.tab === id}">${title}</button>`).join("")}</nav><div class="picker-body"><div class="picker-people clay-card"><div class="pick-teams" role="group" aria-label="\uD300 \uBCF4\uAE30">${[["all", "\uC804\uCCB4\uBCF4\uAE30"], ...teamList.map((t3) => [t3, t3 + "\uD300"])].map(([id, title]) => `<button type="button" class="clay-pill" data-pick-team="${esc12(id)}" aria-pressed="${viewState.teamTab === id}">${esc12(title)}</button>`).join("")}</div><div class="pick-groups"></div><form class="pick-add"><input name="custom" maxlength="20" placeholder="\uBA85\uBD80\uC5D0 \uC5C6\uB294 \uC774\uB984 \uC9C1\uC811 \uCD94\uAC00" aria-label="\uC774\uB984 \uC9C1\uC811 \uCD94\uAC00" autocomplete="off"><button type="submit" class="clay-pill small">\uCD94\uAC00</button></form><div class="pick-tools"><p class="picker-count"></p><span><button type="button" class="clay-pill small" data-pick-all>\uBCF4\uC774\uB294 \uC9C1\uC6D0 \uBAA8\uB450</button><button type="button" class="clay-pill small" data-pick-none>\uBAA8\uB450 \uD574\uC81C</button></span></div><label class="picker-outcomes clay-field" ${viewState.tab === "ladder" ? "" : "hidden"}><span>\uACB0\uACFC <small>\uD55C \uC904\uC5D0 \uD558\uB098, \uBAA8\uC790\uB77C\uBA74 \uD1B5\uACFC</small></span><textarea name="outcomes" rows="5" maxlength="2000" spellcheck="false">${esc12(viewState.outcomes)}</textarea></label></div><div class="picker-stage"></div></div></section>`;
+  const groupsEl = root.querySelector(".pick-groups"), outcomesEl = root.querySelector("[name=outcomes]"), countEl = root.querySelector(".picker-count"), stage = root.querySelector(".picker-stage");
+  const visibleGroups = () => viewState.teamTab === "all" ? teamList.map((t3) => [t3, members(t3)]) : [[viewState.teamTab, members(viewState.teamTab)]];
+  function drawPeople() {
+    const ids = selectedIds(), n2 = ids.length, labels = labelsOf(), color = (id) => ids.includes(id) ? colorOf(ids.indexOf(id), n2) : "#cfd9ec";
+    const toggle = (id) => `<button type="button" class="pick-toggle" data-pick-person="${esc12(id)}" aria-pressed="${ids.includes(id)}" style="--c:${color(id)}"><span>${esc12(labels.get(id))}</span></button>`;
+    const groups = visibleGroups().map(([team2, list]) => `<section class="pick-group"><h3>${esc12(team2)}\uD300 <small>${list.filter((p3) => ids.includes(p3.personId)).length}/${list.length}\uBA85</small></h3><div class="pick-grid">${list.map((p3) => toggle(p3.personId)).join("")}</div></section>`).join("") || '<p class="empty">\uBA85\uBD80\uC5D0 \uC9C1\uC6D0\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.</p>';
+    const custom = viewState.custom.length ? `<section class="pick-group pick-custom"><h3>\uC9C1\uC811 \uCD94\uAC00 <small>${viewState.custom.filter((e3) => ids.includes(e3.id)).length}/${viewState.custom.length}\uBA85</small></h3><div class="pick-grid">${viewState.custom.map((e3) => `<span class="pick-item">${toggle(e3.id)}<button type="button" class="pick-remove" data-pick-remove="${esc12(e3.id)}" aria-label="${esc12(e3.name)} \uC0AD\uC81C">\xD7</button></span>`).join("")}</div></section>` : "";
+    groupsEl.innerHTML = groups + custom;
+    groupsEl.querySelectorAll("[data-pick-person]").forEach((button) => button.addEventListener("click", () => togglePerson(button.dataset.pickPerson)));
+    groupsEl.querySelectorAll("[data-pick-remove]").forEach((button) => button.addEventListener("click", () => {
+      if (spinning) return;
+      const id = button.dataset.pickRemove;
+      viewState.custom = viewState.custom.filter((e3) => e3.id !== id);
+      setSelected(viewState.selected.filter((x4) => x4 !== id));
+    }));
+  }
+  function addCustom(name) {
+    const trimmed = name.trim().slice(0, 20);
+    if (!trimmed || spinning) return;
+    const id = "custom:" + crypto.randomUUID();
+    viewState.custom = [...viewState.custom, { id, name: trimmed }];
+    if (viewState.selected.length >= MAX_PLAYERS) {
+      toast2(`\uCD94\uAC00\uD588\uC9C0\uB9CC \uCC38\uAC00\uB294 \uCD5C\uB300 ${MAX_PLAYERS}\uBA85\uC774\uB77C \uCF1C\uC9C0 \uC54A\uC558\uC5B4\uC694.`);
+      setSelected(viewState.selected);
+    } else setSelected([...viewState.selected, id]);
+  }
+  function updateCount() {
+    const n2 = selectedIds().length;
+    countEl.textContent = n2 < 2 ? `${n2}\uBA85 \xB7 2\uBA85 \uC774\uC0C1 \uB20C\uB7EC \uC8FC\uC138\uC694` : `${n2}\uBA85 \uCC38\uAC00`;
+  }
+  function setSelected(list) {
+    viewState.selected = list;
+    viewState.ladder = null;
+    viewState.revealed = [];
+    drawPeople();
+    updateCount();
+    drawStage();
+  }
+  function togglePerson(id) {
+    if (spinning) return;
+    const set = new Set(viewState.selected);
+    if (set.has(id)) set.delete(id);
+    else {
+      if (set.size >= MAX_PLAYERS) {
+        toast2(`\uCD5C\uB300 ${MAX_PLAYERS}\uBA85\uAE4C\uC9C0 \uCC38\uAC00\uD560 \uC218 \uC788\uC5B4\uC694.`);
+        return;
+      }
+      set.add(id);
+    }
+    setSelected([...set]);
+  }
+  function removeName(index4) {
+    const id = selectedIds()[index4];
+    if (id) setSelected(viewState.selected.filter((x4) => x4 !== id));
+  }
+  root.querySelectorAll("[data-pick-team]").forEach((button) => button.addEventListener("click", () => {
+    viewState.teamTab = button.dataset.pickTeam;
+    root.querySelectorAll("[data-pick-team]").forEach((b3) => b3.setAttribute("aria-pressed", String(b3 === button)));
+    drawPeople();
+  }));
+  root.querySelector(".pick-add").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const input = event.currentTarget.elements.custom;
+    addCustom(input.value);
+    input.value = "";
+    input.focus();
+  });
+  root.querySelector("[data-pick-all]").addEventListener("click", () => {
+    if (spinning) return;
+    const all = [.../* @__PURE__ */ new Set([...viewState.selected, ...visibleGroups().flatMap(([, list]) => list.map((p3) => p3.personId)), ...viewState.custom.map((e3) => e3.id)])];
+    if (all.length > MAX_PLAYERS) toast2(`\uCD5C\uB300 ${MAX_PLAYERS}\uBA85\uAE4C\uC9C0\uB77C \uC55E\uC758 ${MAX_PLAYERS}\uBA85\uB9CC \uCC38\uAC00\uD574\uC694.`);
+    setSelected(all.slice(0, MAX_PLAYERS));
+  });
+  root.querySelector("[data-pick-none]").addEventListener("click", () => {
+    if (!spinning) setSelected([]);
+  });
+  outcomesEl.addEventListener("input", () => {
+    viewState.outcomes = outcomesEl.value;
+    if (viewState.tab === "ladder") drawStage();
+  });
+  root.querySelectorAll("[data-picker-tab]").forEach((button) => button.addEventListener("click", () => {
+    if (spinning || viewState.tab === button.dataset.pickerTab) return;
+    viewState.tab = button.dataset.pickerTab;
+    root.querySelectorAll("[data-picker-tab]").forEach((b3) => b3.setAttribute("aria-pressed", String(b3 === button)));
+    root.querySelector(".picker-outcomes").hidden = viewState.tab !== "ladder";
+    drawStage();
+  }));
+  function drawStage() {
+    epoch++;
+    if (viewState.tab === "wheel") drawWheel();
+    else {
+      wheel?.remove();
+      wheel = null;
+      drawLadder();
+    }
+  }
+  const wheelItems = (list) => list.map((label, i3) => ({ label: shortLabel(label), backgroundColor: colorOf(i3, list.length), labelColor: "#1f2a44" }));
+  function drawWheel() {
+    const list = names(), ready = list.length >= 2, items = wheelItems(ready ? list : ["?", "?"]);
+    if (!wheel) {
+      stage.innerHTML = `<div class="wheel-stage"><div class="wheel-ring" aria-hidden="true"></div><div class="wheel-box" role="img" aria-label="\uB8F0\uB81B"></div><div class="wheel-hub" aria-hidden="true"><span>\uBF51\uAE30</span></div><div class="wheel-pointer" aria-hidden="true"></div></div><div class="picker-actions"><button type="button" class="primary" data-spin>\uB3CC\uB9AC\uAE30</button><button type="button" data-spin-drop hidden>\uB2F9\uCCA8\uC790 \uBE7C\uACE0 \uB2E4\uC2DC \uB3CC\uB9AC\uAE30</button></div><p class="picker-result" aria-live="polite"></p>`;
+      wheel = new Wheel(stage.querySelector(".wheel-box"), { items, isInteractive: false, pointerAngle: 0, radius: 0.97, itemLabelAlign: "center", itemLabelRadius: 0.68, itemLabelRadiusMax: 0.24, itemLabelFont: "'Noto Sans KR Variable','Noto Sans KR',sans-serif", itemLabelFontSizeMax: 26, itemLabelColors: ["#1f2a44"], lineColor: "#ffffff", lineWidth: 4, borderColor: "#ffffff", borderWidth: 0 });
+      stage.querySelector("[data-spin]").addEventListener("click", spin);
+      stage.querySelector("[data-spin-drop]").addEventListener("click", (event) => {
+        removeName(Number(event.currentTarget.dataset.winner));
+        spin();
+      });
+    } else wheel.items = items;
+    stage.querySelector("[data-spin]").disabled = !ready || spinning;
+    stage.querySelector("[data-spin]").textContent = "\uB3CC\uB9AC\uAE30";
+    stage.querySelector("[data-spin-drop]").hidden = true;
+    stage.querySelector(".picker-result").textContent = "";
+  }
+  function spin() {
+    const list = names();
+    if (list.length < 2 || spinning || !wheel) return;
+    const index4 = pickIndex(list.length), spinButton = stage.querySelector("[data-spin]"), dropButton = stage.querySelector("[data-spin-drop]"), result = stage.querySelector(".picker-result"), wheelStage = stage.querySelector(".wheel-stage");
+    spinning = true;
+    spinButton.disabled = true;
+    dropButton.hidden = true;
+    result.textContent = "\uB3CC\uB9AC\uB294 \uC911";
+    wheelStage.classList.add("is-spinning");
+    const finish = (current) => {
+      if (disposed) return;
+      spinning = false;
+      spinButton.disabled = false;
+      spinButton.textContent = "\uB2E4\uC2DC \uB3CC\uB9AC\uAE30";
+      wheelStage.classList.remove("is-spinning");
+      const winner = list[current] ?? list[index4];
+      result.innerHTML = `<strong>${esc12(winner)}</strong> \uB2D8 \uB2F9\uCCA8`;
+      dropButton.dataset.winner = String(list[current] === void 0 ? index4 : current);
+      dropButton.hidden = list.length <= 2;
+    };
+    if (reducedMotion()) {
+      wheel.onRest = null;
+      wheel.spinToItem(index4, 0, false, 0, 1);
+      finish(wheel.getCurrentIndex());
+      return;
+    }
+    wheel.onRest = (event) => {
+      wheel.onRest = null;
+      finish(event.currentIndex);
+    };
+    wheel.spinToItem(index4, 4200, false, 4, 1);
+  }
+  function drawLadder() {
+    const list = names();
+    if (list.length < 2) {
+      stage.innerHTML = '<p class="empty">\uC9C1\uC6D0\uC744 2\uBA85 \uC774\uC0C1 \uB204\uB974\uBA74 \uC0AC\uB2E4\uB9AC\uAC00 \uB9CC\uB4E4\uC5B4\uC838\uC694.</p>';
+      return;
+    }
+    if (!viewState.ladder || viewState.ladder.columns !== list.length) {
+      viewState.ladder = buildLadder(list.length);
+      viewState.revealed = [];
+    }
+    const ladder = viewState.ladder, n2 = list.length, outcomes = parseLines(viewState.outcomes, Infinity), ends = ladderResults(ladder), revealed = new Set(viewState.revealed), myEpoch = epoch;
+    const width = n2 * GAP_X, height = TOP * 2 + (ladder.rows + 1) * GAP_Y, x4 = (col) => PAD + col * GAP_X, y3 = (row) => TOP + (row + 1) * GAP_Y, outcomeOf = (col) => outcomes[col] || "\uD1B5\uACFC", color = (i3) => colorOf(i3, n2);
+    const rails = list.map((_3, i3) => `<line x1="${x4(i3)}" y1="${y3(-1)}" x2="${x4(i3)}" y2="${y3(ladder.rows)}"/>`).join(""), rungs = ladder.rungs.map((r3) => `<line x1="${x4(r3.left)}" y1="${y3(r3.row)}" x2="${x4(r3.left + 1)}" y2="${y3(r3.row)}"/>`).join("");
+    stage.innerHTML = `<div class="picker-actions"><button type="button" data-ladder-new>\uC0AC\uB2E4\uB9AC \uC0C8\uB85C \uB9CC\uB4E4\uAE30</button><button type="button" class="primary" data-ladder-all>\uBAA8\uB450 \uD0C0\uAE30</button><button type="button" data-ladder-again>\uD55C \uBC88 \uB354</button></div><div class="ladder-scroll"><div class="ladder-board" style="width:${width}px"><div class="ladder-tokens" style="grid-template-columns:repeat(${n2},${GAP_X}px)">${list.map((name, i3) => `<button type="button" class="ladder-token" data-ladder-start="${i3}" style="--c:${color(i3)}" aria-pressed="${revealed.has(i3)}" title="${esc12(name)}"><i>${esc12(name[0])}</i><span>${esc12(name)}</span></button>`).join("")}</div><svg class="ladder-svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" aria-hidden="true"><defs><filter id="ladder-shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="2" dy="3" stdDeviation="2.5" flood-color="#3f548c" flood-opacity=".35"/></filter></defs><g class="ladder-rails">${rails}</g><g class="ladder-rails-hi" transform="translate(-2 0)">${rails}</g><g class="ladder-rungs">${rungs}</g><g class="ladder-rungs-hi" transform="translate(0 -2)">${rungs}</g><g class="ladder-trails"></g><g class="ladder-runners"></g></svg><div class="ladder-prizes" style="grid-template-columns:repeat(${n2},${GAP_X}px)">${list.map((_3, i3) => `<span class="ladder-prize ${outcomeOf(i3) === "\uB2F9\uCCA8" ? "is-win" : ""}" data-ladder-end="${i3}">${esc12(outcomeOf(i3))}</span>`).join("")}</div></div></div><ol class="ladder-results" aria-live="polite">${list.map((name, i3) => `<li data-ladder-row="${i3}"><span><i class="ladder-dot" style="--c:${color(i3)}"></i>${esc12(name)}</span><strong>${revealed.has(i3) ? esc12(outcomeOf(ends[i3])) : "?"}</strong></li>`).join("")}</ol>`;
+    const trails = stage.querySelector(".ladder-trails"), runners = stage.querySelector(".ladder-runners");
+    function runRunner(i3, animate, done) {
+      const px = tracePath(ladder, i3).points.map(([row, col]) => [x4(col), y3(row)]), segs = [];
+      let total = 0;
+      for (let k3 = 1; k3 < px.length; k3++) {
+        const d2 = Math.hypot(px[k3][0] - px[k3 - 1][0], px[k3][1] - px[k3 - 1][1]);
+        segs.push(d2);
+        total += d2;
+      }
+      const trail = document.createElementNS(SVG, "polyline");
+      trail.setAttribute("class", "ladder-trail");
+      trail.style.stroke = color(i3);
+      trails.append(trail);
+      const runner = document.createElementNS(SVG, "g");
+      runner.setAttribute("class", "ladder-runner");
+      runner.innerHTML = `<circle class="body" r="${TOKEN_R}" fill="${color(i3)}" filter="url(#ladder-shadow)"/><circle class="shine" r="5" cx="-5" cy="-6" fill="#fff" opacity=".6"/><text y="5">${esc12(list[i3][0])}</text>`;
+      runners.append(runner);
+      const place = (k3, cx, cy) => {
+        runner.setAttribute("transform", `translate(${cx} ${cy})`);
+        trail.setAttribute("points", [...px.slice(0, k3 + 1), [cx, cy]].map((p3) => p3.join(",")).join(" "));
+      };
+      if (!animate || reducedMotion()) {
+        place(px.length - 1, ...px.at(-1));
+        runner.classList.add("is-done");
+        done();
+        return;
+      }
+      const duration2 = Math.min(4200, Math.max(1300, total / SPEED * 1e3));
+      let start2 = 0;
+      const frame = (now) => {
+        if (disposed || myEpoch !== epoch) return;
+        start2 ||= now;
+        const t3 = Math.min(1, (now - start2) / duration2), dist = total * t3;
+        let acc = 0, k3 = 0;
+        while (k3 < segs.length - 1 && acc + segs[k3] < dist) {
+          acc += segs[k3];
+          k3++;
+        }
+        const [ax, ay] = px[k3], [bx, by] = px[k3 + 1], f3 = segs[k3] ? Math.min(1, (dist - acc) / segs[k3]) : 1;
+        place(k3, ax + (bx - ax) * f3, ay + (by - ay) * f3);
+        if (t3 < 1) requestAnimationFrame(frame);
+        else {
+          runner.classList.add("is-done");
+          done();
+        }
+      };
+      requestAnimationFrame(frame);
+    }
+    const land = (i3) => {
+      const end = ends[i3], prize = stage.querySelector(`[data-ladder-end="${end}"]`);
+      stage.querySelector(`[data-ladder-row="${i3}"] strong`).textContent = outcomeOf(end);
+      prize.style.setProperty("--hit", color(i3));
+      prize.classList.remove("is-hit");
+      void prize.offsetWidth;
+      prize.classList.add("is-hit");
+    };
+    function reveal(i3, animate) {
+      if (revealed.has(i3)) return;
+      revealed.add(i3);
+      viewState.revealed = [...revealed];
+      stage.querySelector(`[data-ladder-start="${i3}"]`).setAttribute("aria-pressed", "true");
+      runRunner(i3, animate, () => {
+        if (!disposed && myEpoch === epoch) land(i3);
+      });
+    }
+    for (const i3 of revealed) runRunner(i3, false, () => land(i3));
+    stage.querySelectorAll("[data-ladder-start]").forEach((button) => button.addEventListener("click", () => reveal(Number(button.dataset.ladderStart), true)));
+    stage.querySelector("[data-ladder-all]").addEventListener("click", () => list.forEach((_3, i3) => setTimeout(() => {
+      if (!disposed && myEpoch === epoch) reveal(i3, true);
+    }, i3 * 160)));
+    stage.querySelector("[data-ladder-new]").addEventListener("click", () => {
+      viewState.ladder = null;
+      viewState.revealed = [];
+      drawStage();
+    });
+    stage.querySelector("[data-ladder-again]").addEventListener("click", () => {
+      viewState.ladder = null;
+      viewState.revealed = [];
+      drawStage();
+      stage.querySelector("[data-ladder-all]").click();
+    });
+  }
+  drawPeople();
+  updateCount();
+  drawStage();
+  return { dispose() {
+    disposed = true;
+    epoch++;
+    wheel?.remove();
+    wheel = null;
+  } };
+}
+
 // src/clinic-app.js
 initializeTheme();
 var app = document.querySelector("#app");
-var esc12 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
+var esc13 = (value) => String(value ?? "").replace(/[&<>"']/g, (c3) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c3]);
 var number = (value) => typeof value === "number" ? value.toLocaleString("ko-KR") : String(value ?? "");
 var objectParticle = (word) => (word.charCodeAt(word.length - 1) - 44032) % 28 ? "\uC744" : "\uB97C";
 var display = (value) => value === "" || value === void 0 || value === null ? "\u2014" : number(value);
@@ -14224,10 +16209,10 @@ var nextDay = (date) => new Date(Date.parse(date + "T12:00:00Z") + 864e5).toISOS
 var monthOf2 = (date) => date.slice(2, 4) + date.slice(5, 7);
 var dateOf2 = (month2, day = 1) => `20${month2.slice(0, 2)}-${month2.slice(2)}-${String(day).padStart(2, "0")}`;
 var monthText = (month2) => `20${month2.slice(0, 2)}\uB144 ${Number(month2.slice(2))}\uC6D4`;
-var menus = [["feedback", "\uBA54\uBAA8\uCDE8\uD569", "\uC9C1\uC6D0\xB7\uAD00\uB9AC\uC790 \uC758\uACAC\uC744 \uD55C\uACF3\uC5D0", "file"], ["admin-dashboard", "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", "\uC9C1\uC6D0 \uC0C1\uD0DC\uC640 \uC6D4\uAC04 \uAE30\uB85D", "chart"], ["team-calendar", "\uD300 \uC77C\uC815", "\uD734\uBB34\uC640 \uD300 \uC77C\uC815\uC744 \uD55C\uB208\uC5D0", "calendar"], ["roster", "\uC9C1\uC6D0\uBCC4 \uADFC\uBB34\uD45C", "\uC9C1\uC6D0 \xD7 \uB0A0\uC9DC\uB85C \uBE44\uAD50", "grid"], ["meal-timer", "\uB0B4 \uD558\uB8E8", "\uADFC\uBB34 \uC0C1\uD0DC\uC640 \uB0B4 \uC5C5\uBB34", "clock"], ["meals", "\uC2DD\uB300", "\uC0AC\uC6A9 \uD55C\uB3C4\uC640 \uC2DD\uB300 \uAE30\uB85D", "meal"], ["team-snacks", "\uD300 \uAC04\uC2DD\uBE44", "\uD300\uBCC4 \uAC04\uC2DD \uC8FC\uBB38\uACFC \uC0AC\uC6A9 \uAE08\uC561", "meal"], ["expenses", "\uC9C0\uCD9C\uACB0\uC758\uC11C", "\uC2E0\uCCAD\uACFC 4\uB2E8\uACC4 \uACB0\uC7AC", "file"], ["attendance", "OT\xB7\uC9C0\uAC01", "\uC774\uC6D4\uBD80\uD130 \uC0AC\uC6A9\xB7\uB9C8\uAC10\uAE4C\uC9C0", "chart"], ["sources", "\uC608\uC2DC\xB7\uAC80\uC99D", "37\uAC1C \uD0ED\uACFC \uC608\uC2DC \uAE30\uB85D \uD655\uC778", "file"]];
-var paths = { calendar: "M5 3v4M19 3v4M3 10h18M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2ZM7 14h2m3 0h2m3 0h1M7 18h2m3 0h2", grid: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z", clock: "M12 8v5l3 2M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z", meal: "M4 3v7m3-7v7M2 7h7M5.5 10v11M18 3c-4 4-4 9 0 9V3Zm0 9v9", chart: "M3 3v18h18M7 17v-6m5 6V7m5 10V4", file: "M14 3H5v18h14V8l-5-5Zm0 0v5h5M8 12h8m-8 4h8" };
+var menus = [["feedback", "\uBA54\uBAA8\uCDE8\uD569", "\uC9C1\uC6D0\xB7\uAD00\uB9AC\uC790 \uC758\uACAC\uC744 \uD55C\uACF3\uC5D0", "file"], ["admin-dashboard", "\uAD00\uB9AC\uC790 \uB300\uC2DC\uBCF4\uB4DC", "\uC9C1\uC6D0 \uC0C1\uD0DC\uC640 \uC6D4\uAC04 \uAE30\uB85D", "chart"], ["team-calendar", "\uD300 \uC77C\uC815", "\uD734\uBB34\uC640 \uD300 \uC77C\uC815\uC744 \uD55C\uB208\uC5D0", "calendar"], ["roster", "\uC9C1\uC6D0\uBCC4 \uADFC\uBB34\uD45C", "\uC9C1\uC6D0 \xD7 \uB0A0\uC9DC\uB85C \uBE44\uAD50", "grid"], ["meal-timer", "\uB0B4 \uD558\uB8E8", "\uADFC\uBB34 \uC0C1\uD0DC\uC640 \uB0B4 \uC5C5\uBB34", "clock"], ["meals", "\uC2DD\uB300", "\uC0AC\uC6A9 \uD55C\uB3C4\uC640 \uC2DD\uB300 \uAE30\uB85D", "meal"], ["team-snacks", "\uD300 \uAC04\uC2DD\uBE44", "\uD300\uBCC4 \uAC04\uC2DD \uC8FC\uBB38\uACFC \uC0AC\uC6A9 \uAE08\uC561", "meal"], ["expenses", "\uC9C0\uCD9C\uACB0\uC758\uC11C", "\uC2E0\uCCAD\uACFC 4\uB2E8\uACC4 \uACB0\uC7AC", "file"], ["attendance", "OT\xB7\uC9C0\uAC01", "\uC774\uC6D4\uBD80\uD130 \uC0AC\uC6A9\xB7\uB9C8\uAC10\uAE4C\uC9C0", "chart"], ["sources", "\uC608\uC2DC\xB7\uAC80\uC99D", "37\uAC1C \uD0ED\uACFC \uC608\uC2DC \uAE30\uB85D \uD655\uC778", "file"], ["picker", "\uBF51\uAE30", "\uB8F0\uB81B\xB7\uC0AC\uB2E4\uB9AC\uB85C \uB2F9\uBC88 \uC815\uD558\uAE30", "dice"]];
+var paths = { calendar: "M5 3v4M19 3v4M3 10h18M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2ZM7 14h2m3 0h2m3 0h1M7 18h2m3 0h2", grid: "M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z", clock: "M12 8v5l3 2M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0Z", meal: "M4 3v7m3-7v7M2 7h7M5.5 10v11M18 3c-4 4-4 9 0 9V3Zm0 9v9", chart: "M3 3v18h18M7 17v-6m5 6V7m5 10V4", file: "M14 3H5v18h14V8l-5-5Zm0 0v5h5M8 12h8m-8 4h8", dice: "M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2ZM8.5 8.5h.01M15.5 8.5h.01M12 12h.01M8.5 15.5h.01M15.5 15.5h.01" };
 var icon = (key) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[key] || paths.file}"/></svg>`;
-var badge = (label, cls = "") => `<span class="badge ${cls}">${esc12(label)}</span>`;
+var badge = (label, cls = "") => `<span class="badge ${cls}">${esc13(label)}</span>`;
 var swatch = (color) => /^[A-Fa-f0-9]{6}$/.test(color || "") ? `<i class="swatch" style="--source-color:#${color}" title="\uC608\uC2DC \uC0C9\uC0C1 #${color}" aria-label="\uC608\uC2DC \uC0C9\uC0C1 #${color}"></i>` : "";
 var data;
 var calendar;
@@ -14249,6 +16234,7 @@ var feedbackViewState = {};
 var guideViewState = {};
 var dutyViewState = {};
 var expenseViewState = {};
+var pickerViewState = {};
 var LOCAL_KEY = "bb-staff:public-preview:v1";
 var authSession = null;
 var employees = [];
@@ -14264,6 +16250,7 @@ var signedInPerson;
 var receiptController;
 var snackController;
 var expenseController;
+var pickerController;
 var mealTransitionFrom = "";
 function changeSession(session) {
   sessionRevision++;
@@ -14289,7 +16276,7 @@ function changeSession(session) {
   sourcePage = 0;
   calendarTab = "leave";
   month = data.months.includes(monthOf2(today2())) ? monthOf2(today2()) : data.months.at(-1);
-  for (const state of [receiptViewState, feedbackViewState, guideViewState, dutyViewState, expenseViewState]) for (const key of Object.keys(state)) delete state[key];
+  for (const state of [receiptViewState, feedbackViewState, guideViewState, dutyViewState, expenseViewState, pickerViewState]) for (const key of Object.keys(state)) delete state[key];
   try {
     if (session) sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
     else sessionStorage.removeItem(SESSION_KEY);
@@ -14369,13 +16356,13 @@ async function removeDraftGroup(groupId, validate = () => {
   return navigator.locks ? navigator.locks.request(LOCAL_KEY, work) : work();
 }
 function sourceButton(source, label = "\uC608\uC2DC \uBCF4\uAE30") {
-  return source ? `<button class="text-button" data-source="${esc12(JSON.stringify(source))}">${esc12(label)} \u2197</button>` : "";
+  return source ? `<button class="text-button" data-source="${esc13(JSON.stringify(source))}">${esc13(label)} \u2197</button>` : "";
 }
 function metric2(label, value, detail = "") {
-  return `<div class="metric"><span>${esc12(label)}</span><strong>${esc12(value)}</strong><small>${esc12(detail)}</small></div>`;
+  return `<div class="metric"><span>${esc13(label)}</span><strong>${esc13(value)}</strong><small>${esc13(detail)}</small></div>`;
 }
 function empty2(message = "\uC120\uD0DD\uD55C \uC870\uAC74\uC758 \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.") {
-  return `<div class="empty">${esc12(message)}</div>`;
+  return `<div class="empty">${esc13(message)}</div>`;
 }
 function teamOptions() {
   return [...new Set([...data.roster, ...data.mealRows, ...data.otRows].filter((r3) => r3.month === month).flatMap((r3) => r3.teams))];
@@ -14384,10 +16371,10 @@ function shell() {
   const personal = previewMode === "employee", titles2 = { roster: ["\uB0B4 \uADFC\uBB34\uD45C", "\uB098\uC758 \uD734\uBB34\uC640 \uADFC\uBB34 \uC77C\uC815"], meals: ["\uB0B4 \uC2DD\uB300", "\uC0AC\uC6A9 \uD55C\uB3C4\uC640 \uC794\uC561, \uC2DD\uB300 \uAE30\uB85D"], attendance: ["\uB0B4 OT\xB7\uC9C0\uAC01", "\uB098\uC758 \uC6D4\uBCC4 \uAE30\uB85D"] };
   const shownMenus = menus.map((m3) => personal && titles2[m3[0]] ? [m3[0], ...titles2[m3[0]], m3[3]] : m3), current = shownMenus.find((m3) => m3[0] === view), teams = teamOptions(), visibleMenus = shownMenus.filter((m3) => personal ? !["admin-dashboard", "sources", "feedback"].includes(m3[0]) : m3[0] !== "meal-timer");
   if (personal) {
-    const order = ["meal-timer", "roster", "team-calendar", "meals", "team-snacks", "expenses", "attendance"];
+    const order = ["meal-timer", "roster", "team-calendar", "meals", "team-snacks", "expenses", "attendance", "picker"];
     visibleMenus.sort((a3, b3) => order.indexOf(a3[0]) - order.indexOf(b3[0]));
   }
-  app.innerHTML = `<aside class="sidebar"><a class="brand" href="#/${personal ? "meal-timer" : "admin-dashboard"}"><img class="brand-mark" src="./assets/clinic-logo.png" width="52" height="52" alt="\uBDF0\uD2F0\uBE14\uB77C\uC378 \uB85C\uACE0"><span>\uBDF0\uD2F0\uBE14\uB77C\uC378<small>\uD568\uAED8\uD558\uB294 \uD558\uB8E8</small></span></a><div class="nav-caption">${personal ? "\uB098\uC758 \uC5C5\uBB34" : "\uC9C1\uC6D0 \uC5C5\uBB34 \uAD00\uB9AC"}</div><nav aria-label="\uC9C1\uC6D0 \uC5C5\uBB34 \uBA54\uB274">${visibleMenus.map(([id, title, desc, key]) => `<a class="nav-card ${view === id ? "selected" : ""}" href="#/${id}" ${view === id ? 'aria-current="page"' : ""}>${icon(key)}<span><strong>${title}</strong><small>${desc}</small></span><span class="nav-arrow">\u203A</span></a>`).join("")}</nav><div class="sidebar-note"><span class="status-dot"></span>${personal ? esc12(signedInPerson.name) + " \uB2D8" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}<small>${personal ? esc12(signedInPerson.rawTeam) + " \xB7 \uD14C\uC2A4\uD2B8 \uB85C\uADF8\uC778" : "\uC9C1\uC6D0 \uC0C1\uD0DC \xB7 \uAE30\uB85D \xB7 \uC601\uC218\uC99D"}</small></div></aside><div class="main"><header class="topbar"><span class="login-role-badge">${personal ? "\uC9C1\uC6D0 \uD654\uBA74" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}</span><span class="signed-in-person">${personal ? esc12(signedInPerson.name) + " \uB2D8 \xB7 " + esc12(signedInPerson.rawTeam) : "\uBDF0\uD2F0\uBE14\uB77C\uC378 \uAD00\uB9AC\uC790"}</span>${themeControl()}<span class="date-label">${new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric", weekday: "long" }).format(/* @__PURE__ */ new Date())}</span><span id="help-launcher" class="help-launcher-slot"></span><button type="button" class="logout-button" data-action="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v16h5M14 8l4 4-4 4M8 12h12"/></svg><span>\uB85C\uADF8\uC544\uC6C3</span></button></header><main><div id="workspace-help"></div><div class="page-heading"><div><h1>${current[1]}</h1><p>${current[2]}</p></div>${view === "admin-dashboard" ? '<button class="primary" data-action="staff-leave">+ \uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D</button>' : ["sources", "meal-timer", "feedback", "team-snacks", "expenses"].includes(view) ? "" : `<button class="primary" data-action="${personal && view === "meals" ? "receipt-new" : "new"}">+ ${view === "meals" ? "\uC2DD\uB300" : view === "attendance" ? "OT\xB7\uC9C0\uAC01" : "\uC77C\uC815"} \uB4F1\uB85D</button>`}</div>${["meal-timer", "feedback", "expenses"].includes(view) ? "" : `<section class="filters" aria-label="\uC870\uD68C \uD544\uD130"><div class="filter-top"><label class="month-field">\uC870\uD68C \uC6D4<select id="month-filter">${data.months.map((m3) => `<option value="${m3}" ${m3 === month ? "selected" : ""}>${monthText(m3)}</option>`).join("")}</select></label>${personalView() ? `<p class="personal-filter-note">${esc12(signedInPerson.name)} \uB2D8\uC758 \uAE30\uB85D\uC785\uB2C8\uB2E4.</p>` : `<label class="search-field">\uC9C1\uC6D0 \uCC3E\uAE30<input id="staff-search" type="search" value="${esc12(search)}" placeholder="\uC9C1\uC6D0 \uC774\uB984 \uB610\uB294 \uD300" maxlength="100"></label><label class="team-field">\uD300 \uC120\uD0DD<select id="team-filter">${["\uC804\uCCB4", ...teams].map((t3) => `<option value="${esc12(t3)}" ${team === t3 ? "selected" : ""}>${esc12(t3)}${t3 === "\uC804\uCCB4" ? "" : "\uD300"}</option>`).join("")}</select></label><span class="filter-note">\uD654\uBA74\uC744 \uBC14\uAFD4\uB3C4 \uC6D4\uACFC \uD300\uC774 \uC720\uC9C0\uB3FC\uC694.</span>`}</div></section>`}<div id="content" aria-live="polite"></div></main><footer>\uBDF0\uD2F0\uBE14\uB77C\uC378 \uC9C1\uC6D0 \uC5C5\uBB34 \xB7 \uC608\uC2DC \uAC00\uC838\uC628 \uB0A0\uC9DC ${esc12(data.importedAt?.slice(0, 10))}<span>\uCD94\uAC00\uD55C \uAE30\uB85D\uACFC \uC0AC\uC9C4\uC740 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</span></footer></div>`;
+  app.innerHTML = `<aside class="sidebar"><a class="brand" href="#/${personal ? "meal-timer" : "admin-dashboard"}"><img class="brand-mark" src="./assets/clinic-logo.png" width="52" height="52" alt="\uBDF0\uD2F0\uBE14\uB77C\uC378 \uB85C\uACE0"><span>\uBDF0\uD2F0\uBE14\uB77C\uC378<small>\uD568\uAED8\uD558\uB294 \uD558\uB8E8</small></span></a><div class="nav-caption">${personal ? "\uB098\uC758 \uC5C5\uBB34" : "\uC9C1\uC6D0 \uC5C5\uBB34 \uAD00\uB9AC"}</div><nav aria-label="\uC9C1\uC6D0 \uC5C5\uBB34 \uBA54\uB274">${visibleMenus.map(([id, title, desc, key]) => `<a class="nav-card ${view === id ? "selected" : ""} ${id === "picker" ? "nav-card-fun" : ""}" href="#/${id}" ${view === id ? 'aria-current="page"' : ""}><span class="nav-icon nav-icon-${id}">${icon(key)}</span><span><strong>${title}</strong><small>${desc}</small></span><span class="nav-arrow">\u203A</span></a>`).join("")}</nav><div class="sidebar-note"><span class="status-dot"></span>${personal ? esc13(signedInPerson.name) + " \uB2D8" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}<small>${personal ? esc13(signedInPerson.rawTeam) + " \xB7 \uD14C\uC2A4\uD2B8 \uB85C\uADF8\uC778" : "\uC9C1\uC6D0 \uC0C1\uD0DC \xB7 \uAE30\uB85D \xB7 \uC601\uC218\uC99D"}</small></div></aside><div class="main"><header class="topbar"><span class="login-role-badge">${personal ? "\uC9C1\uC6D0 \uD654\uBA74" : "\uAD00\uB9AC\uC790 \uD654\uBA74"}</span><span class="signed-in-person">${personal ? esc13(signedInPerson.name) + " \uB2D8 \xB7 " + esc13(signedInPerson.rawTeam) : "\uBDF0\uD2F0\uBE14\uB77C\uC378 \uAD00\uB9AC\uC790"}</span>${themeControl()}<span class="date-label">${new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric", weekday: "long" }).format(/* @__PURE__ */ new Date())}</span><span id="help-launcher" class="help-launcher-slot"></span><button type="button" class="logout-button" data-action="logout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H4v16h5M14 8l4 4-4 4M8 12h12"/></svg><span>\uB85C\uADF8\uC544\uC6C3</span></button></header><main><div id="workspace-help"></div><div class="page-heading"><div><h1>${current[1]}</h1><p>${current[2]}</p></div>${view === "admin-dashboard" ? '<button class="primary" data-action="staff-leave">+ \uC9C1\uC6D0 \uD734\uBB34 \uB4F1\uB85D</button>' : ["sources", "meal-timer", "feedback", "team-snacks", "picker", "expenses"].includes(view) ? "" : `<button class="primary" data-action="${personal && view === "meals" ? "receipt-new" : "new"}">+ ${view === "meals" ? "\uC2DD\uB300" : view === "attendance" ? "OT\xB7\uC9C0\uAC01" : "\uC77C\uC815"} \uB4F1\uB85D</button>`}</div>${["meal-timer", "feedback", "picker", "expenses"].includes(view) ? "" : `<section class="filters" aria-label="\uC870\uD68C \uD544\uD130"><div class="filter-top"><label class="month-field">\uC870\uD68C \uC6D4<select id="month-filter">${data.months.map((m3) => `<option value="${m3}" ${m3 === month ? "selected" : ""}>${monthText(m3)}</option>`).join("")}</select></label>${personalView() ? `<p class="personal-filter-note">${esc13(signedInPerson.name)} \uB2D8\uC758 \uAE30\uB85D\uC785\uB2C8\uB2E4.</p>` : `<label class="search-field">\uC9C1\uC6D0 \uCC3E\uAE30<input id="staff-search" type="search" value="${esc13(search)}" placeholder="\uC9C1\uC6D0 \uC774\uB984 \uB610\uB294 \uD300" maxlength="100"></label><label class="team-field">\uD300 \uC120\uD0DD<select id="team-filter">${["\uC804\uCCB4", ...teams].map((t3) => `<option value="${esc13(t3)}" ${team === t3 ? "selected" : ""}>${esc13(t3)}${t3 === "\uC804\uCCB4" ? "" : "\uD300"}</option>`).join("")}</select></label><span class="filter-note">\uD654\uBA74\uC744 \uBC14\uAFD4\uB3C4 \uC6D4\uACFC \uD300\uC774 \uC720\uC9C0\uB3FC\uC694.</span>`}</div></section>`}<div id="content" aria-live="polite"></div></main><footer>\uBDF0\uD2F0\uBE14\uB77C\uC378 \uC9C1\uC6D0 \uC5C5\uBB34 \xB7 \uC608\uC2DC \uAC00\uC838\uC628 \uB0A0\uC9DC ${esc13(data.importedAt?.slice(0, 10))}<span>\uCD94\uAC00\uD55C \uAE30\uB85D\uACFC \uC0AC\uC9C4\uC740 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uB429\uB2C8\uB2E4.</span></footer></div>`;
 }
 function render() {
   hideMorePeek();
@@ -14399,6 +16386,8 @@ function render() {
   receiptController = null;
   snackController?.dispose();
   snackController = null;
+  pickerController?.dispose();
+  pickerController = null;
   expenseController?.dispose();
   expenseController = null;
   helpController?.dispose();
@@ -14424,7 +16413,7 @@ function render() {
   try {
     ({ feedback: (root) => {
       feedbackController = mountFeedbackCollection(root, { people: employees, toast, viewState: feedbackViewState });
-    }, "admin-dashboard": (root) => renderMealManager(root, retainedFeedback), "team-calendar": renderCalendar, roster: renderRoster, "meal-timer": renderTimers, meals: renderMeals, "team-snacks": renderSnacks, expenses: renderExpenses, attendance: renderAttendance, sources: renderSources })[view](content);
+    }, "admin-dashboard": (root) => renderMealManager(root, retainedFeedback), "team-calendar": renderCalendar, roster: renderRoster, "meal-timer": renderTimers, meals: renderMeals, "team-snacks": renderSnacks, picker: renderPicker, expenses: renderExpenses, attendance: renderAttendance, sources: renderSources })[view](content);
     labelMobileTables(content);
   } catch (error) {
     retainedFeedback?.controller?.dispose();
@@ -14476,6 +16465,9 @@ function renderExpenses(content) {
 function renderSnacks(content) {
   snackController = mountSnacks({ root: content, session: authSession, person: signedInPerson, teams: teamOptions(), months: data.months, month, team, search, toast });
 }
+function renderPicker(content) {
+  pickerController = mountPicker({ root: content, session: authSession, person: signedInPerson, teams: teamOptions(), people: employees, viewState: pickerViewState, toast });
+}
 var calendarTabs = () => `<nav class="calendar-tabs" aria-label="\uCE98\uB9B0\uB354 \uC120\uD0DD">${[["leave", "\uD734\uBB34 \uCE98\uB9B0\uB354"], ["status", "\uC0C1\uD0DC \uCE98\uB9B0\uB354"]].map(([id, title]) => `<button data-calendar-tab="${id}" aria-pressed="${calendarTab === id}">${title}</button>`).join("")}</nav>`;
 function renderCalendar(content) {
   if (calendarTab === "status") {
@@ -14483,7 +16475,7 @@ function renderCalendar(content) {
     return;
   }
   const events = calendarRows(), people = rosterRows();
-  content.innerHTML = calendarTabs() + `<div class="metrics">${metric2("\uC870\uD68C \uC9C1\uC6D0", `${new Set(people.map((r3) => r3.personId)).size}\uBA85`, team === "\uC804\uCCB4" ? "\uC774\uB2EC \uC2A4\uCF00\uC904 \uBA85\uBD80" : `${team}\uD300`)}${metric2("\uC77C\uC815 \uD45C\uC2DC", `${events.length}\uAC74`, "\uACF5\uD1B5 \uC77C\uC815 \uD3EC\uD568")}${metric2("\uC608\uC2DC \uC0C9\uC0C1", `${events.filter((r3) => r3.unresolved).length}\uAC74`, "\uC758\uBBF8 \uD655\uC778 \uC804\uC5D0\uB3C4 \uC608\uC2DC \uC0C9\uC0C1 \uBCF4\uC874")}</div><section class="panel calendar-panel"><div class="panel-heading"><div><h2>${team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${esc12(team)}\uD300`}\uC758 \uC77C\uC815</h2><p>\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC77C\uC815 \uB4F1\uB85D, \uAE30\uB85D\uC744 \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694.</p></div><span class="legend-dot">\u25CF \uD734\uBB34\xB7\uD734\uAC00\u3000<span>\u25CF \uC608\uC2DC \uC0C9\uC0C1</span></span></div><div id="calendar"></div></section>`;
+  content.innerHTML = calendarTabs() + `<div class="metrics">${metric2("\uC870\uD68C \uC9C1\uC6D0", `${new Set(people.map((r3) => r3.personId)).size}\uBA85`, team === "\uC804\uCCB4" ? "\uC774\uB2EC \uC2A4\uCF00\uC904 \uBA85\uBD80" : `${team}\uD300`)}${metric2("\uC77C\uC815 \uD45C\uC2DC", `${events.length}\uAC74`, "\uACF5\uD1B5 \uC77C\uC815 \uD3EC\uD568")}${metric2("\uC608\uC2DC \uC0C9\uC0C1", `${events.filter((r3) => r3.unresolved).length}\uAC74`, "\uC758\uBBF8 \uD655\uC778 \uC804\uC5D0\uB3C4 \uC608\uC2DC \uC0C9\uC0C1 \uBCF4\uC874")}</div><section class="panel calendar-panel"><div class="panel-heading"><div><h2>${team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${esc13(team)}\uD300`}\uC758 \uC77C\uC815</h2><p>\uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC77C\uC815 \uB4F1\uB85D, \uAE30\uB85D\uC744 \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uBCFC \uC218 \uC788\uC5B4\uC694.</p></div><span class="legend-dot">\u25CF \uD734\uBB34\xB7\uD734\uAC00\u3000<span>\u25CF \uC608\uC2DC \uC0C9\uC0C1</span></span></div><div id="calendar"></div></section>`;
   calendar = new Calendar(document.querySelector("#calendar"), {
     plugins: [index, index2, index3],
     locale: l45,
@@ -14550,7 +16542,7 @@ function statusPeople() {
 }
 function renderStatusCalendar(content) {
   const events = mealStatusEvents(statusPeople(), localStorage);
-  content.innerHTML = calendarTabs() + `<div class="metrics">${metric2("\uC9C0\uAE08 \uC2DD\uC0AC\uC911", `${events.length}\uBA85`, team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${team}\uD300`)}${metric2("\uD45C\uC2DC \uAE30\uC900", "\uC624\uB298", `${today2()} \xB7 \uC2DD\uC0AC \uC2DC\uC791 \uC2DC\uAC01`)}${metric2("\uAE30\uB85D \uC704\uCE58", "\uC774 \uBE0C\uB77C\uC6B0\uC800", "\uC2DD\uC0AC \uBC84\uD2BC\uC744 \uB204\uB978 \uAE30\uAE30\uC758 \uAE30\uB85D")}</div><section class="panel calendar-panel"><div class="panel-heading"><div><h2>${team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${esc12(team)}\uD300`}\uC758 \uC2DD\uC0AC \uC0C1\uD0DC</h2><p>\uC2DD\uC0AC \uBC84\uD2BC\uC744 \uB204\uB978 \uC9C1\uC6D0\uC774 \uC2DC\uC791 \uC2DC\uAC01\uACFC \uD568\uAED8 \uC624\uB298 \uCE78\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4. \uC2DD\uC0AC\uB97C \uC885\uB8CC\uD558\uBA74 \uC0AC\uB77C\uC9D1\uB2C8\uB2E4.</p></div><span class="legend-dot">\u25CF \uC2DD\uC0AC\uC911</span></div>${events.length ? "" : '<p class="empty">\uC9C0\uAE08 \uC2DD\uC0AC\uC911\uC778 \uC9C1\uC6D0\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.</p>'}<div id="calendar"></div></section>`;
+  content.innerHTML = calendarTabs() + `<div class="metrics">${metric2("\uC9C0\uAE08 \uC2DD\uC0AC\uC911", `${events.length}\uBA85`, team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${team}\uD300`)}${metric2("\uD45C\uC2DC \uAE30\uC900", "\uC624\uB298", `${today2()} \xB7 \uC2DD\uC0AC \uC2DC\uC791 \uC2DC\uAC01`)}${metric2("\uAE30\uB85D \uC704\uCE58", "\uC774 \uBE0C\uB77C\uC6B0\uC800", "\uC2DD\uC0AC \uBC84\uD2BC\uC744 \uB204\uB978 \uAE30\uAE30\uC758 \uAE30\uB85D")}</div><section class="panel calendar-panel"><div class="panel-heading"><div><h2>${team === "\uC804\uCCB4" ? "\uBAA8\uB4E0 \uD300" : `${esc13(team)}\uD300`}\uC758 \uC2DD\uC0AC \uC0C1\uD0DC</h2><p>\uC2DD\uC0AC \uBC84\uD2BC\uC744 \uB204\uB978 \uC9C1\uC6D0\uC774 \uC2DC\uC791 \uC2DC\uAC01\uACFC \uD568\uAED8 \uC624\uB298 \uCE78\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4. \uC2DD\uC0AC\uB97C \uC885\uB8CC\uD558\uBA74 \uC0AC\uB77C\uC9D1\uB2C8\uB2E4.</p></div><span class="legend-dot">\u25CF \uC2DD\uC0AC\uC911</span></div>${events.length ? "" : '<p class="empty">\uC9C0\uAE08 \uC2DD\uC0AC\uC911\uC778 \uC9C1\uC6D0\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.</p>'}<div id="calendar"></div></section>`;
   calendar = new Calendar(document.querySelector("#calendar"), {
     plugins: [index, index3],
     locale: l45,
@@ -14569,7 +16561,7 @@ function renderStatusCalendar(content) {
     events: events.map((e3) => ({ id: e3.id, title: `${e3.name} \xB7 ${e3.label}`, start: e3.date, allDay: true, classNames: ["status-event"], extendedProps: { record: e3 } })),
     eventClick: (info) => {
       const r3 = info.event.extendedProps.record;
-      openDialog(`${r3.name} \xB7 \uC2DD\uC0AC\uC911`, `<dl><dt>\uD300</dt><dd>${esc12(r3.rawTeam)}</dd><dt>\uC2DC\uC791 \uC2DC\uAC01</dt><dd>${esc12(r3.date)} ${esc12(r3.time)}</dd></dl><p class="notice">\uC2DD\uC0AC\uB97C \uC885\uB8CC\uD558\uBA74 \uC0C1\uD0DC \uCE98\uB9B0\uB354\uC5D0\uC11C \uC0AC\uB77C\uC9D1\uB2C8\uB2E4.</p>`);
+      openDialog(`${r3.name} \xB7 \uC2DD\uC0AC\uC911`, `<dl><dt>\uD300</dt><dd>${esc13(r3.rawTeam)}</dd><dt>\uC2DC\uC791 \uC2DC\uAC01</dt><dd>${esc13(r3.date)} ${esc13(r3.time)}</dd></dl><p class="notice">\uC2DD\uC0AC\uB97C \uC885\uB8CC\uD558\uBA74 \uC0C1\uD0DC \uCE98\uB9B0\uB354\uC5D0\uC11C \uC0AC\uB77C\uC9D1\uB2C8\uB2E4.</p>`);
     }
   });
   calendar.render();
@@ -14663,9 +16655,9 @@ function showMorePeek(link, events) {
   const panel = document.createElement("div");
   panel.className = "more-peek";
   panel.setAttribute("role", "tooltip");
-  panel.innerHTML = `<p>${esc12(date)} \xB7 ${items.length}\uAC74</p><ul>${items.map((e3) => {
+  panel.innerHTML = `<p>${esc13(date)} \xB7 ${items.length}\uAC74</p><ul>${items.map((e3) => {
     const color = e3.color || findDayColor(e3);
-    return `<li><i class="swatch ${color ? "" : e3.personId ? "is-staff" : "is-common"}"${color ? ` style="--source-color:#${esc12(color)}"` : ""}></i><strong>${esc12(e3.name || "\uACF5\uD1B5")}</strong><span>${esc12(e3.label)}</span></li>`;
+    return `<li><i class="swatch ${color ? "" : e3.personId ? "is-staff" : "is-common"}"${color ? ` style="--source-color:#${esc13(color)}"` : ""}></i><strong>${esc13(e3.name || "\uACF5\uD1B5")}</strong><span>${esc13(e3.label)}</span></li>`;
   }).join("")}</ul>`;
   document.body.append(panel);
   const r3 = link.getBoundingClientRect(), w4 = panel.offsetWidth, h3 = panel.offsetHeight, below = r3.bottom + 8;
@@ -14675,21 +16667,21 @@ function showMorePeek(link, events) {
 }
 addEventListener("scroll", hideMorePeek, { passive: true });
 var canEditSchedule = (record) => !!record.local && scheduleCandidates(monthOf2(record.date)).some((p3) => p3.personId === record.personId);
-var scheduleActions = (record) => !canEditSchedule(record) ? "" : record.override ? `<span class="schedule-actions"><button type="button" data-schedule-revert="${esc12(groupOf(record))}">\uC6D0\uB798 \uB0A0\uC9DC\uB85C \uB418\uB3CC\uB9AC\uAE30</button></span>` : `<span class="schedule-actions"><button type="button" data-schedule-edit="${esc12(groupOf(record))}">\uD3B8\uC9D1</button><button type="button" data-schedule-delete="${esc12(groupOf(record))}">\uC0AD\uC81C</button></span>`;
+var scheduleActions = (record) => !canEditSchedule(record) ? "" : record.override ? `<span class="schedule-actions"><button type="button" data-schedule-revert="${esc13(groupOf(record))}">\uC6D0\uB798 \uB0A0\uC9DC\uB85C \uB418\uB3CC\uB9AC\uAE30</button></span>` : `<span class="schedule-actions"><button type="button" data-schedule-edit="${esc13(groupOf(record))}">\uD3B8\uC9D1</button><button type="button" data-schedule-delete="${esc13(groupOf(record))}">\uC0AD\uC81C</button></span>`;
 var scheduleSpan = (group) => group.days > 1 ? `${group.start} ~ ${group.end} (${group.days}\uC77C)` : group.date;
 function showSchedule(record) {
   const group = record.local ? scheduleGroups(allDrafts()).find((g4) => g4.groupId === groupOf(record)) || { ...record, days: 1 } : { ...record, days: 1 };
-  openDialog(`${record.name || "\uACF5\uD1B5"} \xB7 ${record.label}`, `<dl><dt>${group.days > 1 ? "\uAE30\uAC04" : "\uB0A0\uC9DC"}</dt><dd>${esc12(scheduleSpan(group))}</dd>${record.override ? `<dt>\uC6D0\uB798 \uB0A0\uC9DC</dt><dd>${esc12(record.from)}</dd>` : ""}<dt>\uD300</dt><dd>${esc12(record.teams?.join(" \xB7 ") || "\uACF5\uD1B5")}</dd><dt>\uC608\uC2DC \uD45C\uC2DC</dt><dd>${swatch(record.color || findDayColor(record))} ${esc12(record.rawValue || record.label)}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc12(record.note || "\uBA54\uBAA8 \uC5C6\uC74C")}</dd></dl>${record.unresolved ? '<p class="notice">\uC608\uC2DC \uC0C9\uC0C1\uC744 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uC758\uBBF8\uB294 \uC544\uC9C1 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>' : ""}${sourceButton(record.source)}${record.local ? `<p class="notice">${record.override ? "\uC2DC\uD2B8 \uC77C\uC815\uC744 \uC571\uC5D0\uC11C \uC62E\uACA8 \uD45C\uC2DC\uD569\uB2C8\uB2E4. \uC2DC\uD2B8\uB294 \uBC14\uB00C\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4." : "\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uC77C\uC815\uC785\uB2C8\uB2E4."}</p>` + scheduleActions(record) : ""}`);
+  openDialog(`${record.name || "\uACF5\uD1B5"} \xB7 ${record.label}`, `<dl><dt>${group.days > 1 ? "\uAE30\uAC04" : "\uB0A0\uC9DC"}</dt><dd>${esc13(scheduleSpan(group))}</dd>${record.override ? `<dt>\uC6D0\uB798 \uB0A0\uC9DC</dt><dd>${esc13(record.from)}</dd>` : ""}<dt>\uD300</dt><dd>${esc13(record.teams?.join(" \xB7 ") || "\uACF5\uD1B5")}</dd><dt>\uC608\uC2DC \uD45C\uC2DC</dt><dd>${swatch(record.color || findDayColor(record))} ${esc13(record.rawValue || record.label)}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc13(record.note || "\uBA54\uBAA8 \uC5C6\uC74C")}</dd></dl>${record.unresolved ? '<p class="notice">\uC608\uC2DC \uC0C9\uC0C1\uC744 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uC758\uBBF8\uB294 \uC544\uC9C1 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p>' : ""}${sourceButton(record.source)}${record.local ? `<p class="notice">${record.override ? "\uC2DC\uD2B8 \uC77C\uC815\uC744 \uC571\uC5D0\uC11C \uC62E\uACA8 \uD45C\uC2DC\uD569\uB2C8\uB2E4. \uC2DC\uD2B8\uB294 \uBC14\uB00C\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4." : "\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uC77C\uC815\uC785\uB2C8\uB2E4."}</p>` + scheduleActions(record) : ""}`);
 }
 function renderRoster(content) {
   if (previewMode === "employee") {
     const people2 = rosterRows();
-    content.innerHTML = `<section class="panel personal-roster"><div class="panel-heading"><div><h2>${monthText(month)} \uB0B4 \uADFC\uBB34\uD45C</h2><p>${esc12(signedInPerson.name)} \uB2D8 \xB7 \uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694.</p></div></div>${people2.length ? mobileRoster(people2) : empty2("\uC774\uB2EC\uC758 \uADFC\uBB34\uD45C\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>${localRecords("schedule")}`;
+    content.innerHTML = `<section class="panel personal-roster"><div class="panel-heading"><div><h2>${monthText(month)} \uB0B4 \uADFC\uBB34\uD45C</h2><p>${esc13(signedInPerson.name)} \uB2D8 \xB7 \uB0A0\uC9DC\uB97C \uB204\uB974\uBA74 \uC0C1\uC138 \uB0B4\uC6A9\uC744 \uD655\uC778\uD560 \uC218 \uC788\uC5B4\uC694.</p></div></div>${people2.length ? mobileRoster(people2) : empty2("\uC774\uB2EC\uC758 \uADFC\uBB34\uD45C\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>${localRecords("schedule")}`;
     attachDutyPanel(content, rosterRows());
     return;
   }
   const people = rosterRows(), added = allDrafts(), count = new Date(2e3 + Number(month.slice(0, 2)), Number(month.slice(2)), 0).getDate(), days = Array.from({ length: count }, (_3, i3) => i3 + 1);
-  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${monthText(month)} \uADFC\uBB34\uD45C</h2><p>${people.length}\uBA85 \xB7 \uC608\uC2DC \uC0C9\uC0C1\uC744 \uADF8\uB300\uB85C \uBCF4\uC874\uD588\uC5B4\uC694. \uBE48\uCE78\uC740 \uBBF8\uAE30\uC7AC \uC0C1\uD0DC\uC785\uB2C8\uB2E4.</p></div><span class="desktop-roster-hint">${badge("\uAC00\uB85C\uB85C \uC2A4\uD06C\uB864")}</span><span class="mobile-roster-hint">\uC9C1\uC6D0\uC744 \uB20C\uB7EC \uC6D4\uAC04 \uADFC\uBB34\uD45C \uD655\uC778</span></div><div class="table-scroll roster-scroll"><table class="roster-table"><thead><tr><th class="sticky-cell">\uC9C1\uC6D0 / \uD300</th>${days.map((d2) => `<th>${d2}<small>${new Intl.DateTimeFormat("ko-KR", { weekday: "short" }).format(/* @__PURE__ */ new Date(dateOf2(month, d2) + "T12:00:00"))}</small></th>`).join("")}</tr></thead><tbody>${people.map((r3) => `<tr><th class="sticky-cell"><strong>${esc12(r3.name)}</strong><small>${esc12(r3.rawTeam)}${r3.role ? " \xB7 " + esc12(r3.role) : ""}</small></th>${days.map((d2) => `<td>${rosterDayCell(r3, d2, added)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>${mobileRoster(people)}${people.length ? "" : empty2()}</section>${localRecords("schedule")}`;
+  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${monthText(month)} \uADFC\uBB34\uD45C</h2><p>${people.length}\uBA85 \xB7 \uC608\uC2DC \uC0C9\uC0C1\uC744 \uADF8\uB300\uB85C \uBCF4\uC874\uD588\uC5B4\uC694. \uBE48\uCE78\uC740 \uBBF8\uAE30\uC7AC \uC0C1\uD0DC\uC785\uB2C8\uB2E4.</p></div><span class="desktop-roster-hint">${badge("\uAC00\uB85C\uB85C \uC2A4\uD06C\uB864")}</span><span class="mobile-roster-hint">\uC9C1\uC6D0\uC744 \uB20C\uB7EC \uC6D4\uAC04 \uADFC\uBB34\uD45C \uD655\uC778</span></div><div class="table-scroll roster-scroll"><table class="roster-table"><thead><tr><th class="sticky-cell">\uC9C1\uC6D0 / \uD300</th>${days.map((d2) => `<th>${d2}<small>${new Intl.DateTimeFormat("ko-KR", { weekday: "short" }).format(/* @__PURE__ */ new Date(dateOf2(month, d2) + "T12:00:00"))}</small></th>`).join("")}</tr></thead><tbody>${people.map((r3) => `<tr><th class="sticky-cell"><strong>${esc13(r3.name)}</strong><small>${esc13(r3.rawTeam)}${r3.role ? " \xB7 " + esc13(r3.role) : ""}</small></th>${days.map((d2) => `<td>${rosterDayCell(r3, d2, added)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>${mobileRoster(people)}${people.length ? "" : empty2()}</section>${localRecords("schedule")}`;
   attachDutyPanel(content, people);
 }
 function labelMobileTables(root) {
@@ -14704,11 +16696,11 @@ function labelMobileTables(root) {
 }
 function mobileRoster(people) {
   const added = allDrafts();
-  return '<div class="mobile-roster">' + people.map((r3, i3) => `<details class="mobile-roster-person" ${i3 === 0 ? "open" : ""}><summary><strong>${esc12(r3.name)}</strong><span>${esc12(r3.rawTeam)}${r3.role ? " \xB7 " + esc12(r3.role) : ""}</span></summary><div class="mobile-roster-month"><div class="daily-weekdays">${["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"].map((w4) => "<span>" + w4 + "</span>").join("")}</div><div class="mobile-roster-days">${calendarDays(month).map((day) => day ? rosterDayCell(r3, day, added, true) : '<span class="mobile-roster-blank"></span>').join("")}</div></div></details>`).join("") + "</div>";
+  return '<div class="mobile-roster">' + people.map((r3, i3) => `<details class="mobile-roster-person" ${i3 === 0 ? "open" : ""}><summary><strong>${esc13(r3.name)}</strong><span>${esc13(r3.rawTeam)}${r3.role ? " \xB7 " + esc13(r3.role) : ""}</span></summary><div class="mobile-roster-month"><div class="daily-weekdays">${["\uC77C", "\uC6D4", "\uD654", "\uC218", "\uBAA9", "\uAE08", "\uD1A0"].map((w4) => "<span>" + w4 + "</span>").join("")}</div><div class="mobile-roster-days">${calendarDays(month).map((day) => day ? rosterDayCell(r3, day, added, true) : '<span class="mobile-roster-blank"></span>').join("")}</div></div></details>`).join("") + "</div>";
 }
 function showRosterDay(row, day) {
   const records = allDrafts(), cell = row.days[day], added = addedSchedule(records, row, day), moved = cell ? overrideMap(records).get(sourceIdOf(cell.source)) : null;
-  openDialog(esc12(row.name) + " \xB7 " + dateOf2(row.month, day), `${cell ? '<section class="notice"><h3>\uAC00\uC838\uC628 \uC77C\uC815</h3><p>' + swatch(cell.color) + " " + esc12(cell.value || cell.colorMeaning || cell.label || "\uC0C9\uC0C1 \uD45C\uC2DC") + '</p><p class="prewrap">' + esc12(cell.note || "") + "</p>" + (moved ? "<p>\uC571\uC5D0\uC11C <strong>" + esc12(moved.date) + "</strong>\uB85C \uC62E\uACA8 \uD45C\uC2DC \uC911\uC785\uB2C8\uB2E4. \uC2DC\uD2B8\uB294 \uADF8\uB300\uB85C\uC785\uB2C8\uB2E4.</p>" + scheduleActions(moved) : "") + sourceButton(cell.source) + "</section>" : ""}${added.map((r3) => '<section class="daily-record"><h3>' + (r3.override ? swatch(r3.color) + " " : "") + esc12(r3.label) + '</h3><p class="prewrap">' + esc12(r3.note || "\uBA54\uBAA8 \uC5C6\uC74C") + "</p><small>" + (r3.override ? "\uC2DC\uD2B8 \uC77C\uC815 \xB7 \uC6D0\uB798 " + esc12(r3.from) : "\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uB4F1\uB85D\uD55C \uC77C\uC815") + "</small>" + scheduleActions(r3) + "</section>").join("")}`);
+  openDialog(esc13(row.name) + " \xB7 " + dateOf2(row.month, day), `${cell ? '<section class="notice"><h3>\uAC00\uC838\uC628 \uC77C\uC815</h3><p>' + swatch(cell.color) + " " + esc13(cell.value || cell.colorMeaning || cell.label || "\uC0C9\uC0C1 \uD45C\uC2DC") + '</p><p class="prewrap">' + esc13(cell.note || "") + "</p>" + (moved ? "<p>\uC571\uC5D0\uC11C <strong>" + esc13(moved.date) + "</strong>\uB85C \uC62E\uACA8 \uD45C\uC2DC \uC911\uC785\uB2C8\uB2E4. \uC2DC\uD2B8\uB294 \uADF8\uB300\uB85C\uC785\uB2C8\uB2E4.</p>" + scheduleActions(moved) : "") + sourceButton(cell.source) + "</section>" : ""}${added.map((r3) => '<section class="daily-record"><h3>' + (r3.override ? swatch(r3.color) + " " : "") + esc13(r3.label) + '</h3><p class="prewrap">' + esc13(r3.note || "\uBA54\uBAA8 \uC5C6\uC74C") + "</p><small>" + (r3.override ? "\uC2DC\uD2B8 \uC77C\uC815 \xB7 \uC6D0\uB798 " + esc13(r3.from) : "\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uB4F1\uB85D\uD55C \uC77C\uC815") + "</small>" + scheduleActions(r3) + "</section>").join("")}`);
 }
 function schedulePeople(targetMonth) {
   return [...new Map(data.roster.filter((p3) => p3.month === targetMonth).map((p3) => [p3.personId, p3])).values()];
@@ -14720,7 +16712,7 @@ function openSchedulePicker(leaveOnly = false) {
   function paint() {
     const people = scheduleCandidates(pickerMonth);
     if (!people.some((p3) => p3.personId === selectedPerson)) selectedPerson = people[0]?.personId || "";
-    area.innerHTML = `<div class="schedule-picker-fields"><label>\uC870\uD68C \uC6D4<select data-picker-month>${data.months.map((m3) => '<option value="' + m3 + '" ' + (m3 === pickerMonth ? "selected" : "") + ">" + monthText(m3) + "</option>").join("")}</select></label>${previewMode === "employee" && people.length === 1 ? "<p>" + esc12(signedInPerson.name) + " \uB2D8\uC758 \uC77C\uC815</p>" : "<label>\uC9C1\uC6D0<select data-picker-person>" + people.map((p3) => '<option value="' + esc12(p3.personId) + '" ' + (p3.personId === selectedPerson ? "selected" : "") + ">" + esc12(p3.name) + " \xB7 " + esc12(p3.rawTeam) + "</option>").join("") + "</select></label>"}</div><p>\uB4F1\uB85D\uD560 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC \uC8FC\uC138\uC694.</p><div class="schedule-picker-calendar">${schedulePickerDays(pickerMonth)}</div>`;
+    area.innerHTML = `<div class="schedule-picker-fields"><label>\uC870\uD68C \uC6D4<select data-picker-month>${data.months.map((m3) => '<option value="' + m3 + '" ' + (m3 === pickerMonth ? "selected" : "") + ">" + monthText(m3) + "</option>").join("")}</select></label>${previewMode === "employee" && people.length === 1 ? "<p>" + esc13(signedInPerson.name) + " \uB2D8\uC758 \uC77C\uC815</p>" : "<label>\uC9C1\uC6D0<select data-picker-person>" + people.map((p3) => '<option value="' + esc13(p3.personId) + '" ' + (p3.personId === selectedPerson ? "selected" : "") + ">" + esc13(p3.name) + " \xB7 " + esc13(p3.rawTeam) + "</option>").join("") + "</select></label>"}</div><p>\uB4F1\uB85D\uD560 \uB0A0\uC9DC\uC758 + \uBC84\uD2BC\uC744 \uB20C\uB7EC \uC8FC\uC138\uC694.</p><div class="schedule-picker-calendar">${schedulePickerDays(pickerMonth)}</div>`;
   }
   dialog.addEventListener("change", (event) => {
     if (event.target.hasAttribute("data-picker-month")) {
@@ -14790,7 +16782,7 @@ function tickTimers() {
 }
 function renderMeals(content) {
   const rows = data.mealRows.filter((r3) => matches(r3));
-  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${previewMode === "employee" ? "\uAC00\uC838\uC628 \uB0B4 \uC2DD\uB300 \uB0B4\uC5ED" : "\uAC00\uC838\uC628 \uC9C1\uC6D0\uBCC4 \uC2DD\uB300 \uB0B4\uC5ED"}</h2><p>\uAC00\uC838\uC628 \uC790\uB8CC\uC758 \uC77C\uBCC4 \uBCF4\uAE30\uC785\uB2C8\uB2E4. \uCD94\uAC00 \uC785\uB825\uAE4C\uC9C0 \uD569\uCE5C \uD604\uC7AC \uC0AC\uC6A9\uC561\xB7\uC794\uC561\uC740 \uB9E8 \uC704\uC5D0\uC11C \uD655\uC778\uD574\uC694. 0\uC6D0\uACFC \uBE48\uCE78\uC740 \uAD6C\uBD84\uD569\uB2C8\uB2E4.</p></div></div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0</th><th>\uC608\uC2DC \uD300</th><th>\uC0AC\uC6A9</th><th>\uD55C\uB3C4</th><th>\uC794\uC561</th><th>\uADFC\uBB34\uC77C\uC218</th><th>\uC785\uAE08 \uC5EC\uBD80</th><th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc12(r3.name)}${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th><td>${esc12(r3.rawTeam)}</td>${["\uC0AC\uC6A9", "\uD55C\uB3C4", "\uC794\uC561", "\uADFC\uBB34\uC77C\uC790", "\uC785\uAE08\uC5EC\uBD80"].map((label) => `<td>${esc12(display(r3.totals[label]?.value))}</td>`).join("")}<td><button data-detail="${esc12(r3.id)}" data-kind="meals">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty2()}</section>${localRecords("meals")}`;
+  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>${previewMode === "employee" ? "\uAC00\uC838\uC628 \uB0B4 \uC2DD\uB300 \uB0B4\uC5ED" : "\uAC00\uC838\uC628 \uC9C1\uC6D0\uBCC4 \uC2DD\uB300 \uB0B4\uC5ED"}</h2><p>\uAC00\uC838\uC628 \uC790\uB8CC\uC758 \uC77C\uBCC4 \uBCF4\uAE30\uC785\uB2C8\uB2E4. \uCD94\uAC00 \uC785\uB825\uAE4C\uC9C0 \uD569\uCE5C \uD604\uC7AC \uC0AC\uC6A9\uC561\xB7\uC794\uC561\uC740 \uB9E8 \uC704\uC5D0\uC11C \uD655\uC778\uD574\uC694. 0\uC6D0\uACFC \uBE48\uCE78\uC740 \uAD6C\uBD84\uD569\uB2C8\uB2E4.</p></div></div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0</th><th>\uC608\uC2DC \uD300</th><th>\uC0AC\uC6A9</th><th>\uD55C\uB3C4</th><th>\uC794\uC561</th><th>\uADFC\uBB34\uC77C\uC218</th><th>\uC785\uAE08 \uC5EC\uBD80</th><th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc13(r3.name)}${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th><td>${esc13(r3.rawTeam)}</td>${["\uC0AC\uC6A9", "\uD55C\uB3C4", "\uC794\uC561", "\uADFC\uBB34\uC77C\uC790", "\uC785\uAE08\uC5EC\uBD80"].map((label) => `<td>${esc13(display(r3.totals[label]?.value))}</td>`).join("")}<td><button data-detail="${esc13(r3.id)}" data-kind="meals">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty2()}</section>${localRecords("meals")}`;
   content.insertAdjacentHTML("afterbegin", '<div id="meal-budget"></div><div id="receipt-area"></div>');
   const budgetRoot = content.querySelector("#meal-budget");
   function updateBudget(receipts, unavailable = false) {
@@ -14805,11 +16797,11 @@ function renderMeals(content) {
 }
 function renderAttendance(content) {
   const rows = data.otRows.filter((r3) => matches(r3)), labels = [...new Set(rows.flatMap((r3) => r3.categories.map((c3) => c3.label)))];
-  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>OT\xB7\uC9C0\uAC01 \uD604\uD669</h2><p>${rows.length}\uBA85 \xB7 \uC2DC\uAC04 \uB2E8\uC704\uB294 \uBD84\uC785\uB2C8\uB2E4. \uC774\uC6D4\xB7\uC0AC\uC6A9\xB7\uC9C0\uAC01\xB7\uB9C8\uAC10\uC758 \uC608\uC2DC \uBD80\uD638\uB97C \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div>${badge("\uB2E8\uC704: \uBD84")}</div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0 / \uC608\uC2DC \uD300</th>${labels.map((l3) => `<th>${esc12(l3)}</th>`).join("")}<th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc12(r3.name)}<small>${esc12(r3.rawTeam)}</small>${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th>${labels.map((l3) => `<td>${esc12(display(r3.categories.find((c3) => c3.label === l3)?.total))}</td>`).join("")}<td><button data-detail="${esc12(r3.id)}" data-kind="attendance">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty2()}</section>${localRecords("attendance")}`;
+  content.innerHTML = `<section class="panel"><div class="panel-heading"><div><h2>OT\xB7\uC9C0\uAC01 \uD604\uD669</h2><p>${rows.length}\uBA85 \xB7 \uC2DC\uAC04 \uB2E8\uC704\uB294 \uBD84\uC785\uB2C8\uB2E4. \uC774\uC6D4\xB7\uC0AC\uC6A9\xB7\uC9C0\uAC01\xB7\uB9C8\uAC10\uC758 \uC608\uC2DC \uBD80\uD638\uB97C \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div>${badge("\uB2E8\uC704: \uBD84")}</div><div class="table-scroll"><table><thead><tr><th>\uC9C1\uC6D0 / \uC608\uC2DC \uD300</th>${labels.map((l3) => `<th>${esc13(l3)}</th>`).join("")}<th>\uC0C1\uC138</th></tr></thead><tbody>${rows.map((r3) => `<tr><th>${esc13(r3.name)}<small>${esc13(r3.rawTeam)}</small>${r3.identityNeedsReview ? badge("\uC774\uB984\xB7\uD300 \uD655\uC778", "subtle") : ""}</th>${labels.map((l3) => `<td>${esc13(display(r3.categories.find((c3) => c3.label === l3)?.total))}</td>`).join("")}<td><button data-detail="${esc13(r3.id)}" data-kind="attendance">\uC77C\uBCC4 \uBCF4\uAE30</button></td></tr>`).join("")}</tbody></table></div>${rows.length ? "" : empty2()}</section>${localRecords("attendance")}`;
 }
 function localRecords(kind) {
   const rows = kind === "schedule" ? scheduleGroups(localRows(kind)) : localRows(kind);
-  return `<section class="panel local-records"><div class="panel-heading"><div><h2>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uAE30\uB85D</h2><p>\uAC00\uC838\uC628 \uC608\uC2DC \uD569\uACC4\uC640 \uAD6C\uBD84\uD574 \uD45C\uC2DC\uD569\uB2C8\uB2E4.</p></div>${badge(`${rows.length}\uAC74`)}</div>${rows.length ? `<div class="table-scroll"><table><thead><tr><th>\uB0A0\uC9DC</th><th>\uC9C1\uC6D0</th><th>\uB0B4\uC6A9</th><th>\uBA54\uBAA8</th>${kind === "schedule" ? "<th>\uAD00\uB9AC</th>" : ""}</tr></thead><tbody>${rows.map((r3) => `<tr><td>${esc12(kind === "schedule" ? r3.override ? `${r3.from} \u2192 ${r3.date}` : scheduleSpan(r3) : r3.date)}</td><th>${esc12(r3.name)}</th><td>${esc12(r3.label)}${r3.override ? " \xB7 \uC2DC\uD2B8 \uC77C\uC815 \uC62E\uAE40" : ""}${r3.amount !== void 0 ? " \xB7 " + esc12(number(r3.amount)) + (kind === "meals" ? "\uC6D0" : "\uBD84") : ""}</td><td class="prewrap">${esc12(r3.note)}</td>${kind === "schedule" ? `<td>${scheduleActions(r3) || "\u2014"}</td>` : ""}</tr>`).join("")}</tbody></table></div>` : empty2("\uCD94\uAC00\uD55C \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>`;
+  return `<section class="panel local-records"><div class="panel-heading"><div><h2>\uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0\uC11C \uCD94\uAC00\uD55C \uAE30\uB85D</h2><p>\uAC00\uC838\uC628 \uC608\uC2DC \uD569\uACC4\uC640 \uAD6C\uBD84\uD574 \uD45C\uC2DC\uD569\uB2C8\uB2E4.</p></div>${badge(`${rows.length}\uAC74`)}</div>${rows.length ? `<div class="table-scroll"><table><thead><tr><th>\uB0A0\uC9DC</th><th>\uC9C1\uC6D0</th><th>\uB0B4\uC6A9</th><th>\uBA54\uBAA8</th>${kind === "schedule" ? "<th>\uAD00\uB9AC</th>" : ""}</tr></thead><tbody>${rows.map((r3) => `<tr><td>${esc13(kind === "schedule" ? r3.override ? `${r3.from} \u2192 ${r3.date}` : scheduleSpan(r3) : r3.date)}</td><th>${esc13(r3.name)}</th><td>${esc13(r3.label)}${r3.override ? " \xB7 \uC2DC\uD2B8 \uC77C\uC815 \uC62E\uAE40" : ""}${r3.amount !== void 0 ? " \xB7 " + esc13(number(r3.amount)) + (kind === "meals" ? "\uC6D0" : "\uBD84") : ""}</td><td class="prewrap">${esc13(r3.note)}</td>${kind === "schedule" ? `<td>${scheduleActions(r3) || "\u2014"}</td>` : ""}</tr>`).join("")}</tbody></table></div>` : empty2("\uCD94\uAC00\uD55C \uAE30\uB85D\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}</section>`;
 }
 function showDetail(kind, id) {
   const rows = (kind === "meals" ? data.mealRows : data.otRows).filter((r3) => previewMode === "admin" || r3.personId === signedInPerson.personId), initialRow = rows.find((r3) => r3.id === id);
@@ -14827,7 +16819,7 @@ function openDialog(title, body) {
   dialogVersion++;
   const container = document.querySelector("#overlays");
   container.querySelector("dialog")?.close();
-  container.innerHTML = `<dialog aria-labelledby="dialog-title"><div class="dialog-heading"><h2 id="dialog-title">${esc12(title)}</h2><button data-action="close" aria-label="\uB2EB\uAE30">\uB2EB\uAE30 \u2715</button></div><div class="dialog-body">${body}</div></dialog>`;
+  container.innerHTML = `<dialog aria-labelledby="dialog-title"><div class="dialog-heading"><h2 id="dialog-title">${esc13(title)}</h2><button data-action="close" aria-label="\uB2EB\uAE30">\uB2EB\uAE30 \u2715</button></div><div class="dialog-body">${body}</div></dialog>`;
   const dialog = container.querySelector("dialog");
   dialog.showModal();
   dialog.addEventListener("click", (event) => {
@@ -14860,14 +16852,14 @@ async function showSource(source) {
     const raw = await rawData(source);
     if (version !== dialogVersion) return;
     const cell = raw.cells[source.cell], color = rawColor(raw, source.cell), meta = data.sources.find((s3) => s3.book === source.book && s3.tab === source.tab);
-    document.querySelector(".dialog-body").innerHTML = `<p>${esc12(meta.label)} / ${esc12(source.tab)} / ${esc12(source.cell)}</p><dl><dt>\uC608\uC2DC \uAC12</dt><dd class="prewrap">${esc12(display(cell?.v))}</dd><dt>\uC608\uC2DC \uC0C9\uC0C1</dt><dd>${swatch(color)} ${esc12(color ? "#" + color : "\uC9C0\uC815 \uC5C6\uC74C")}</dd><dt>\uC218\uC2DD</dt><dd class="prewrap">${esc12(cell?.f || "\uC5C6\uC74C")}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc12(cell?.note || "\uC5C6\uC74C")}</dd></dl><a class="button" href="${esc12(meta.url)}" target="_blank" rel="noopener noreferrer">\uAC80\uC218 \uC548\uB0B4 \uBCF4\uAE30 \u2197</a>`;
+    document.querySelector(".dialog-body").innerHTML = `<p>${esc13(meta.label)} / ${esc13(source.tab)} / ${esc13(source.cell)}</p><dl><dt>\uC608\uC2DC \uAC12</dt><dd class="prewrap">${esc13(display(cell?.v))}</dd><dt>\uC608\uC2DC \uC0C9\uC0C1</dt><dd>${swatch(color)} ${esc13(color ? "#" + color : "\uC9C0\uC815 \uC5C6\uC74C")}</dd><dt>\uC218\uC2DD</dt><dd class="prewrap">${esc13(cell?.f || "\uC5C6\uC74C")}</dd><dt>\uBA54\uBAA8</dt><dd class="prewrap">${esc13(cell?.note || "\uC5C6\uC74C")}</dd></dl><a class="button" href="${esc13(meta.url)}" target="_blank" rel="noopener noreferrer">\uAC80\uC218 \uC548\uB0B4 \uBCF4\uAE30 \u2197</a>`;
   } catch (error) {
     if (version === dialogVersion) document.querySelector(".dialog-body").textContent = error.message;
   }
 }
 function renderSources(content) {
   const review = [...data.mealRows, ...data.otRows].filter((r3) => r3.identityNeedsReview && matches(r3)), issues = data.issues.filter((issue) => data.mealRows.some((r3) => matches(r3) && r3.source.book === issue.source.book && r3.source.tab === issue.source.tab && r3.source.cell === issue.source.cell));
-  content.innerHTML = `<div class="metrics">${metric2("\uC608\uC2DC \uC804\uCCB4", `${data.audit.tabs}\uAC1C \uD0ED`, "\uC2A4\uCF00\uC904 12 \xB7 \uC2DD\uB300 13 \xB7 OT/\uC9C0\uAC01 12")}${metric2("\uBCF4\uC874\uD55C \uC140", `${number(data.audit.importedCells)}\uAC1C`, "\uC608\uC2DC\uC640 \uC140 \uAC12 \uC77C\uCE58 \uAC80\uC0AC \uC644\uB8CC")}${metric2("\uBA54\uBAA8 / \uC218\uC2DD", `${number(data.audit.notes)} / ${number(data.audit.formulas)}`, "\uC608\uC2DC XLSX\uC640 \uCD9C\uCC98 \uC88C\uD45C \uBCF4\uC874")}</div><section class="panel"><div class="panel-heading"><div><h2>\uC5F0\uACB0\xB7\uD569\uACC4 \uD655\uC778</h2><p>\uC120\uD0DD\uD55C \uC6D4\xB7\uD300\uC758 \uD655\uC778 \uD56D\uBAA9\uC785\uB2C8\uB2E4. \uD655\uC778 \uC804\uC5D0\uB294 \uC608\uC2DC\uC744 \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div></div>${issues.map((i3) => `<div class="notice">${esc12(i3.name)} \xB7 ${esc12(i3.kind)}: \uC608\uC2DC ${number(i3.sourceTotal)}\uC6D0 / \uC77C\uBCC4 \uD569 ${number(i3.dailySum)}\uC6D0 ${sourceButton(i3.source)}</div>`).join("")}${review.length ? `<div class="review-list">${review.map((r3) => `<span>${esc12(r3.name)} \xB7 ${esc12(r3.rawTeam)} ${sourceButton(r3.source, "\uC774\uB984\xB7\uD300 \uD655\uC778")}</span>`).join("")}</div>` : empty2("\uC774 \uC870\uAC74\uC5D0\uC11C \uC774\uB984\xB7\uD300 \uC5F0\uACB0 \uD655\uC778 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}<p class="panel-foot">\uC608\uC2DC \uC0C9\uC0C1\uC740 \uBAA8\uB450 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uBC94\uB840\uC640 \uC77C\uCE58\uD558\uC9C0 \uC54A\uB294 \uC0C9\uC740 \uC758\uBBF8\uB97C \uC784\uC758 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p></section><section class="panel"><div class="panel-heading"><div><h2>\uC608\uC2DC \uD0ED \uC804\uCCB4 \uBCF4\uAE30</h2><p>\uC774 \uC601\uC5ED\uC740 \uD300 \uD544\uD130 \uC5C6\uC774 \uC120\uD0DD\uD55C \uD0ED \uC804\uCCB4\uB97C \uBCF4\uC5EC\uC90D\uB2C8\uB2E4. \uD45C \uC544\uB798\uC758 \uCD94\uAC00 \uAE30\uB85D\uB3C4 \uD3EC\uD568\uD569\uB2C8\uB2E4.</p></div></div><div class="source-controls"><label>\uC608\uC2DC<select id="source-book">${[["schedule", "\uC2A4\uCF00\uC904"], ["meals", "\uC2DD\uB300"], ["attendance", "OT/\uC9C0\uAC01"]].map(([k3, l3]) => `<option value="${k3}" ${sourceBook === k3 ? "selected" : ""}>${l3}</option>`).join("")}</select></label><label>\uD0ED<select id="source-tab">${data.sources.filter((s3) => s3.book === sourceBook).map((s3) => `<option value="${s3.tab}" ${(sourceTab || month) === s3.tab ? "selected" : ""}>${esc12(s3.tab === "\uCC38\uACE0\uC6A9" ? "\uCC38\uACE0\uC6A9" : monthText(s3.tab))}</option>`).join("")}</select></label><label>\uC140\xB7\uB0B4\uC6A9 \uAC80\uC0C9<input id="source-query" value="${esc12(sourceQuery)}" placeholder="\uC608: A320 \uB610\uB294 \uC9C1\uC6D0 \uC774\uB984" maxlength="100"></label><button data-action="source-search">\uAC80\uC0C9</button></div><div id="raw-table">\uC608\uC2DC\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4\u2026</div></section>`;
+  content.innerHTML = `<div class="metrics">${metric2("\uC608\uC2DC \uC804\uCCB4", `${data.audit.tabs}\uAC1C \uD0ED`, "\uC2A4\uCF00\uC904 12 \xB7 \uC2DD\uB300 13 \xB7 OT/\uC9C0\uAC01 12")}${metric2("\uBCF4\uC874\uD55C \uC140", `${number(data.audit.importedCells)}\uAC1C`, "\uC608\uC2DC\uC640 \uC140 \uAC12 \uC77C\uCE58 \uAC80\uC0AC \uC644\uB8CC")}${metric2("\uBA54\uBAA8 / \uC218\uC2DD", `${number(data.audit.notes)} / ${number(data.audit.formulas)}`, "\uC608\uC2DC XLSX\uC640 \uCD9C\uCC98 \uC88C\uD45C \uBCF4\uC874")}</div><section class="panel"><div class="panel-heading"><div><h2>\uC5F0\uACB0\xB7\uD569\uACC4 \uD655\uC778</h2><p>\uC120\uD0DD\uD55C \uC6D4\xB7\uD300\uC758 \uD655\uC778 \uD56D\uBAA9\uC785\uB2C8\uB2E4. \uD655\uC778 \uC804\uC5D0\uB294 \uC608\uC2DC\uC744 \uADF8\uB300\uB85C \uC720\uC9C0\uD569\uB2C8\uB2E4.</p></div></div>${issues.map((i3) => `<div class="notice">${esc13(i3.name)} \xB7 ${esc13(i3.kind)}: \uC608\uC2DC ${number(i3.sourceTotal)}\uC6D0 / \uC77C\uBCC4 \uD569 ${number(i3.dailySum)}\uC6D0 ${sourceButton(i3.source)}</div>`).join("")}${review.length ? `<div class="review-list">${review.map((r3) => `<span>${esc13(r3.name)} \xB7 ${esc13(r3.rawTeam)} ${sourceButton(r3.source, "\uC774\uB984\xB7\uD300 \uD655\uC778")}</span>`).join("")}</div>` : empty2("\uC774 \uC870\uAC74\uC5D0\uC11C \uC774\uB984\xB7\uD300 \uC5F0\uACB0 \uD655\uC778 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.")}<p class="panel-foot">\uC608\uC2DC \uC0C9\uC0C1\uC740 \uBAA8\uB450 \uBCF4\uC874\uD588\uC2B5\uB2C8\uB2E4. \uBC94\uB840\uC640 \uC77C\uCE58\uD558\uC9C0 \uC54A\uB294 \uC0C9\uC740 \uC758\uBBF8\uB97C \uC784\uC758 \uC9C0\uC815\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.</p></section><section class="panel"><div class="panel-heading"><div><h2>\uC608\uC2DC \uD0ED \uC804\uCCB4 \uBCF4\uAE30</h2><p>\uC774 \uC601\uC5ED\uC740 \uD300 \uD544\uD130 \uC5C6\uC774 \uC120\uD0DD\uD55C \uD0ED \uC804\uCCB4\uB97C \uBCF4\uC5EC\uC90D\uB2C8\uB2E4. \uD45C \uC544\uB798\uC758 \uCD94\uAC00 \uAE30\uB85D\uB3C4 \uD3EC\uD568\uD569\uB2C8\uB2E4.</p></div></div><div class="source-controls"><label>\uC608\uC2DC<select id="source-book">${[["schedule", "\uC2A4\uCF00\uC904"], ["meals", "\uC2DD\uB300"], ["attendance", "OT/\uC9C0\uAC01"]].map(([k3, l3]) => `<option value="${k3}" ${sourceBook === k3 ? "selected" : ""}>${l3}</option>`).join("")}</select></label><label>\uD0ED<select id="source-tab">${data.sources.filter((s3) => s3.book === sourceBook).map((s3) => `<option value="${s3.tab}" ${(sourceTab || month) === s3.tab ? "selected" : ""}>${esc13(s3.tab === "\uCC38\uACE0\uC6A9" ? "\uCC38\uACE0\uC6A9" : monthText(s3.tab))}</option>`).join("")}</select></label><label>\uC140\xB7\uB0B4\uC6A9 \uAC80\uC0C9<input id="source-query" value="${esc13(sourceQuery)}" placeholder="\uC608: A320 \uB610\uB294 \uC9C1\uC6D0 \uC774\uB984" maxlength="100"></label><button data-action="source-search">\uAC80\uC0C9</button></div><div id="raw-table">\uC608\uC2DC\uC744 \uBD88\uB7EC\uC624\uB294 \uC911\uC785\uB2C8\uB2E4\u2026</div></section>`;
   loadRawTable();
 }
 function coordSort(a3, b3) {
@@ -14884,7 +16876,7 @@ async function loadRawTable() {
     sourcePage = Math.min(sourcePage, pages - 1);
     document.querySelector("#raw-table").innerHTML = `<div class="raw-summary"><span>\uAC80\uC0C9 ${number(coords.length)}\uC140 \xB7 ${sourcePage + 1} / ${pages}\uCABD</span><div><button data-action="raw-prev" ${sourcePage === 0 ? "disabled" : ""}>\uC774\uC804</button><button data-action="raw-next" ${sourcePage + 1 >= pages ? "disabled" : ""}>\uB2E4\uC74C</button></div></div><div class="table-scroll"><table class="raw-table"><thead><tr><th>\uC140</th><th>\uC608\uC2DC \uAC12</th><th>\uC0C9\uC0C1</th><th>\uC218\uC2DD</th><th>\uBA54\uBAA8</th></tr></thead><tbody>${coords.slice(sourcePage * pageSize, (sourcePage + 1) * pageSize).map((coord) => {
       const c3 = raw.cells[coord];
-      return `<tr><th>${sourceButton({ ...source, cell: coord }, coord)}</th><td class="prewrap">${esc12(display(c3?.v))}</td><td>${swatch(rawColor(raw, coord))}</td><td class="prewrap">${esc12(c3?.f || "\u2014")}</td><td class="prewrap">${esc12(c3?.note || "\u2014")}</td></tr>`;
+      return `<tr><th>${sourceButton({ ...source, cell: coord }, coord)}</th><td class="prewrap">${esc13(display(c3?.v))}</td><td>${swatch(rawColor(raw, coord))}</td><td class="prewrap">${esc13(c3?.f || "\u2014")}</td><td class="prewrap">${esc13(c3?.note || "\u2014")}</td></tr>`;
     }).join("")}</tbody></table></div>${coords.length ? "" : empty2()}`;
     labelMobileTables(document.querySelector("#raw-table"));
   } catch (error) {
@@ -14904,7 +16896,7 @@ function openEntry(kind = view === "meals" ? "meals" : view === "attendance" ? "
     return;
   }
   const minDate = dateOf2(data.months[0]), maxDate = dateOf2(data.months.at(-1), lastDay(data.months.at(-1))), labels = leaveOnly ? ["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28"] : ["\uD734\uBB34", "\uC5F0\uCC28", "\uC624\uC804 \uBC18\uCC28", "\uC624\uD6C4 \uBC18\uCC28", "\uADFC\uBB34", "\uD300 \uC77C\uC815", "\uAE30\uD0C0"];
-  openDialog(editing ? "\uC77C\uC815 \uC218\uC815" : `${leaveOnly ? "\uC9C1\uC6D0 \uD734\uBB34" : kind === "schedule" ? "\uC77C\uC815" : kind === "meals" ? "\uC2DD\uB300" : "OT\xB7\uC9C0\uAC01"} \uB4F1\uB85D`, `<form id="entry-form" data-kind="${kind}" data-group="${esc12(editing?.groupId || "")}"><div class="form-grid">${fixed ? `<label>\uC9C1\uC6D0<input value="${esc12(fixed.name)}" readonly><input type="hidden" name="person" value="${esc12(fixed.personId)}"></label>` : `<label>\uC9C1\uC6D0<select name="person" required>${people.map((r3) => `<option value="${esc12(r3.personId)}">${esc12(r3.name)} \xB7 ${esc12(r3.rawTeam)}</option>`).join("")}</select></label>`}<label>${kind === "schedule" ? "\uC2DC\uC791\uC77C" : "\uB0A0\uC9DC"}<input name="date" type="date" value="${defaultDate}" required min="${minDate}" max="${maxDate}"></label>${kind === "schedule" ? `<label>\uC885\uB8CC\uC77C<input name="end" type="date" value="${editing?.end || defaultDate}" required min="${defaultDate}" max="${maxDate}"></label><label>\uC77C\uC815<select name="label">${labels.map((l3) => `<option ${l3 === editing?.label ? "selected" : ""}>${l3}</option>`).join("")}</select></label>` : kind === "attendance" ? '<label>\uAD6C\uBD84<select name="label"><option>OT</option><option>\uACF5\uD734\uC77C OT</option><option>OT \uC0AC\uC6A9</option><option>\uC9C0\uAC01</option><option>\uC870\uC815</option></select></label>' : ""}${kind !== "schedule" ? `<label>${kind === "meals" ? "\uAE08\uC561 (\uC6D0)" : "\uC2DC\uAC04 (\uBD84)"}<input name="amount" type="number" required min="${kind === "meals" ? 0 : -1e6}" max="100000000" step="1" inputmode="numeric"></label>` : ""}<label class="full">\uBA54\uBAA8<textarea name="note" rows="3" maxlength="2000" placeholder="\uD544\uC694\uD55C \uB0B4\uC6A9\uC744 \uB0A8\uACA8 \uC8FC\uC138\uC694.">${esc12(editing?.note || "")}</textarea></label></div><p class="notice">${kind === "schedule" ? "\uD558\uB8E8\uB9CC \uB4F1\uB85D\uD558\uB824\uBA74 \uC885\uB8CC\uC77C\uC744 \uC2DC\uC791\uC77C\uACFC \uAC19\uAC8C \uB450\uC138\uC694. " : ""}\uAC00\uC838\uC628 \uC608\uC2DC\uC640 \uAD6C\uBD84\uD574 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uD569\uB2C8\uB2E4.${kind === "attendance" ? " OT \uC0AC\uC6A9\xB7\uC9C0\uAC01\uC740 \uC591\uC218\uB85C \uC785\uB825\uD574\uB3C4 \uC74C\uC218\uB85C \uAE30\uB85D\uD569\uB2C8\uB2E4." : ""}</p><div class="form-actions"><button type="button" data-action="close">\uCDE8\uC18C</button><button class="primary" type="submit">${editing ? "\uC800\uC7A5\uD558\uAE30" : "\uB4F1\uB85D\uD558\uAE30"}</button></div><p class="form-error" role="alert"></p></form>`);
+  openDialog(editing ? "\uC77C\uC815 \uC218\uC815" : `${leaveOnly ? "\uC9C1\uC6D0 \uD734\uBB34" : kind === "schedule" ? "\uC77C\uC815" : kind === "meals" ? "\uC2DD\uB300" : "OT\xB7\uC9C0\uAC01"} \uB4F1\uB85D`, `<form id="entry-form" data-kind="${kind}" data-group="${esc13(editing?.groupId || "")}"><div class="form-grid">${fixed ? `<label>\uC9C1\uC6D0<input value="${esc13(fixed.name)}" readonly><input type="hidden" name="person" value="${esc13(fixed.personId)}"></label>` : `<label>\uC9C1\uC6D0<select name="person" required>${people.map((r3) => `<option value="${esc13(r3.personId)}">${esc13(r3.name)} \xB7 ${esc13(r3.rawTeam)}</option>`).join("")}</select></label>`}<label>${kind === "schedule" ? "\uC2DC\uC791\uC77C" : "\uB0A0\uC9DC"}<input name="date" type="date" value="${defaultDate}" required min="${minDate}" max="${maxDate}"></label>${kind === "schedule" ? `<label>\uC885\uB8CC\uC77C<input name="end" type="date" value="${editing?.end || defaultDate}" required min="${defaultDate}" max="${maxDate}"></label><label>\uC77C\uC815<select name="label">${labels.map((l3) => `<option ${l3 === editing?.label ? "selected" : ""}>${l3}</option>`).join("")}</select></label>` : kind === "attendance" ? '<label>\uAD6C\uBD84<select name="label"><option>OT</option><option>\uACF5\uD734\uC77C OT</option><option>OT \uC0AC\uC6A9</option><option>\uC9C0\uAC01</option><option>\uC870\uC815</option></select></label>' : ""}${kind !== "schedule" ? `<label>${kind === "meals" ? "\uAE08\uC561 (\uC6D0)" : "\uC2DC\uAC04 (\uBD84)"}<input name="amount" type="number" required min="${kind === "meals" ? 0 : -1e6}" max="100000000" step="1" inputmode="numeric"></label>` : ""}<label class="full">\uBA54\uBAA8<textarea name="note" rows="3" maxlength="2000" placeholder="\uD544\uC694\uD55C \uB0B4\uC6A9\uC744 \uB0A8\uACA8 \uC8FC\uC138\uC694.">${esc13(editing?.note || "")}</textarea></label></div><p class="notice">${kind === "schedule" ? "\uD558\uB8E8\uB9CC \uB4F1\uB85D\uD558\uB824\uBA74 \uC885\uB8CC\uC77C\uC744 \uC2DC\uC791\uC77C\uACFC \uAC19\uAC8C \uB450\uC138\uC694. " : ""}\uAC00\uC838\uC628 \uC608\uC2DC\uC640 \uAD6C\uBD84\uD574 \uC774 \uBE0C\uB77C\uC6B0\uC800\uC5D0 \uC800\uC7A5\uD569\uB2C8\uB2E4.${kind === "attendance" ? " OT \uC0AC\uC6A9\xB7\uC9C0\uAC01\uC740 \uC591\uC218\uB85C \uC785\uB825\uD574\uB3C4 \uC74C\uC218\uB85C \uAE30\uB85D\uD569\uB2C8\uB2E4." : ""}</p><div class="form-actions"><button type="button" data-action="close">\uCDE8\uC18C</button><button class="primary" type="submit">${editing ? "\uC800\uC7A5\uD558\uAE30" : "\uB4F1\uB85D\uD558\uAE30"}</button></div><p class="form-error" role="alert"></p></form>`);
   if (personId && people.some((p3) => p3.personId === personId)) {
     const field = document.querySelector("#entry-form [name=person]");
     if (field) field.value = personId;
@@ -14981,7 +16973,7 @@ document.addEventListener("click", async (event) => {
       toast("\uC0AD\uC81C\uD560 \uC218 \uC788\uB294 \uC77C\uC815\uC774 \uC544\uB2D9\uB2C8\uB2E4.");
       return;
     }
-    openDialog("\uC77C\uC815 \uC0AD\uC81C", `<p>${esc12(group.name)} \xB7 ${esc12(group.label)} \xB7 ${esc12(scheduleSpan(group))}</p><p>\uC774 \uC77C\uC815\uC744 \uC0AD\uC81C\uD560\uAE4C\uC694? \uC0AD\uC81C\uD55C \uC77C\uC815\uC740 \uB418\uB3CC\uB9B4 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.</p><div class="form-actions"><button type="button" data-action="close">\uCDE8\uC18C</button><button type="button" class="primary" data-schedule-delete-confirm="${esc12(group.groupId)}">\uC0AD\uC81C\uD558\uAE30</button></div>`);
+    openDialog("\uC77C\uC815 \uC0AD\uC81C", `<p>${esc13(group.name)} \xB7 ${esc13(group.label)} \xB7 ${esc13(scheduleSpan(group))}</p><p>\uC774 \uC77C\uC815\uC744 \uC0AD\uC81C\uD560\uAE4C\uC694? \uC0AD\uC81C\uD55C \uC77C\uC815\uC740 \uB418\uB3CC\uB9B4 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4.</p><div class="form-actions"><button type="button" data-action="close">\uCDE8\uC18C</button><button type="button" class="primary" data-schedule-delete-confirm="${esc13(group.groupId)}">\uC0AD\uC81C\uD558\uAE30</button></div>`);
     return;
   }
   if (target.dataset.scheduleRevert) {
@@ -15068,7 +17060,7 @@ document.addEventListener("click", async (event) => {
     if (previewMode !== "admin" || mealDemo) return;
     const p3 = mealPeople(data.roster, month).find((r3) => r3.personId === target.dataset.personId), kind = target.dataset.adminEnd;
     if (!p3 || !ACTIVITY_TYPES[kind]) return;
-    openDialog("\uC0C1\uD0DC \uC885\uB8CC \uCC98\uB9AC", `<p>${esc12(p3.name)} \uB2D8\uC758 ${ACTIVITY_TYPES[kind].label}\uC744 \uC9C0\uAE08 \uC2DC\uAC01\uC73C\uB85C \uC885\uB8CC\uD560\uAE4C\uC694?</p><div class="form-actions"><button data-action="close">\uCDE8\uC18C</button><button class="primary" data-admin-end-confirm="${kind}" data-expected-active="${esc12(target.dataset.activeId)}" data-person-id="${esc12(p3.personId)}">\uC885\uB8CC \uAE30\uB85D\uD558\uAE30</button></div>`);
+    openDialog("\uC0C1\uD0DC \uC885\uB8CC \uCC98\uB9AC", `<p>${esc13(p3.name)} \uB2D8\uC758 ${ACTIVITY_TYPES[kind].label}\uC744 \uC9C0\uAE08 \uC2DC\uAC01\uC73C\uB85C \uC885\uB8CC\uD560\uAE4C\uC694?</p><div class="form-actions"><button data-action="close">\uCDE8\uC18C</button><button class="primary" data-admin-end-confirm="${kind}" data-expected-active="${esc13(target.dataset.activeId)}" data-person-id="${esc13(p3.personId)}">\uC885\uB8CC \uAE30\uB85D\uD558\uAE30</button></div>`);
     return;
   }
   if (target.dataset.calendarTab) {
@@ -15139,7 +17131,7 @@ document.addEventListener("change", (event) => {
   }
   if (event.target.matches("#entry-form [name=date]") && document.querySelector("#entry-form select[name=person]")) {
     const select = document.querySelector("#entry-form [name=person]"), selected = select.value, people = document.querySelector("#entry-form").dataset.kind === "schedule" ? scheduleCandidates(monthOf2(event.target.value)) : schedulePeople(monthOf2(event.target.value));
-    select.innerHTML = '<option value="">\uC9C1\uC6D0\uC744 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694</option>' + people.map((p3) => '<option value="' + esc12(p3.personId) + '">' + esc12(p3.name) + " \xB7 " + esc12(p3.rawTeam) + "</option>").join("");
+    select.innerHTML = '<option value="">\uC9C1\uC6D0\uC744 \uC120\uD0DD\uD574 \uC8FC\uC138\uC694</option>' + people.map((p3) => '<option value="' + esc13(p3.personId) + '">' + esc13(p3.name) + " \xB7 " + esc13(p3.rawTeam) + "</option>").join("");
     select.value = people.some((p3) => p3.personId === selected) ? selected : "";
     return;
   }
@@ -15319,7 +17311,7 @@ addEventListener("storage", (event) => {
     return;
   }
   if (event.key === LOCAL_KEY) {
-    if (["team-snacks", "expenses"].includes(view)) return;
+    if (["team-snacks", "picker", "expenses"].includes(view)) return;
     if (view === "meals") {
       receiptController?.refresh();
       const area = document.querySelector(".local-records");
@@ -15351,7 +17343,7 @@ async function start() {
     document.title = "\uBDF0\uD2F0\uBE14\uB77C\uC378 \xB7 \uC9C1\uC6D0 \uC5C5\uBB34";
     render();
   } catch (error) {
-    app.innerHTML = `<main class="load-error"><h1>\uC9C1\uC6D0 \uC790\uB8CC\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.</h1><p>${esc12(error.message)}</p><button data-action="retry">\uB2E4\uC2DC \uBD88\uB7EC\uC624\uAE30</button></main>`;
+    app.innerHTML = `<main class="load-error"><h1>\uC9C1\uC6D0 \uC790\uB8CC\uB97C \uBD88\uB7EC\uC624\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4.</h1><p>${esc13(error.message)}</p><button data-action="retry">\uB2E4\uC2DC \uBD88\uB7EC\uC624\uAE30</button></main>`;
   }
 }
 start();
