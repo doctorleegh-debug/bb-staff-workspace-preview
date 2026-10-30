@@ -320,9 +320,9 @@ html{scrollbar-gutter:stable}html:has(.daily-drawer[open]){overflow:hidden}
  .guide-popup .guide-step-navigation{position:sticky;bottom:0;background:var(--panel);padding:12px 0;margin-top:10px}
 }
 @media(max-width:800px){.guide-popup .guide-image-button img{height:clamp(180px,30dvh,280px)}}
-.calendar-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 22px}.calendar-tabs button[aria-pressed=true]{background:#2563eb;color:#ffffff;border-color:#2563eb}.fc .fc-event.status-event{background:#fde7c8;color:#7a3e00}
+.calendar-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:0 auto 0 0}.calendar-tabs button{font-size:32px;font-weight:750;letter-spacing:-1.2px;line-height:1.2;padding:8px 18px}.calendar-tabs button[aria-pressed=true]{background:#2563eb;color:#ffffff;border-color:#2563eb}.fc .fc-event.status-event{background:#fde7c8;color:#7a3e00}
 :root[data-theme=dark] .fc .fc-event.status-event{background:#5a3a12;color:#ffd9a8}
-@media(max-width:600px){.calendar-tabs{gap:7px}.calendar-tabs button{flex:1;min-width:0;padding:10px 8px;font-size:15px}}
+@media(max-width:600px){.calendar-tabs{gap:7px}.calendar-tabs button{flex:1 1 auto;min-width:0;white-space:nowrap;padding:8px 12px;font-size:24px}}
 .status-action.is-paused{border-color:#e0b36a;background:#fff7ea}.schedule-actions{display:inline-flex;gap:8px;flex-wrap:wrap}.schedule-actions button{min-height:40px;padding:6px 14px}.dialog-body>.schedule-actions{display:flex;justify-content:flex-end;margin-top:12px}.daily-record .schedule-actions{display:flex;margin-top:10px}
 /* Meal toggle: one control slides between 식사중 and 식사종료 (200ms); 중단/재개 is its own button beside it. */
 .status-action.meal-card{aspect-ratio:auto;grid-column:span 2;min-height:220px}
